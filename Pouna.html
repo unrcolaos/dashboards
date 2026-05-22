@@ -1,0 +1,746 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UNCT-SWAP Gender Equality Scorecard</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --exceeds: #2d6a4f;
+    --exceeds-bg: #d8f3dc;
+    --exceeds-mid: #52b788;
+    --meets: #1d4e89;
+    --meets-bg: #dbeafe;
+    --meets-mid: #60a5fa;
+    --approaches: #92400e;
+    --approaches-bg: #fef3c7;
+    --approaches-mid: #f59e0b;
+    --missing: #7f1d1d;
+    --missing-bg: #fee2e2;
+    --missing-mid: #f87171;
+    --not-assessed: #374151;
+    --not-assessed-bg: #f3f4f6;
+    --not-assessed-mid: #9ca3af;
+    --bg: #fafaf8;
+    --surface: #ffffff;
+    --border: #e8e4df;
+    --text: #1a1614;
+    --text-muted: #6b6560;
+    --accent: #8b5e3c;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+  }
+
+  /* HEADER */
+  .site-header {
+    background: #1a1614;
+    color: #fff;
+    padding: 0 2rem;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 60px;
+    border-bottom: 3px solid var(--accent);
+  }
+  .site-header h1 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.05rem;
+    letter-spacing: 0.02em;
+    color: #fff;
+  }
+  .header-badge {
+    background: var(--accent);
+    color: #fff;
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 4px 12px;
+    border-radius: 2px;
+  }
+
+  /* HERO */
+  .hero {
+    background: linear-gradient(135deg, #1a1614 60%, #3d2b1f 100%);
+    color: #fff;
+    padding: 4rem 2rem 3rem;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    opacity: 1;
+  }
+  .hero-inner { max-width: 1100px; margin: 0 auto; position: relative; }
+  .hero-label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: #c8a882;
+    margin-bottom: 1rem;
+  }
+  .hero h2 {
+    font-family: 'DM Serif Display', serif;
+    font-size: clamp(2rem, 4vw, 3.2rem);
+    line-height: 1.1;
+    margin-bottom: 0.75rem;
+  }
+  .hero p {
+    color: #b0a89c;
+    font-size: 1rem;
+    max-width: 600px;
+    line-height: 1.6;
+    margin-bottom: 2.5rem;
+  }
+
+  /* SUMMARY CARDS */
+  .summary-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1rem;
+    margin-top: 0;
+  }
+  .summary-card {
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 8px;
+    padding: 1.2rem 1.4rem;
+    position: relative;
+    overflow: hidden;
+  }
+  .summary-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+  }
+  .summary-card.exceeds::before { background: var(--exceeds-mid); }
+  .summary-card.meets::before { background: var(--meets-mid); }
+  .summary-card.approaches::before { background: var(--approaches-mid); }
+  .summary-card.missing::before { background: var(--missing-mid); }
+  .summary-num {
+    font-family: 'DM Serif Display', serif;
+    font-size: 2.8rem;
+    line-height: 1;
+    margin-bottom: 0.25rem;
+  }
+  .summary-card.exceeds .summary-num { color: var(--exceeds-mid); }
+  .summary-card.meets .summary-num { color: var(--meets-mid); }
+  .summary-card.approaches .summary-num { color: var(--approaches-mid); }
+  .summary-card.missing .summary-num { color: var(--missing-mid); }
+  .summary-label { font-size: 0.8rem; color: #b0a89c; font-weight: 500; }
+
+  /* MAIN CONTENT */
+  .main { max-width: 1100px; margin: 0 auto; padding: 2.5rem 2rem 4rem; }
+
+  /* SECTION HEADERS */
+  .section-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.5rem;
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+  .section-title::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  /* FILTER BAR */
+  .filter-bar {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    margin-bottom: 2rem;
+    align-items: center;
+  }
+  .filter-label { font-size: 0.8rem; font-weight: 500; color: var(--text-muted); margin-right: 0.25rem; }
+  .filter-btn {
+    padding: 6px 14px;
+    border-radius: 99px;
+    border: 1.5px solid var(--border);
+    background: var(--surface);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.8rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.15s;
+    color: var(--text-muted);
+  }
+  .filter-btn:hover { border-color: var(--accent); color: var(--accent); }
+  .filter-btn.active { background: var(--text); color: #fff; border-color: var(--text); }
+  .filter-btn.active.exceeds { background: var(--exceeds); border-color: var(--exceeds); }
+  .filter-btn.active.meets { background: var(--meets); border-color: var(--meets); }
+  .filter-btn.active.approaches { background: #b45309; border-color: #b45309; }
+  .filter-btn.active.missing { background: var(--missing); border-color: var(--missing); }
+
+  /* YEAR SELECTOR */
+  .year-tabs {
+    display: flex;
+    gap: 0.25rem;
+    background: #f0ece7;
+    padding: 4px;
+    border-radius: 8px;
+    margin-left: auto;
+  }
+  .year-tab {
+    padding: 5px 14px;
+    border-radius: 6px;
+    border: none;
+    background: transparent;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.8rem;
+    font-weight: 500;
+    cursor: pointer;
+    color: var(--text-muted);
+    transition: all 0.15s;
+  }
+  .year-tab.active { background: #fff; color: var(--text); box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+
+  /* INDICATOR CARDS */
+  .dimensions-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 2.5rem;
+  }
+  .dimension-group {}
+  .dim-header {
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 0.75rem;
+    padding-left: 4px;
+  }
+  .indicators-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(310px, 1fr));
+    gap: 1rem;
+  }
+  .indicator-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1.25rem 1.4rem;
+    position: relative;
+    transition: transform 0.15s, box-shadow 0.15s;
+    overflow: hidden;
+  }
+  .indicator-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.07);
+  }
+  .indicator-card .card-accent {
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 4px;
+    border-radius: 10px 10px 0 0;
+  }
+  .indicator-card.exceeds .card-accent { background: var(--exceeds-mid); }
+  .indicator-card.meets .card-accent { background: var(--meets-mid); }
+  .indicator-card.approaches .card-accent { background: var(--approaches-mid); }
+  .indicator-card.missing .card-accent { background: var(--missing-mid); }
+  .indicator-card.not-assessed .card-accent { background: var(--not-assessed-mid); }
+  .card-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 0.6rem;
+  }
+  .pi-id {
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    color: var(--text-muted);
+  }
+  .status-pill {
+    font-size: 0.7rem;
+    font-weight: 600;
+    padding: 3px 10px;
+    border-radius: 99px;
+    letter-spacing: 0.03em;
+  }
+  .pill-exceeds { background: var(--exceeds-bg); color: var(--exceeds); }
+  .pill-meets { background: var(--meets-bg); color: var(--meets); }
+  .pill-approaches { background: var(--approaches-bg); color: var(--approaches); }
+  .pill-missing { background: var(--missing-bg); color: var(--missing); }
+  .pill-not-assessed { background: var(--not-assessed-bg); color: var(--not-assessed); }
+  .indicator-name {
+    font-size: 0.95rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    line-height: 1.3;
+  }
+  .card-meta {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    margin-bottom: 0.9rem;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+  .card-meta span { display: flex; align-items: center; gap: 0.25rem; }
+
+  /* TREND BAR */
+  .trend-label { font-size: 0.68rem; color: var(--text-muted); margin-bottom: 0.35rem; font-weight: 500; letter-spacing: 0.05em; text-transform: uppercase; }
+  .trend-dots {
+    display: flex;
+    gap: 0.4rem;
+    align-items: center;
+  }
+  .trend-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    flex: 1;
+  }
+  .trend-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+  .dot-exceeds { background: var(--exceeds-mid); }
+  .dot-meets { background: var(--meets-mid); }
+  .dot-approaches { background: var(--approaches-mid); }
+  .dot-missing { background: var(--missing-mid); }
+  .dot-not-assessed { background: #d1d5db; }
+  .trend-year { font-size: 0.6rem; color: var(--text-muted); }
+  .trend-connector {
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+    margin-top: -14px;
+  }
+  .card-agency {
+    margin-top: 0.9rem;
+    padding-top: 0.75rem;
+    border-top: 1px solid var(--border);
+    font-size: 0.72rem;
+    color: var(--text-muted);
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+  }
+
+  /* HIDDEN CARD */
+  .indicator-card.hidden { display: none; }
+
+  /* PROGRESS BAR SECTION */
+  .progress-section {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1.75rem 2rem;
+    margin-bottom: 2.5rem;
+  }
+  .progress-title {
+    font-size: 0.8rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 1.2rem;
+  }
+  .stacked-bar {
+    display: flex;
+    height: 36px;
+    border-radius: 6px;
+    overflow: hidden;
+    margin-bottom: 1rem;
+  }
+  .bar-seg {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: #fff;
+    transition: width 0.4s ease;
+    min-width: 0;
+    overflow: hidden;
+    white-space: nowrap;
+  }
+  .bar-seg.exceeds { background: var(--exceeds-mid); }
+  .bar-seg.meets { background: var(--meets-mid); }
+  .bar-seg.approaches { background: var(--approaches-mid); }
+  .bar-seg.missing { background: var(--missing-mid); }
+  .bar-legend {
+    display: flex;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+  }
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.78rem;
+    color: var(--text-muted);
+  }
+  .legend-dot {
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  /* ACTIVITY LOG */
+  .activity-section { margin-top: 3rem; }
+  .activity-table {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+  }
+  .activity-table table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  .activity-table th {
+    text-align: left;
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    padding: 0.85rem 1.2rem;
+    background: #f9f7f4;
+    border-bottom: 1px solid var(--border);
+  }
+  .activity-table td {
+    padding: 0.9rem 1.2rem;
+    font-size: 0.82rem;
+    border-bottom: 1px solid #f3f0eb;
+    vertical-align: top;
+    line-height: 1.5;
+  }
+  .activity-table tr:last-child td { border-bottom: none; }
+  .activity-table tr:hover td { background: #fafaf8; }
+  .act-type-pill {
+    display: inline-block;
+    font-size: 0.68rem;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 99px;
+    background: #f0ece7;
+    color: var(--accent);
+  }
+  .act-completed {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    font-size: 0.75rem;
+    color: var(--exceeds);
+    font-weight: 600;
+  }
+  .act-completed::before {
+    content: '✓';
+    font-size: 0.8rem;
+  }
+
+  /* FOOTER */
+  footer {
+    text-align: center;
+    padding: 2rem;
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    border-top: 1px solid var(--border);
+    margin-top: 2rem;
+  }
+
+  @media (max-width: 700px) {
+    .summary-grid { grid-template-columns: repeat(2,1fr); }
+    .hero { padding: 2.5rem 1.25rem 2rem; }
+    .main { padding: 1.5rem 1.25rem 3rem; }
+    .filter-bar { flex-direction: column; align-items: flex-start; }
+    .year-tabs { margin-left: 0; }
+  }
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <h1>UNCT-SWAP Gender Equality Scorecard</h1>
+  <span class="header-badge">Lao PDR</span>
+</header>
+
+<section class="hero">
+  <div class="hero-inner">
+    <p class="hero-label">Performance Indicator Dashboard</p>
+    <h2>Gender Equality<br><em>Progress Overview</em></h2>
+    <p>Live view of UNCT-SWAP scorecard indicators across seven dimensions. Data sourced from the Indicator Data tab of the shared workbook.</p>
+    <div class="summary-grid" id="summary-grid">
+      <!-- Filled by JS -->
+    </div>
+  </div>
+</section>
+
+<main class="main">
+
+  <!-- STACKED BAR -->
+  <div class="progress-section">
+    <div class="progress-title">Latest Status Distribution — All 15 Indicators</div>
+    <div class="stacked-bar" id="stacked-bar"></div>
+    <div class="bar-legend">
+      <div class="legend-item"><div class="legend-dot" style="background:var(--exceeds-mid)"></div> Exceeds</div>
+      <div class="legend-item"><div class="legend-dot" style="background:var(--meets-mid)"></div> Meets</div>
+      <div class="legend-item"><div class="legend-dot" style="background:var(--approaches-mid)"></div> Approaches</div>
+      <div class="legend-item"><div class="legend-dot" style="background:var(--missing-mid)"></div> Missing / Not Assessed</div>
+    </div>
+  </div>
+
+  <!-- FILTER BAR -->
+  <div class="filter-bar">
+    <span class="filter-label">Filter by status:</span>
+    <button class="filter-btn active" data-filter="all" onclick="setFilter('all',this)">All</button>
+    <button class="filter-btn exceeds" data-filter="Exceeds" onclick="setFilter('Exceeds',this)">Exceeds</button>
+    <button class="filter-btn meets" data-filter="Meets" onclick="setFilter('Meets',this)">Meets</button>
+    <button class="filter-btn approaches" data-filter="Approaches" onclick="setFilter('Approaches',this)">Approaches</button>
+    <button class="filter-btn missing" data-filter="Missing" onclick="setFilter('Missing',this)">Missing</button>
+    <div class="year-tabs">
+      <button class="year-tab" onclick="setYear('2022',this)">2022</button>
+      <button class="year-tab" onclick="setYear('2023',this)">2023</button>
+      <button class="year-tab" onclick="setYear('2024',this)">2024</button>
+      <button class="year-tab active" onclick="setYear('latest',this)">Latest</button>
+    </div>
+  </div>
+
+  <!-- INDICATORS -->
+  <div class="dimensions-grid" id="dimensions-grid">
+    <!-- Filled by JS -->
+  </div>
+
+  <!-- ACTIVITY LOG -->
+  <div class="activity-section">
+    <h3 class="section-title">Recent Activities & Progress</h3>
+    <div class="activity-table">
+      <table>
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Indicator</th>
+            <th>Activity</th>
+            <th>Type</th>
+            <th>Lead</th>
+            <th>Status</th>
+            <th>Notes</th>
+          </tr>
+        </thead>
+        <tbody id="activity-tbody">
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</main>
+
+<footer>
+  UNCT-SWAP Gender Equality Scorecard · Lao PDR · Data current as of May 2025
+</footer>
+
+<script>
+const INDICATORS = [
+  { dimension: "1. Planning", pi_id: "PI 1.1", indicator_name: "Common Country Analysis", status_2022: "Approaches", status_2023: "Approaches", status_2024: "Approaches", status_2025: "Not assessed", last_assessed: "2024", agency: "Outcome leads / POG", latest_status: "Approaches" },
+  { dimension: "1. Planning", pi_id: "PI 1.2", indicator_name: "UNSDCF Outcomes", status_2022: "Approaches", status_2023: "Not assessed", status_2024: "Not assessed", status_2025: "Not assessed", last_assessed: "2022", agency: "UNCT", latest_status: "Approaches" },
+  { dimension: "1. Planning", pi_id: "PI 1.3", indicator_name: "UNSDCF Indicators", status_2022: "Approaches", status_2023: "Not assessed", status_2024: "Not assessed", status_2025: "Not assessed", last_assessed: "2022", agency: "POG / MELG", latest_status: "Approaches" },
+  { dimension: "2. Programming & M&E", pi_id: "PI 2.1", indicator_name: "Joint Programmes", status_2022: "Meets", status_2023: "Meets", status_2024: "Meets", status_2025: "Meets", last_assessed: "2025", agency: "POG", latest_status: "Meets" },
+  { dimension: "2. Programming & M&E", pi_id: "PI 2.2", indicator_name: "Communication & Advocacy", status_2022: "Approaches", status_2023: "Meets", status_2024: "Approaches", status_2025: "Exceeds", last_assessed: "2025", agency: "UNCT / UNCG", latest_status: "Exceeds" },
+  { dimension: "2. Programming & M&E", pi_id: "PI 2.3", indicator_name: "UNSDCF Monitoring & Evaluation", status_2022: "Meets", status_2023: "Meets", status_2024: "Meets", status_2025: "Meets", last_assessed: "2025", agency: "POG / MELG", latest_status: "Meets" },
+  { dimension: "3. Partnerships", pi_id: "PI 3.1", indicator_name: "Engagement with Government", status_2022: "Exceeds", status_2023: "Approaches", status_2024: "Exceeds", status_2025: "Exceeds", last_assessed: "2025", agency: "UNCT / POG", latest_status: "Exceeds" },
+  { dimension: "3. Partnerships", pi_id: "PI 3.2", indicator_name: "Engagement with GEWE CSOs", status_2022: "Exceeds", status_2023: "Exceeds", status_2024: "Approaches", status_2025: "Approaches", last_assessed: "2025", agency: "UNCT / POG", latest_status: "Approaches" },
+  { dimension: "4. Leadership", pi_id: "PI 4.1", indicator_name: "Leadership for Gender Equality", status_2022: "Approaches", status_2023: "Approaches", status_2024: "Approaches", status_2025: "Approaches", last_assessed: "2025", agency: "UNCT / RCO", latest_status: "Approaches" },
+  { dimension: "4. Leadership", pi_id: "PI 4.2", indicator_name: "Organizational Culture", status_2022: "Meets", status_2023: "Meets", status_2024: "Meets", status_2025: "Meets", last_assessed: "2025", agency: "UNCT / Staff Assoc.", latest_status: "Meets" },
+  { dimension: "4. Leadership", pi_id: "PI 4.3", indicator_name: "Gender Parity in Staffing", status_2022: "Missing", status_2023: "Missing", status_2024: "Missing", status_2025: "Missing", last_assessed: "2025", agency: "UNCT / OMT", latest_status: "Missing" },
+  { dimension: "5. Gender Architecture", pi_id: "PI 5.1", indicator_name: "Gender Coordination Mechanism", status_2022: "Missing", status_2023: "Missing", status_2024: "Missing", status_2025: "Exceeds", last_assessed: "2025", agency: "RCO / GTG", latest_status: "Exceeds" },
+  { dimension: "5. Gender Architecture", pi_id: "PI 5.2", indicator_name: "Gender Mainstreaming Capacities", status_2022: "Missing", status_2023: "Missing", status_2024: "Missing", status_2025: "Missing", last_assessed: "2025", agency: "GTG / POG", latest_status: "Missing" },
+  { dimension: "6. Financial Resources", pi_id: "PI 6.1", indicator_name: "Resource Allocation & Tracking", status_2022: "Missing", status_2023: "Missing", status_2024: "Missing", status_2025: "Missing", last_assessed: "2025", agency: "POG / LEAD", latest_status: "Missing" },
+  { dimension: "7. Results", pi_id: "PI 7.1", indicator_name: "GEWE Results", status_2022: "Meets", status_2023: "Meets", status_2024: "Meets", status_2025: "Meets", last_assessed: "2025", agency: "UNCT / Outcome leads", latest_status: "Meets" }
+];
+
+const ACTIVITIES = [
+  { date: "May 2025", pi_id: "PI 5.1", indicator: "Gender Coordination Mechanism", description: "GTG Terms of Reference finalized and endorsed by UNCT. Annual work plan 2025 approved.", type: "Planning", lead: "RCO / GTG", status: "Completed", notes: "PI 5.1 moved from Missing → Exceeds in 2025 assessment" },
+  { date: "May 2025", pi_id: "PI 2.2", indicator: "Communication & Advocacy", description: "Joint GEWE advocacy campaign completed across agencies. UNCG strategy updated.", type: "Advocacy", lead: "UNCT / UNCG", status: "Completed", notes: "PI 2.2 achieved Exceeds in 2025 assessment" },
+  { date: "Apr 2025", pi_id: "PI 4.2", indicator: "Organizational Culture", description: "Annual staff perception survey on GEWE organizational culture completed.", type: "Assessment", lead: "UNCT / Staff Assoc.", status: "Completed", notes: "Maintained Meets rating" },
+  { date: "Mar 2025", pi_id: "PI 2.3", indicator: "UNSDCF M&E", description: "Gender-sensitive M&E training delivered to LEAD group.", type: "Training", lead: "POG / LEAD", status: "Completed", notes: "Contributed to Meets reassessment" }
+];
+
+let activeFilter = 'all';
+let activeYear = 'latest';
+
+function statusClass(s) {
+  if (!s || s === 'Not assessed') return 'not-assessed';
+  return s.toLowerCase().replace(' ', '-');
+}
+
+function pillClass(s) {
+  if (!s || s === 'Not assessed') return 'pill-not-assessed';
+  return 'pill-' + s.toLowerCase().replace(' ', '-');
+}
+
+function dotClass(s) {
+  if (!s || s === 'Not assessed') return 'dot-not-assessed';
+  return 'dot-' + s.toLowerCase().replace(' ', '-');
+}
+
+function getStatusForYear(ind, year) {
+  if (year === '2022') return ind.status_2022;
+  if (year === '2023') return ind.status_2023;
+  if (year === '2024') return ind.status_2024;
+  if (year === '2025') return ind.status_2025;
+  return ind.latest_status;
+}
+
+function buildSummary() {
+  const counts = { Exceeds: 0, Meets: 0, Approaches: 0, 'Missing / Not Assessed': 0 };
+  INDICATORS.forEach(ind => {
+    const s = ind.latest_status;
+    if (s === 'Exceeds') counts['Exceeds']++;
+    else if (s === 'Meets') counts['Meets']++;
+    else if (s === 'Approaches') counts['Approaches']++;
+    else counts['Missing / Not Assessed']++;
+  });
+  const grid = document.getElementById('summary-grid');
+  grid.innerHTML = [
+    { cls: 'exceeds', label: 'Exceeds', key: 'Exceeds' },
+    { cls: 'meets', label: 'Meets', key: 'Meets' },
+    { cls: 'approaches', label: 'Approaches', key: 'Approaches' },
+    { cls: 'missing', label: 'Missing / N/A', key: 'Missing / Not Assessed' }
+  ].map(({ cls, label, key }) => `
+    <div class="summary-card ${cls}">
+      <div class="summary-num">${counts[key]}</div>
+      <div class="summary-label">${label}</div>
+    </div>
+  `).join('');
+}
+
+function buildStackedBar() {
+  const total = INDICATORS.length;
+  const counts = { Exceeds: 0, Meets: 0, Approaches: 0, Missing: 0 };
+  INDICATORS.forEach(ind => {
+    const s = ind.latest_status;
+    if (s === 'Exceeds') counts.Exceeds++;
+    else if (s === 'Meets') counts.Meets++;
+    else if (s === 'Approaches') counts.Approaches++;
+    else counts.Missing++;
+  });
+  const bar = document.getElementById('stacked-bar');
+  bar.innerHTML = Object.entries(counts).map(([key, val]) => {
+    const pct = ((val / total) * 100).toFixed(1);
+    const label = pct > 10 ? `${val} (${pct}%)` : val > 0 ? `${val}` : '';
+    return `<div class="bar-seg ${key.toLowerCase()}" style="width:${pct}%">${label}</div>`;
+  }).join('');
+}
+
+function buildDimensions() {
+  const dims = [...new Set(INDICATORS.map(i => i.dimension))];
+  const grid = document.getElementById('dimensions-grid');
+
+  grid.innerHTML = dims.map(dim => {
+    const inds = INDICATORS.filter(i => i.dimension === dim);
+    const cards = inds.map(ind => {
+      const currentStatus = getStatusForYear(ind, activeYear);
+      const sc = statusClass(currentStatus);
+      const isHidden = activeFilter !== 'all' && currentStatus !== activeFilter ? 'hidden' : '';
+      const years = ['2022', '2023', '2024', '2025'];
+      const labels = ['2022', '2023', '2024', '2025'];
+      const trendHtml = years.map((yr, i) => {
+        const s = getStatusForYear(ind, yr);
+        return `<div class="trend-item"><div class="trend-dot ${dotClass(s)}" title="${yr}: ${s}"></div><div class="trend-year">${labels[i]}</div></div>`;
+      }).join('<div class="trend-connector"></div>');
+
+      return `
+        <div class="indicator-card ${sc} ${isHidden}" data-status="${currentStatus}" data-pi="${ind.pi_id}">
+          <div class="card-accent"></div>
+          <div class="card-top">
+            <span class="pi-id">${ind.pi_id}</span>
+            <span class="status-pill ${pillClass(currentStatus)}">${currentStatus}</span>
+          </div>
+          <div class="indicator-name">${ind.indicator_name}</div>
+          <div class="card-meta">
+            <span>📅 Last assessed: ${ind.last_assessed || '—'}</span>
+          </div>
+          <div class="trend-label">Trend (2022–2025)</div>
+          <div class="trend-dots">${trendHtml}</div>
+          <div class="card-agency">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+            ${ind.agency}
+          </div>
+        </div>`;
+    }).join('');
+
+    return `
+      <div class="dimension-group">
+        <div class="dim-header">${dim}</div>
+        <div class="indicators-row">${cards}</div>
+      </div>`;
+  }).join('');
+}
+
+function buildActivities() {
+  const tbody = document.getElementById('activity-tbody');
+  tbody.innerHTML = ACTIVITIES.map(a => `
+    <tr>
+      <td><strong>${a.date}</strong></td>
+      <td><strong>${a.pi_id}</strong><br><span style="color:var(--text-muted);font-size:0.75rem">${a.indicator}</span></td>
+      <td>${a.description}</td>
+      <td><span class="act-type-pill">${a.type}</span></td>
+      <td>${a.lead}</td>
+      <td><span class="act-completed">${a.status}</span></td>
+      <td style="color:var(--text-muted)">${a.notes}</td>
+    </tr>
+  `).join('');
+}
+
+function setFilter(filter, btn) {
+  activeFilter = filter;
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  applyFilters();
+}
+
+function setYear(year, btn) {
+  activeYear = year;
+  document.querySelectorAll('.year-tab').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  buildDimensions(); // Rebuild cards with new year data
+  applyFilters();
+}
+
+function applyFilters() {
+  document.querySelectorAll('.indicator-card').forEach(card => {
+    const status = card.dataset.status;
+    if (activeFilter === 'all' || status === activeFilter) {
+      card.classList.remove('hidden');
+    } else {
+      card.classList.add('hidden');
+    }
+  });
+}
+
+// Init
+buildSummary();
+buildStackedBar();
+buildDimensions();
+buildActivities();
+</script>
+</body>
+</html>
