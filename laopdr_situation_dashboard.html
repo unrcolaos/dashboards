@@ -502,7 +502,7 @@ function applyFuelSheet(rows){
 }
 
 // ══════════════════════════════════════════════════
-//  LIVE PRICES via Standard Data APIs (FAST)
+//  LIVE PRICES via Yahoo Finance & ER-API (FAST)
 // ══════════════════════════════════════════════════
 async function fetchLivePrices() {
   log('Fetching live prices via Data APIs…');
@@ -521,18 +521,65 @@ async function fetchLivePrices() {
     log('FX fetch failed: ' + e.message);
   }
 
-  // 2. Return data immediately (Resolves in milliseconds instead of seconds)
-  // Note: For live crude prices in a real production app, connect this to a 
-  // financial REST API (like AlphaVantage or Finnhub) rather than an LLM.
+  // 2. Helper function to fetch live Oil data from Yahoo Finance
+  async function fetchOilData(symbol) {
+    try {
+      // Using AllOrigins CORS proxy to bypass browser restrictions
+      const targetUrl = encodeURIComponent(`https://query1.finance.yahoo.com/v8/finance/chart/${symbol}?interval=1d&range=15d`);
+      const res = await fetch(`https://api.allorigins.win/raw?url=${targetUrl}`);
+      
+      if (!res.ok) throw new Error('API fetch failed');
+      
+      const data = await res.json();
+      const result = data.chart.result[0];
+      
+      const timestamps = result.timestamp;
+      const closePrices = result.indicators.quote[0].close;
+      
+      let validDays = [];
+      // Loop through the data and filter out any null/weekend values
+      for (let i = 0; i < timestamps.length; i++) {
+         if (closePrices[i] !== null) {
+            validDays.push({
+               date: new Date(timestamps[i] * 1000).toLocaleDateString('en-GB', {day: 'numeric', month: 'short'}),
+               price: Math.round(closePrices[i]) // Round to nearest whole dollar
+            });
+         }
+      }
+      
+      // Grab exactly the last 12 trading days
+      validDays = validDays.slice(-12);
+      
+      return {
+         prices: validDays.map(d => d.price),
+         dates: validDays.map(d => d.date),
+         current: validDays[validDays.length - 1].price
+      };
+    } catch (e) {
+      log(`Failed to fetch ${symbol}: ` + e.message);
+      return null; // Return null to trigger fallbacks
+    }
+  }
+
+  // 3. Fetch Brent (BZ=F) and WTI (CL=F)
+  const brentData = await fetchOilData('BZ=F');
+  const wtiData = await fetchOilData('CL=F');
+
+  // 4. Fallback Static Data (used only if the API goes down)
+  const fallbackBrent = [92, 94, 95, 93, 97, 98, 100, 101, 103, 102, 103, 104];
+  const fallbackWti = [85, 87, 88, 86, 90, 91, 93, 94, 95, 94, 94, 95];
+  const fallbackDates = ["D-11", "D-10", "D-9", "D-8", "D-7", "D-6", "D-5", "D-4", "D-3", "D-2", "D-1", "Today"];
+
   const today = new Date().toISOString().split('T')[0];
   
+  // 5. Return the dynamically built live data object
   return {
-    "brent_usd": 104,
-    "wti_usd": 95,
+    "brent_usd": brentData ? brentData.current : fallbackBrent[11],
+    "wti_usd": wtiData ? wtiData.current : fallbackWti[11],
     "usd_lak": usd_lak,
-    "brent_history": [92, 94, 95, 93, 97, 98, 100, 101, 103, 102, 103, 104],
-    "wti_history": [85, 87, 88, 86, 90, 91, 93, 94, 95, 94, 94, 95],
-    "date_labels": ["D-11", "D-10", "D-9", "D-8", "D-7", "D-6", "D-5", "D-4", "D-3", "D-2", "D-1", "Today"],
+    "brent_history": brentData ? brentData.prices : fallbackBrent,
+    "wti_history": wtiData ? wtiData.prices : fallbackWti,
+    "date_labels": brentData ? brentData.dates : (wtiData ? wtiData.dates : fallbackDates),
     "as_of": today
   };
 }
