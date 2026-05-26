@@ -309,22 +309,6 @@ footer a{color:var(--un)} footer strong{color:var(--text)}
 </footer>
 
 <script>
-The dashboard is likely failing because of a few hidden data-parsing bugs that occur when you connect a real Google Sheet, combined with how the script handles network errors from the live price APIs.
-
-Here are the specific issues breaking the page:
-
-1. **CSV Parsing with Commas:** The original `parseCSV` function simply splits data by commas (`split(',')`). If your Google Sheet exports formatted numbers containing commas (e.g., `"34,400"`), the parser splits that single number into two different columns, misaligning all your data.
-2. **Number Truncation:** Even if parsed correctly, JavaScript's default `parseFloat("34,400")` evaluates to just `34`. This causes all the values in your charts to flatline near zero.
-3. **Silent API Failures:** The `fetchLivePrices` function catches Yahoo Finance API errors but silently returns static fallback data without throwing an error. The main dashboard script assumes the fetch succeeded, showing a green "Updated ✓" checkmark while displaying frozen estimate data.
-
-### The Fix
-
-You need to replace your existing CSV parser with one that respects quotes, add a safe number parser that strips commas, and ensure the live price fetcher properly throws errors so the dashboard can switch to its warning state.
-
-Replace your **entire** `<script>` section (from `<script>` to `</script>`) with the following updated code. I have also adjusted the CPI chart groupings to use more inclusive terminology for the smaller data subsets.
-
-```html
-<script>
 // ══════════════════════════════════════════════════
 //  STATE & UI HELPERS
 // ══════════════════════════════════════════════════
