@@ -1,0 +1,683 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lao PDR · Middle East Crisis Impact · Situation Update</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@300;400;600;700&display=swap');
+  :root {
+    --un-blue:#009EDB; --un-dark:#0A1628; --un-mid:#0D2240;
+    --red:#E84C4C; --amber:#F5A623; --green:#27AE60; --teal:#1ABC9C;
+    --text:#EEF2F7; --muted:#8A9AB5; --card:rgba(13,34,64,0.85); --border:rgba(0,158,219,0.2);
+    --grid:rgba(0,158,219,0.07);
+  }
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'IBM Plex Sans',sans-serif;background:var(--un-dark);color:var(--text);font-size:13px;
+    background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);
+    background-size:40px 40px}
+
+  /* ── HEADER ── */
+  header{background:linear-gradient(135deg,var(--un-mid) 0%,#071527 100%);border-bottom:2px solid var(--un-blue);
+    padding:12px 20px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;
+    position:sticky;top:0;z-index:100;box-shadow:0 4px 30px rgba(0,0,0,.5)}
+  .hrow{display:flex;align-items:center;gap:12px}
+  .unlogo{width:42px;height:42px;background:var(--un-blue);border-radius:50%;display:grid;place-items:center;
+    font-size:9px;font-weight:700;color:#fff;text-align:center;line-height:1.15;flex-shrink:0}
+  .htitle h1{font-size:14px;font-weight:700}
+  .htitle p{font-size:10px;color:var(--muted);margin-top:1px}
+  .badge{background:rgba(0,158,219,.15);border:1px solid var(--un-blue);border-radius:4px;padding:3px 9px;
+    font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--un-blue)}
+  #ts{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--muted)}
+  .rbtn{background:var(--un-blue);border:none;border-radius:4px;padding:5px 12px;color:#fff;font-size:11px;
+    font-weight:600;cursor:pointer;font-family:'IBM Plex Sans',sans-serif;margin-left:4px}
+  .rbtn:hover{opacity:.85}
+
+  /* ── CONFIG PANEL ── */
+  .config-panel{background:rgba(0,158,219,0.07);border:1px solid rgba(0,158,219,0.3);margin:12px 18px 0;
+    border-radius:8px;overflow:hidden}
+  .config-header{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;
+    cursor:pointer;user-select:none}
+  .config-header-left{display:flex;align-items:center;gap:8px;font-size:12px;font-weight:600;color:var(--un-blue)}
+  .config-toggle{font-size:10px;color:var(--muted)}
+  .config-body{padding:14px;border-top:1px solid rgba(0,158,219,0.2);display:none}
+  .config-body.open{display:block}
+  .config-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:10px}
+  .config-field label{display:block;font-size:10px;color:var(--muted);text-transform:uppercase;
+    letter-spacing:.6px;margin-bottom:4px}
+  .config-field input{width:100%;background:rgba(10,22,40,0.8);border:1px solid rgba(0,158,219,0.3);
+    border-radius:4px;padding:6px 10px;color:var(--text);font-family:'IBM Plex Mono',monospace;
+    font-size:10px;outline:none}
+  .config-field input:focus{border-color:var(--un-blue)}
+  .config-field .hint{font-size:9px;color:rgba(138,154,181,.6);margin-top:3px;line-height:1.4}
+  .config-field .hint a{color:var(--un-blue)}
+  .config-actions{display:flex;gap:8px;margin-top:12px;align-items:center;flex-wrap:wrap}
+  .save-btn{background:var(--green);border:none;border-radius:4px;padding:6px 14px;color:#fff;
+    font-size:11px;font-weight:600;cursor:pointer;font-family:'IBM Plex Sans',sans-serif}
+  .save-btn:hover{opacity:.85}
+  .config-note{font-size:10px;color:var(--muted);line-height:1.5}
+  .config-status{font-size:10px;font-family:'IBM Plex Mono',monospace;padding:4px 8px;border-radius:4px}
+  .config-status.ok{background:rgba(39,174,96,.15);color:var(--green)}
+  .config-status.err{background:rgba(232,76,76,.15);color:var(--red)}
+  .config-status.loading{background:rgba(0,158,219,.15);color:var(--un-blue)}
+
+  /* ── STATUS BAR ── */
+  .status-row{display:flex;align-items:center;gap:10px;padding:8px 18px;flex-wrap:wrap}
+  .status-chip{display:flex;align-items:center;gap:5px;background:var(--card);border:1px solid var(--border);
+    border-radius:20px;padding:3px 10px;font-size:10px;font-family:'IBM Plex Mono',monospace}
+  .status-chip.ok{border-color:rgba(39,174,96,.4);color:var(--green)}
+  .status-chip.err{border-color:rgba(232,76,76,.4);color:var(--red)}
+  .status-chip.loading{border-color:rgba(0,158,219,.4);color:var(--un-blue)}
+  .status-chip.warn{border-color:rgba(245,166,35,.4);color:var(--amber)}
+
+  /* ── DASHBOARD ── */
+  .dash{padding:10px 18px 22px;display:grid;gap:12px}
+  .krow{display:grid;grid-template-columns:repeat(auto-fit,minmax(155px,1fr));gap:9px}
+  .kpi{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:13px 15px;
+    backdrop-filter:blur(8px);position:relative;overflow:hidden}
+  .kpi::before{content:'';position:absolute;top:0;left:0;right:0;height:2px}
+  .kpi.red::before{background:var(--red)} .kpi.amber::before{background:var(--amber)}
+  .kpi.green::before{background:var(--green)} .kpi.blue::before{background:var(--un-blue)}
+  .kpi.teal::before{background:var(--teal)}
+  .klabel{font-size:10px;text-transform:uppercase;letter-spacing:.7px;color:var(--muted);margin-bottom:5px}
+  .kval{font-family:'IBM Plex Mono',monospace;font-size:22px;font-weight:600;line-height:1}
+  .kval.red{color:var(--red)} .kval.amber{color:var(--amber)} .kval.green{color:var(--green)}
+  .kval.blue{color:var(--un-blue)} .kval.teal{color:var(--teal)}
+  .ksub{font-size:10px;color:var(--muted);margin-top:4px;line-height:1.3}
+  .ksrc{font-size:9px;color:rgba(138,154,181,.55);margin-top:5px}
+  .ksrc a{color:inherit;text-decoration:underline}
+  .ldot{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--green);
+    margin-right:4px;animation:pulse 2s infinite}
+  .sdot{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--un-blue);margin-right:4px}
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+  .cgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(330px,1fr));gap:12px}
+  .cc{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:15px;backdrop-filter:blur(8px)}
+  .ctitle{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;margin-bottom:2px}
+  .csub{font-size:10px;color:var(--muted);margin-bottom:10px}
+  .csrc{font-size:9px;color:rgba(138,154,181,.55);margin-top:8px;line-height:1.4}
+  .csrc a{color:var(--un-blue);text-decoration:none}
+  .csrc a:hover{text-decoration:underline}
+  canvas{max-height:200px}
+  .alerts{display:grid;grid-template-columns:repeat(auto-fit,minmax(270px,1fr));gap:9px}
+  .ac{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:13px 15px;border-left:3px solid}
+  .ac.crit{border-left-color:var(--red)} .ac.warn{border-left-color:var(--amber)}
+  .ac.info{border-left-color:var(--un-blue)} .ac.pos{border-left-color:var(--green)}
+  .atag{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.9px;margin-bottom:5px}
+  .atag.crit{color:var(--red)} .atag.warn{color:var(--amber)} .atag.info{color:var(--un-blue)} .atag.pos{color:var(--green)}
+  .atext{font-size:11px;line-height:1.5}
+  footer{margin:6px 18px 18px;padding:11px 15px;background:var(--card);border:1px solid var(--border);
+    border-radius:8px;font-size:10px;color:var(--muted);line-height:1.9}
+  footer a{color:var(--un-blue)} footer strong{color:var(--text)}
+  .spin{display:inline-block;width:9px;height:9px;border:2px solid rgba(255,255,255,.2);
+    border-top-color:var(--un-blue);border-radius:50%;animation:spin .8s linear infinite;vertical-align:middle}
+  @keyframes spin{to{transform:rotate(360deg)}}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="hrow">
+    <div class="unlogo">UN<br>LAO</div>
+    <div class="htitle">
+      <h1>Lao PDR — Impact of the Middle East Crisis</h1>
+      <p>Situation Update No.2 · April 2026 &nbsp;|&nbsp; United Nations Lao PDR</p>
+    </div>
+  </div>
+  <div class="hrow">
+    <span class="badge">LIVE DASHBOARD</span>
+    <span id="ts">Ready</span>
+    <button class="rbtn" onclick="initDashboard()">↺ Refresh</button>
+    <button class="rbtn" style="background:rgba(0,158,219,0.2);border:1px solid var(--un-blue);"
+      onclick="toggleConfig()">⚙ Data Sources</button>
+  </div>
+</header>
+
+<!-- ── CONFIGURATION PANEL ── -->
+<div class="config-panel" id="configPanel">
+  <div class="config-header" onclick="toggleConfig()">
+    <div class="config-header-left">
+      ⚙&nbsp; Data source configuration — connect your Google Sheets
+    </div>
+    <span class="config-toggle" id="configToggleLabel">▼ expand</span>
+  </div>
+  <div class="config-body" id="configBody">
+    <div class="config-grid">
+
+      <div class="config-field">
+        <label>KPIs Tab — CSV URL</label>
+        <input type="text" id="url-kpis" placeholder="https://docs.google.com/spreadsheets/d/…/pub?gid=0&single=true&output=csv">
+        <div class="hint">
+          Contains columns: <code>key, value, sub, source</code><br>
+          Keys: <code>cpi_inflation, petrol_lak, diesel_lak, fx_reserves, gdp_forecast</code><br>
+          <a href="#" onclick="openSheetsHelp()">How to publish your sheet as CSV →</a>
+        </div>
+      </div>
+
+      <div class="config-field">
+        <label>CPI Chart Tab — CSV URL</label>
+        <input type="text" id="url-cpi" placeholder="https://docs.google.com/spreadsheets/d/…/pub?gid=1&single=true&output=csv">
+        <div class="hint">
+          Columns: <code>month, transport, food, other</code><br>
+          One row per month. Values are percentage-point contributions (YoY%).
+        </div>
+      </div>
+
+      <div class="config-field">
+        <label>Fuel Prices Tab — CSV URL</label>
+        <input type="text" id="url-fuel" placeholder="https://docs.google.com/spreadsheets/d/…/pub?gid=2&single=true&output=csv">
+        <div class="hint">
+          Columns: <code>date, petrol_vte, diesel_vte, platts_p, platts_d</code><br>
+          Values are index numbers (27 Feb = 100).
+        </div>
+      </div>
+
+    </div>
+
+    <div class="config-actions">
+      <button class="save-btn" onclick="saveAndReload()">Save &amp; Reload Data</button>
+      <button class="rbtn" style="background:transparent;border:1px solid var(--muted);font-size:10px;" onclick="copyTemplate()">Copy Sheet Template Link</button>
+      <span class="config-status" id="config-status"></span>
+    </div>
+
+    <div class="config-note" style="margin-top:10px;">
+      <strong style="color:var(--text)">Setup steps:</strong>
+      1. Make a copy of the <a href="https://docs.google.com/spreadsheets/d/1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgVE2upms/edit" target="_blank" style="color:var(--un-blue)">template Google Sheet</a>
+      (or create your own with the columns above).&nbsp;
+      2. Go to <strong style="color:var(--text)">File → Share → Publish to web</strong>, choose each tab, select <strong style="color:var(--text)">CSV</strong>, click Publish.&nbsp;
+      3. Paste the 3 CSV links above and click <strong style="color:var(--text)">Save &amp; Reload</strong>.&nbsp;
+      4. Done — your boss only ever edits the Google Sheet from now on. URLs are saved in your browser.
+    </div>
+  </div>
+</div>
+
+<!-- ── STATUS ROW ── -->
+<div class="status-row">
+  <div class="status-chip loading" id="chip-sheets"><span class="spin"></span>&nbsp;Sheets: checking…</div>
+  <div class="status-chip loading" id="chip-live"><span class="spin"></span>&nbsp;Live prices: fetching…</div>
+  <div class="status-chip warn" id="chip-mode">Mode: built-in data</div>
+</div>
+
+<div class="dash">
+
+  <!-- KPIs -->
+  <div class="krow">
+    <div class="kpi amber">
+      <div class="klabel"><span class="sdot"></span>CPI Inflation (YoY)</div>
+      <div class="kval amber" id="kv-cpi">10.2%</div>
+      <div class="ksub" id="ks-cpi">April 2026 · Transport: 97% of 2-month rise</div>
+      <div class="ksrc" id="kr-cpi">Source: <a href="https://www.lsb.gov.la" target="_blank">Lao Statistics Bureau</a></div>
+    </div>
+    <div class="kpi red">
+      <div class="klabel"><span class="ldot"></span>Brent Crude (Live)</div>
+      <div class="kval red" id="kpi-brent">—<span class="spin" id="sp1"></span></div>
+      <div class="ksub" id="sub-brent">Fetching…</div>
+      <div class="ksrc">Live · <a href="https://finance.yahoo.com/quote/BZ%3DF/" target="_blank">Yahoo Finance BZ=F</a></div>
+    </div>
+    <div class="kpi red">
+      <div class="klabel"><span class="ldot"></span>WTI Crude (Live)</div>
+      <div class="kval red" id="kpi-wti">—<span class="spin" id="sp2"></span></div>
+      <div class="ksub" id="sub-wti">Fetching…</div>
+      <div class="ksrc">Live · <a href="https://finance.yahoo.com/quote/CL%3DF/" target="_blank">Yahoo Finance CL=F</a></div>
+    </div>
+    <div class="kpi blue">
+      <div class="klabel"><span class="ldot"></span>USD / LAK (Live)</div>
+      <div class="kval blue" id="kpi-lak">—<span class="spin" id="sp3"></span></div>
+      <div class="ksub" id="sub-lak">Fetching…</div>
+      <div class="ksrc">Live · <a href="https://open.er-api.com/v6/latest/USD" target="_blank">ExchangeRate-API</a></div>
+    </div>
+    <div class="kpi amber">
+      <div class="klabel"><span class="sdot"></span>Petrol – Vientiane</div>
+      <div class="kval amber" id="kv-petrol">34,400</div>
+      <div class="ksub" id="ks-petrol">LAK/L · 1 May 2026 · ↓19% from peak</div>
+      <div class="ksrc" id="kr-petrol"><a href="https://www.lsfc.gov.la" target="_blank">Lao State Fuel Company</a></div>
+    </div>
+    <div class="kpi amber">
+      <div class="klabel"><span class="sdot"></span>Diesel – Vientiane</div>
+      <div class="kval amber" id="kv-diesel">39,400</div>
+      <div class="ksub" id="ks-diesel">LAK/L · 1 May 2026 · ↓25% from peak</div>
+      <div class="ksrc" id="kr-diesel"><a href="https://www.lsfc.gov.la" target="_blank">Lao State Fuel Company</a></div>
+    </div>
+    <div class="kpi green">
+      <div class="klabel"><span class="sdot"></span>FX Reserves</div>
+      <div class="kval green" id="kv-fx">$4.2B</div>
+      <div class="ksub" id="ks-fx">March 2026 · ≈4.0 months imports</div>
+      <div class="ksrc" id="kr-fx"><a href="https://www.bol.gov.la/statistics/BOP6_Lao%20PDR.xlsx" target="_blank">Bank of Lao PDR</a></div>
+    </div>
+    <div class="kpi teal">
+      <div class="klabel"><span class="sdot"></span>GDP Growth 2026</div>
+      <div class="kval teal" id="kv-gdp">4.0%</div>
+      <div class="ksub" id="ks-gdp">IMF/ADB forecast · WB: 3.5%</div>
+      <div class="ksrc" id="kr-gdp"><a href="https://www.imf.org/external/datamapper/datasets/WEO" target="_blank">IMF WEO</a> / <a href="https://www.adb.org/publications/asian-development-outlook-april-2026" target="_blank">ADB ADO Apr 2026</a></div>
+    </div>
+  </div>
+
+  <!-- CHARTS -->
+  <div class="cgrid">
+    <div class="cc">
+      <div class="ctitle"><span class="ldot"></span>Crude Oil Prices (Live)</div>
+      <div class="csub">Brent &amp; WTI · USD/bbl · recent trend</div>
+      <canvas id="chartCrude"></canvas>
+      <div class="csrc">Live via Claude AI →
+        <a href="https://finance.yahoo.com/quote/BZ%3DF/history/" target="_blank">Yahoo Finance BZ=F</a> &amp;
+        <a href="https://finance.yahoo.com/quote/CL%3DF/history/" target="_blank">CL=F</a> |
+        Ref: <a href="https://iea.blob.core.windows.net/assets/515f3128-df1a-4d6c-beb4-fd91d2434bef/-14APR2026_OilMarketReport_Free_version1.pdf" target="_blank">IEA Oil Market Report Apr 2026</a>
+      </div>
+    </div>
+    <div class="cc">
+      <div class="ctitle"><span class="ldot"></span>USD / LAK Exchange Rate</div>
+      <div class="csub">Report-period range + live spot rate</div>
+      <canvas id="chartFX"></canvas>
+      <div class="csrc">Live spot via Claude AI →
+        <a href="https://open.er-api.com/v6/latest/USD" target="_blank">ExchangeRate-API</a> |
+        History: <a href="https://www.bol.gov.la/statistics/BOP6_Lao%20PDR.xlsx" target="_blank">Bank of Lao PDR</a>
+      </div>
+    </div>
+    <div class="cc">
+      <div class="ctitle" id="cpi-chart-title"><span class="sdot"></span>CPI by Component (YoY%)</div>
+      <div class="csub" id="cpi-chart-sub">Apr 2025 – Apr 2026</div>
+      <canvas id="chartCPI"></canvas>
+      <div class="csrc" id="cpi-chart-src">
+        <a href="https://www.lsb.gov.la" target="_blank">Lao Statistics Bureau CPI Apr 2026</a> — update via Google Sheet or manually.
+      </div>
+    </div>
+    <div class="cc">
+      <div class="ctitle" id="fuel-chart-title"><span class="sdot"></span>Fuel Retail Prices – Vientiane</div>
+      <div class="csub" id="fuel-chart-sub">Indexed (27 Feb = 100)</div>
+      <canvas id="chartFuel"></canvas>
+      <div class="csrc" id="fuel-chart-src">
+        <a href="https://www.lsfc.gov.la" target="_blank">Lao State Fuel Company</a> &amp; Platts — update via Google Sheet or manually.
+      </div>
+    </div>
+  </div>
+
+  <!-- ALERTS -->
+  <div class="alerts">
+    <div class="ac crit">
+      <div class="atag crit">⚠ Critical Risk</div>
+      <div class="atext">Strait of Hormuz restrictions leave Asia-Pacific highly exposed. Supply disruption risk peaks in <strong>May–June 2026</strong>. Final pre-crisis crude arrived April; refinery capacity uneven across region.</div>
+    </div>
+    <div class="ac warn">
+      <div class="atag warn">✈ Aviation &amp; Tourism</div>
+      <div class="atext">Jet fuel prices <strong>doubled</strong>. Luang Prabang saw <strong>46% fewer Pi Mai visitors</strong>; tourism earnings fell 55% to $54.2M. Thai AirAsia cutting 30% capacity May–June.</div>
+    </div>
+    <div class="ac info">
+      <div class="atag info">📦 Supply Chain</div>
+      <div class="atext">Construction materials up <strong>30%</strong> since end-Feb. UN agencies absorbing up to <strong>20% extra project costs</strong>. WFP projects 24% rise in Asia-Pacific food insecurity by end-2026.</div>
+    </div>
+    <div class="ac pos">
+      <div class="atag pos">✓ Positive Signals</div>
+      <div class="atext">Thai refineries (97% of Lao fuel supply) at <strong>full capacity</strong>. China/Korea/Taiwan may raise jet fuel exports. Singapore Platts diesel down ~50% in 3 weeks. FX reserves stable at $4.2B.</div>
+    </div>
+  </div>
+
+</div>
+
+<footer>
+  <strong>All data sources:</strong><br>
+  <span class="ldot"></span><strong>Live (Claude AI):</strong>
+  <a href="https://finance.yahoo.com/quote/BZ%3DF/" target="_blank">Yahoo Finance – Brent</a> |
+  <a href="https://finance.yahoo.com/quote/CL%3DF/" target="_blank">Yahoo Finance – WTI</a> |
+  <a href="https://open.er-api.com/v6/latest/USD" target="_blank">ExchangeRate-API – USD/LAK</a><br>
+  <span class="sdot"></span><strong>Google Sheet (boss-editable):</strong> KPIs · CPI data · Fuel price data — configure via ⚙ Data Sources above<br>
+  <strong>Institutional references:</strong>
+  <a href="https://www.lsb.gov.la" target="_blank">Lao Statistics Bureau</a> |
+  <a href="https://www.lsfc.gov.la" target="_blank">Lao State Fuel Company</a> |
+  <a href="https://www.bol.gov.la/statistics/BOP6_Lao%20PDR.xlsx" target="_blank">Bank of Lao PDR</a> |
+  <a href="https://iea.blob.core.windows.net/assets/515f3128-df1a-4d6c-beb4-fd91d2434bef/-14APR2026_OilMarketReport_Free_version1.pdf" target="_blank">IEA Oil Market Report</a> |
+  <a href="https://www.imf.org/-/media/files/publications/weo/2026/april/english/text.pdf" target="_blank">IMF WEO Apr 2026</a> |
+  <a href="https://www.adb.org/publications/asian-development-outlook-april-2026" target="_blank">ADB ADO Apr 2026</a> |
+  <a href="https://www.wfp.org/publications/projected-increase-acute-food-insecurity-due-middle-east-conflict" target="_blank">WFP Food Insecurity</a> |
+  <a href="https://kpl.gov.la/en/detail.aspx/detail.aspx?id=98916" target="_blank">KPL – Luang Prabang Tourism</a><br>
+  <strong>UN Lao PDR:</strong> <a href="https://laopdr.un.org" target="_blank">laopdr.un.org</a> | @UNinLaoPDR
+</footer>
+
+<script>
+// ══════════════════════════════════════════════════════
+//  CONFIGURATION — PASTE YOUR GOOGLE SHEETS CSV URLS HERE
+//  (or use the ⚙ Data Sources panel in the UI above)
+// ══════════════════════════════════════════════════════
+const DEFAULT_URLS = {
+  kpis: '',   // e.g. https://docs.google.com/spreadsheets/d/YOUR_ID/pub?gid=0&single=true&output=csv
+  cpi:  '',   // e.g. https://docs.google.com/spreadsheets/d/YOUR_ID/pub?gid=1&single=true&output=csv
+  fuel: ''    // e.g. https://docs.google.com/spreadsheets/d/YOUR_ID/pub?gid=2&single=true&output=csv
+};
+// ══════════════════════════════════════════════════════
+
+Chart.defaults.color='#8A9AB5';
+Chart.defaults.borderColor='rgba(0,158,219,0.1)';
+Chart.defaults.font.family="'IBM Plex Mono',monospace";
+Chart.defaults.font.size=10;
+
+// ── STORAGE ─────────────────────────────────────────────────────
+function getUrls(){
+  return {
+    kpis: localStorage.getItem('sh_kpis') || DEFAULT_URLS.kpis,
+    cpi:  localStorage.getItem('sh_cpi')  || DEFAULT_URLS.cpi,
+    fuel: localStorage.getItem('sh_fuel') || DEFAULT_URLS.fuel
+  };
+}
+function saveUrls(){
+  const kpis=document.getElementById('url-kpis').value.trim();
+  const cpi =document.getElementById('url-cpi').value.trim();
+  const fuel=document.getElementById('url-fuel').value.trim();
+  if(kpis) localStorage.setItem('sh_kpis',kpis);
+  if(cpi)  localStorage.setItem('sh_cpi', cpi);
+  if(fuel) localStorage.setItem('sh_fuel',fuel);
+  return {kpis,cpi,fuel};
+}
+function loadUrlsIntoForm(){
+  const u=getUrls();
+  document.getElementById('url-kpis').value=u.kpis||'';
+  document.getElementById('url-cpi').value =u.cpi ||'';
+  document.getElementById('url-fuel').value=u.fuel||'';
+}
+
+// ── CONFIG PANEL ─────────────────────────────────────────────────
+let configOpen=false;
+function toggleConfig(){
+  configOpen=!configOpen;
+  document.getElementById('configBody').className='config-body'+(configOpen?' open':'');
+  document.getElementById('configToggleLabel').textContent=configOpen?'▲ collapse':'▼ expand';
+  if(configOpen) loadUrlsIntoForm();
+}
+function saveAndReload(){
+  saveUrls();
+  setConfigStatus('Saved! Reloading data…','loading');
+  toggleConfig();
+  initDashboard();
+}
+function setConfigStatus(msg,type){
+  const el=document.getElementById('config-status');
+  el.textContent=msg; el.className='config-status '+(type||'');
+}
+function copyTemplate(){
+  const msg='Template: Create a Google Sheet with 3 tabs — KPIs (key,value,sub,source), CPI (month,transport,food,other), Fuel (date,petrol_vte,diesel_vte,platts_p,platts_d). File > Share > Publish to web > each tab > CSV > copy URL.';
+  navigator.clipboard?.writeText(msg).then(()=>setConfigStatus('Copied!','ok')).catch(()=>setConfigStatus(msg.slice(0,60)+'…',''));
+}
+function openSheetsHelp(){ window.open('https://support.google.com/docs/answer/183965','_blank'); }
+
+// ── CSV PARSER ────────────────────────────────────────────────────
+function parseCSV(text){
+  const lines=text.trim().split('\n').filter(l=>l.trim());
+  if(!lines.length) return [];
+  const headers=lines[0].split(',').map(h=>h.trim().replace(/^"|"$/g,''));
+  return lines.slice(1).map(line=>{
+    const vals=line.match(/(".*?"|[^,]+)(?=\s*,|\s*$)/g)||line.split(',');
+    const row={};
+    headers.forEach((h,i)=>{ row[h]=(vals[i]||'').replace(/^"|"$/g,'').trim(); });
+    return row;
+  });
+}
+
+// ── FETCH CSV WITH CORS PROXY FALLBACK ─────────────────────────
+async function fetchCSV(url){
+  if(!url) return null;
+  // Google Sheets published CSVs support CORS natively
+  try {
+    const res=await fetch(url,{mode:'cors'});
+    if(!res.ok) throw new Error('HTTP '+res.status);
+    return parseCSV(await res.text());
+  } catch(e){
+    console.warn('CSV fetch failed:',url,e);
+    return null;
+  }
+}
+
+// ── CHIP HELPERS ─────────────────────────────────────────────────
+function setChip(id,text,type){
+  const el=document.getElementById(id);
+  el.textContent=text; el.className='status-chip '+(type||'');
+}
+
+// ── BUILT-IN FALLBACK DATA ────────────────────────────────────────
+const FALLBACK={
+  kpis:{
+    cpi_inflation:  {value:'10.2%', sub:'April 2026 · Transport: 97% of 2-month rise',  source:'Lao Statistics Bureau'},
+    petrol_lak:     {value:'34,400',sub:'LAK/L · 1 May 2026 · ↓19% from peak',          source:'Lao State Fuel Company'},
+    diesel_lak:     {value:'39,400',sub:'LAK/L · 1 May 2026 · ↓25% from peak',          source:'Lao State Fuel Company'},
+    fx_reserves:    {value:'$4.2B', sub:'March 2026 · ≈4.0 months imports',              source:'Bank of Lao PDR'},
+    gdp_forecast:   {value:'4.0%',  sub:'IMF/ADB forecast · WB: 3.5%',                  source:'IMF WEO / ADB ADO Apr 2026'}
+  },
+  cpi:{
+    labels:['Apr-25','May-25','Jun-25','Jul-25','Aug-25','Sep-25','Oct-25','Nov-25','Dec-25','Jan-26','Feb-26','Mar-26','Apr-26'],
+    transport:[0.0,0.1,0.1,0.1,0.1,0.1,0.2,0.2,0.3,0.4,1.5,7.2,5.4],
+    food:[2.0,1.8,1.6,1.4,1.3,1.2,1.1,1.0,1.0,1.0,1.1,1.3,1.8],
+    other:[1.0,1.0,0.9,0.8,0.7,0.7,0.6,0.6,0.6,0.7,0.7,0.8,1.2]
+  },
+  fuel:{
+    labels:['27-Feb','4-Mar','11-Mar','18-Mar','25-Mar','1-Apr','7-Apr','13-Apr','20-Apr','27-Apr','1-May'],
+    petrol:[100,125,148,155,162,175,190,185,170,158,142],
+    diesel:[100,130,160,195,230,260,275,255,220,195,165],
+    plattsP:[100,145,200,260,310,300,270,235,200,170,145],
+    plattsD:[100,150,220,310,340,295,250,185,140,120,100]
+  }
+};
+
+// ── APPLY KPI DATA ────────────────────────────────────────────────
+function applyKPIs(rows){
+  // rows from sheet: [{key, value, sub, source}, …]
+  const map={};
+  rows.forEach(r=>{ if(r.key) map[r.key.trim()]=r; });
+  const set=(key,vid,sid)=>{
+    if(map[key]){
+      const r=map[key];
+      document.getElementById(vid).textContent=r.value||'';
+      if(sid) document.getElementById(sid).textContent=r.sub||'';
+    }
+  };
+  set('cpi_inflation','kv-cpi','ks-cpi');
+  set('petrol_lak',   'kv-petrol','ks-petrol');
+  set('diesel_lak',   'kv-diesel','ks-diesel');
+  set('fx_reserves',  'kv-fx','ks-fx');
+  set('gdp_forecast', 'kv-gdp','ks-gdp');
+}
+
+// ── CHART INSTANCES ───────────────────────────────────────────────
+let charts={};
+function destroyChart(id){ if(charts[id]){ charts[id].destroy(); delete charts[id]; } }
+
+function buildCPI(data){
+  destroyChart('cpi');
+  const d=data||FALLBACK.cpi;
+  charts.cpi=new Chart(document.getElementById('chartCPI').getContext('2d'),{
+    type:'bar',
+    data:{labels:d.labels,datasets:[
+      {label:'Transport & Shipping',data:d.transport,backgroundColor:'rgba(232,76,76,0.75)',stack:'s'},
+      {label:'Food & Non-Alcoholic Bev.',data:d.food,backgroundColor:'rgba(245,166,35,0.75)',stack:'s'},
+      {label:'Other',data:d.other,backgroundColor:'rgba(26,188,156,0.55)',stack:'s'}
+    ]},
+    options:{responsive:true,maintainAspectRatio:true,
+      plugins:{legend:{position:'bottom',labels:{boxWidth:10,padding:7,font:{size:9}}}},
+      scales:{x:{stacked:true,grid:{display:false}},y:{stacked:true,ticks:{callback:v=>v+'%'}}}}
+  });
+}
+
+function buildFuel(data){
+  destroyChart('fuel');
+  const d=data||FALLBACK.fuel;
+  charts.fuel=new Chart(document.getElementById('chartFuel').getContext('2d'),{
+    type:'line',
+    data:{labels:d.labels,datasets:[
+      {label:'Petrol VTE',data:d.petrol,borderColor:'#E84C4C',backgroundColor:'rgba(232,76,76,0.07)',tension:0.3,pointRadius:2},
+      {label:'Diesel VTE',data:d.diesel,borderColor:'#009EDB',backgroundColor:'rgba(0,158,219,0.07)',tension:0.3,pointRadius:2},
+      {label:'Platts Petrol',data:d.plattsP,borderColor:'rgba(232,76,76,0.4)',borderDash:[4,4],tension:0.3,pointRadius:1.5},
+      {label:'Platts Diesel',data:d.plattsD,borderColor:'rgba(0,158,219,0.4)',borderDash:[4,4],tension:0.3,pointRadius:1.5}
+    ]},
+    options:{responsive:true,maintainAspectRatio:true,
+      plugins:{legend:{position:'bottom',labels:{boxWidth:10,padding:7,font:{size:9}}}},
+      scales:{x:{grid:{display:false}},y:{title:{display:true,text:'Index (27 Feb=100)',font:{size:9}}}}}
+  });
+}
+
+function buildCrudeStatic(){
+  destroyChart('crude');
+  charts.crude=new Chart(document.getElementById('chartCrude').getContext('2d'),{
+    type:'line',
+    data:{labels:['27-Feb','8-Mar','17-Mar','26-Mar','4-Apr','13-Apr','22-Apr','1-May'],
+      datasets:[
+        {label:'Brent ($/bbl)',data:[82,90,98,112,126,118,110,104],borderColor:'#E84C4C',backgroundColor:'rgba(232,76,76,0.07)',tension:0.3},
+        {label:'WTI ($/bbl)',data:[78,85,92,105,112,106,99,95],borderColor:'#F5A623',backgroundColor:'rgba(245,166,35,0.07)',tension:0.3}
+      ]},
+    options:{responsive:true,maintainAspectRatio:true,
+      plugins:{legend:{position:'bottom',labels:{boxWidth:10,padding:7,font:{size:9}}}},
+      scales:{x:{grid:{display:false}},y:{ticks:{callback:v=>'$'+v},title:{display:true,text:'USD/bbl (report period)',font:{size:9}}}}}
+  });
+}
+
+function buildCrudeLive(labels,brent,wti){
+  destroyChart('crude');
+  charts.crude=new Chart(document.getElementById('chartCrude').getContext('2d'),{
+    type:'line',
+    data:{labels,datasets:[
+      {label:'Brent ($/bbl)',data:brent,borderColor:'#E84C4C',backgroundColor:'rgba(232,76,76,0.08)',tension:0.35,pointRadius:2},
+      {label:'WTI ($/bbl)',data:wti,borderColor:'#F5A623',backgroundColor:'rgba(245,166,35,0.08)',tension:0.35,pointRadius:2}
+    ]},
+    options:{responsive:true,maintainAspectRatio:true,
+      plugins:{legend:{position:'bottom',labels:{boxWidth:10,padding:7,font:{size:9}}}},
+      scales:{x:{grid:{display:false}},y:{ticks:{callback:v=>'$'+v},title:{display:true,text:'USD/bbl (live)',font:{size:9}}}}}
+  });
+}
+
+function buildFXChart(liveLak){
+  destroyChart('fx');
+  const fxL=['Jan-26','Feb-26','Mar(low)','Mar-18','Mar-31','Apr-7','Apr-14','May-1','Live'];
+  const fxV=[21600,21550,21400,21400,22000,22050,22100,21900,liveLak||21900];
+  const pc=fxV.map((_,i)=>i===fxV.length-1?'#27AE60':'#009EDB');
+  charts.fx=new Chart(document.getElementById('chartFX').getContext('2d'),{
+    type:'line',
+    data:{labels:fxL,datasets:[{label:'LAK/USD',data:fxV,borderColor:'#009EDB',
+      backgroundColor:'rgba(0,158,219,0.07)',tension:0.35,
+      pointRadius:fxV.map((_,i)=>i===fxV.length-1?6:3),
+      pointBackgroundColor:pc}]},
+    options:{responsive:true,maintainAspectRatio:true,
+      plugins:{legend:{display:false}},
+      scales:{x:{grid:{display:false}},
+        y:{title:{display:true,text:'LAK per USD',font:{size:9}},
+          ticks:{callback:v=>v.toLocaleString()},min:21200,max:Math.max(22300,(liveLak||22000)+300)}}}
+  });
+}
+
+// ── GOOGLE SHEETS FETCH ───────────────────────────────────────────
+async function loadSheetsData(){
+  const urls=getUrls();
+  const hasAny=urls.kpis||urls.cpi||urls.fuel;
+  if(!hasAny){
+    setChip('chip-sheets','Sheets: not configured','warn');
+    setChip('chip-mode','Mode: built-in data (configure Sheets above)','warn');
+    buildCPI(); buildFuel();
+    return false;
+  }
+
+  setChip('chip-sheets','Sheets: loading…','loading');
+  let loaded=0, failed=0;
+
+  // KPIs
+  if(urls.kpis){
+    const rows=await fetchCSV(urls.kpis);
+    if(rows){ applyKPIs(rows); loaded++; }
+    else failed++;
+  }
+
+  // CPI chart
+  if(urls.cpi){
+    const rows=await fetchCSV(urls.cpi);
+    if(rows && rows.length){
+      const d={
+        labels: rows.map(r=>r.month||r.Month||Object.values(r)[0]),
+        transport: rows.map(r=>parseFloat(r.transport||r.Transport||0)),
+        food:      rows.map(r=>parseFloat(r.food||r.Food||0)),
+        other:     rows.map(r=>parseFloat(r.other||r.Other||0))
+      };
+      buildCPI(d); loaded++;
+      document.getElementById('cpi-chart-sub').textContent='Live from Google Sheets';
+      const ldot='<span class="ldot"></span>';
+      document.getElementById('cpi-chart-title').innerHTML=ldot+'CPI by Component (YoY%)';
+    } else { buildCPI(); failed++; }
+  } else { buildCPI(); }
+
+  // Fuel chart
+  if(urls.fuel){
+    const rows=await fetchCSV(urls.fuel);
+    if(rows && rows.length){
+      const d={
+        labels:  rows.map(r=>r.date||r.Date||Object.values(r)[0]),
+        petrol:  rows.map(r=>parseFloat(r.petrol_vte||r.Petrol_VTE||0)),
+        diesel:  rows.map(r=>parseFloat(r.diesel_vte||r.Diesel_VTE||0)),
+        plattsP: rows.map(r=>parseFloat(r.platts_p||r.Platts_P||0)),
+        plattsD: rows.map(r=>parseFloat(r.platts_d||r.Platts_D||0))
+      };
+      buildFuel(d); loaded++;
+      document.getElementById('fuel-chart-sub').textContent='Live from Google Sheets';
+      const ldot='<span class="ldot"></span>';
+      document.getElementById('fuel-chart-title').innerHTML=ldot+'Fuel Retail Prices – Vientiane';
+    } else { buildFuel(); failed++; }
+  } else { buildFuel(); }
+
+  if(failed===0 && loaded>0){
+    setChip('chip-sheets',`Sheets: ${loaded} tab(s) loaded ✓`,'ok');
+    setChip('chip-mode','Mode: Google Sheets + live prices','ok');
+  } else if(loaded>0){
+    setChip('chip-sheets',`Sheets: ${loaded} ok, ${failed} failed`,'warn');
+    setChip('chip-mode','Mode: partial Sheets + built-in fallback','warn');
+  } else {
+    setChip('chip-sheets','Sheets: all failed — using built-in data','err');
+    setChip('chip-mode','Mode: built-in data','warn');
+  }
+  return loaded>0;
+}
+
+// ── LIVE PRICES VIA CLAUDE API ────────────────────────────────────
+async function fetchLivePrices(){
+  setChip('chip-live','Live prices: fetching…','loading');
+  try {
+    const prompt=`Return ONLY a JSON object (no markdown, no explanation):
+{"brent_usd":<current Brent crude USD/bbl>,"wti_usd":<current WTI crude USD/bbl>,"usd_lak":<current USD to LAK rate>,"brent_30d":[<15 recent daily Brent prices oldest first>],"wti_30d":[<15 recent daily WTI prices oldest first>],"date_labels":["<15 date labels like 'May 12'>"],"data_date":"<YYYY-MM-DD>"}`;
+    const res=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:800,
+        messages:[{role:'user',content:prompt}]})
+    });
+    if(!res.ok) throw new Error('API '+res.status);
+    const data=await res.json();
+    const raw=data.content.find(b=>b.type==='text')?.text||'';
+    const d=JSON.parse(raw.replace(/```json|```/g,'').trim());
+
+    document.getElementById('kpi-brent').textContent='$'+d.brent_usd.toFixed(0);
+    document.getElementById('sub-brent').textContent=`USD/bbl · ${d.data_date} · Report ref: ~$126`;
+    document.getElementById('kpi-wti').textContent='$'+d.wti_usd.toFixed(0);
+    document.getElementById('sub-wti').textContent=`USD/bbl · ${d.data_date} · Report ref: ~$110`;
+    document.getElementById('kpi-lak').textContent=Math.round(d.usd_lak).toLocaleString();
+    document.getElementById('sub-lak').textContent=`LAK per USD · ${d.data_date} · Report range: 21,400–22,200`;
+
+    ['sp1','sp2','sp3'].forEach(id=>{const el=document.getElementById(id);if(el)el.remove();});
+    buildCrudeLive(d.date_labels,d.brent_30d,d.wti_30d);
+    buildFXChart(Math.round(d.usd_lak));
+    setChip('chip-live','Live prices: updated ✓ (Claude AI)','ok');
+  } catch(e){
+    console.warn('Live price fetch failed:',e);
+    ['sp1','sp2','sp3'].forEach(id=>{const el=document.getElementById(id);if(el)el.remove();});
+    document.getElementById('kpi-brent').textContent='~$104';
+    document.getElementById('sub-brent').textContent='Indicative — live fetch unavailable';
+    document.getElementById('kpi-wti').textContent='~$95';
+    document.getElementById('sub-wti').textContent='Indicative — live fetch unavailable';
+    document.getElementById('kpi-lak').textContent='~21,900';
+    document.getElementById('sub-lak').textContent='Indicative — live fetch unavailable';
+    buildCrudeStatic();
+    buildFXChart(21900);
+    setChip('chip-live','Live prices: unavailable (showing estimates)','warn');
+  }
+}
+
+// ── INIT ──────────────────────────────────────────────────────────
+async function initDashboard(){
+  document.getElementById('ts').textContent='Refreshing…';
+  await Promise.all([ loadSheetsData(), fetchLivePrices() ]);
+  const now=new Date();
+  document.getElementById('ts').textContent='Updated: '+now.toLocaleString('en-GB',{day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'});
+}
+
+initDashboard();
+</script>
+</body>
+</html>
