@@ -1,0 +1,68 @@
+name: Update Live Prices
+
+on:
+  schedule:
+    # Runs daily at 00:00 UTC (07:00 AM Indochina Time)
+    - cron: '0 0 * * *'
+  workflow_dispatch: # Adds a button to run it manually
+
+permissions:
+  contents: write
+
+jobs:
+  update-data:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Install Dependencies
+        run: pip install yfinance requests
+
+      - name: Fetch Financial Data
+        run: |
+          python -c "
+          import yfinance as yf
+          import requests
+          import json
+          from datetime import datetime
+
+          data = {'usd_lak': 21900, 'brentData': None, 'wtiData': None, 'as_of': datetime.now().strftime('%Y-%m-%d')}
+          
+          # Fetch LAK
+          try:
+              r = requests.get('https://open.er-api.com/v6/latest/USD')
+              if r.status_code == 200:
+                  data['usd_lak'] = r.json().get('rates', {}).get('LAK', 21900)
+          except: pass
+
+          # Fetch Oil
+          def get_oil(ticker):
+              try:
+                  hist = yf.Ticker(ticker).history(period='15d')
+                  if not hist.empty:
+                      prices = hist['Close'].round(0).tolist()
+                      dates = [d.strftime('%d %b') for d in hist.index]
+                      return {'prices': prices[-12:], 'dates': dates[-12:], 'current': prices[-1]}
+              except: return None
+
+          data['brentData'] = get_oil('BZ=F')
+          data['wtiData'] = get_oil('CL=F')
+
+          # Save to JSON
+          with open('prices.json', 'w') as f:
+              json.dump(data, f)
+          "
+
+      - name: Commit and Push
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add prices.json
+          # Only commit if the data has actually changed
+          git diff --quiet && git diff --staged --quiet || (git commit -m "Auto-update prices.json" && git push)
