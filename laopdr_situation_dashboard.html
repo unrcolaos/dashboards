@@ -441,10 +441,47 @@ function clearCfg() {
   document.getElementById('url-fuel').value = '';
 }
 
-function testUrls() {
+async function testUrls() {
   const panel = document.getElementById('testResults');
+  if (!panel) return;
+
+  // Show the panel and a loading message
   panel.style.display = 'block';
-  panel.textContent = 'Testing URLs...\n(Functionality to be implemented)';
+  panel.innerHTML = 'Testing connections... please wait.<br><br>';
+
+  const urls = getUrls();
+  let resultsHTML = '';
+
+  // Helper function to test a single sheet
+  const testSheet = async (url, name) => {
+    if (!url || url.trim() === '') {
+      return `<b>${name}:</b> ⚪ Not provided<br>`;
+    }
+    try {
+      const data = await fetchSheetViaAPI(url, name);
+      if (data && data.length > 0) {
+        return `<b>${name}:</b> 🟢 Success (Found ${data.length} rows)<br>`;
+      } else {
+        return `<b>${name}:</b> 🔴 Failed (Check URL format or permissions)<br>`;
+      }
+    } catch (e) {
+      return `<b>${name}:</b> 🔴 Error (${e.message})<br>`;
+    }
+  };
+
+  // Test all three sheets
+  resultsHTML += await testSheet(urls.kpis, 'KPIs Sheet');
+  resultsHTML += await testSheet(urls.cpi, 'CPI Sheet');
+  resultsHTML += await testSheet(urls.fuel, 'Fuel Sheet');
+
+  // Display the final results
+  panel.innerHTML = `
+    <div style="font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.5;">
+      <b>Test Results:</b><br><br>
+      ${resultsHTML}<br>
+      <i style="color: #8A9AB5; font-size: 11px;">Note: If a sheet fails, ensure its sharing settings are set to "Anyone with the link can view".</i>
+    </div>
+  `;
 }
 
 // ══════════════════════════════════════════════════
