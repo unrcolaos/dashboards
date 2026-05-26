@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -227,7 +228,6 @@ const HARDCODED_URLS = {
   fuel: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRg7cTilc179XVU6S-tJMmRcpsNJd0SgcaSvkEiW3aQV_GqRykZHiFatB5Vgw4pgPDa3CSFKOZF8v5q/pub?gid=410362409&single=true&output=csv',
   alerts: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRg7cTilc179XVU6S-tJMmRcpsNJd0SgcaSvkEiW3aQV_GqRykZHiFatB5Vgw4pgPDa3CSFKOZF8v5q/pub?gid=1054060297&single=true&output=csv'
 };
-};
 
 // ══════════════════════════════════════════════════
 //  STATE & UI HELPERS
@@ -339,7 +339,7 @@ function buildCsvUrl(url){
 }
 
 async function fetchSheetViaAPI(url, tabName){
-  if(!url || url === 'YOUR_KPI_SHEET_URL_HERE' || url === 'YOUR_CPI_SHEET_URL_HERE' || url === 'YOUR_FUEL_SHEET_URL_HERE') return null;
+  if(!url || url === 'YOUR_KPI_SHEET_URL_HERE' || url === 'YOUR_CPI_SHEET_URL_HERE' || url === 'YOUR_FUEL_SHEET_URL_HERE' || url === 'YOUR_ALERTS_SHEET_URL_HERE') return null;
   const csvUrl = buildCsvUrl(url);
   log('Fetching '+tabName+': '+csvUrl.slice(0,80)+'...');
 
@@ -543,7 +543,7 @@ async function initDashboard(){
   let sheetsLoaded=0;
   if(hasSheets){
     setProgress(15,'Fetching Google Sheets…');
-    const [kpiRows,cpiRows,fuelRows]=await Promise.all([
+    const [kpiRows,cpiRows,fuelRows,alertRows]=await Promise.all([
       fetchSheetViaAPI(urls.kpis,'KPIs'),
       fetchSheetViaAPI(urls.cpi,'CPI'),
       fetchSheetViaAPI(urls.fuel,'Fuel'),
