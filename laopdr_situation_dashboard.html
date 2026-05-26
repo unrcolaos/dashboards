@@ -310,185 +310,37 @@ footer a{color:var(--un)} footer strong{color:var(--text)}
 
 <script>
 // ══════════════════════════════════════════════════
-//  BUILT-IN FALLBACK DATA (Situation Update No.2)
+//  IMPROVED GOOGLE SHEETS FETCHING
+//  Supports both "Published to Web" and Standard Sharing URLs
 // ══════════════════════════════════════════════════
-const FB={
-  cpi:{
-    labels:['Apr-25','May-25','Jun-25','Jul-25','Aug-25','Sep-25','Oct-25','Nov-25','Dec-25','Jan-26','Feb-26','Mar-26','Apr-26'],
-    transport:[0.0,0.1,0.1,0.1,0.1,0.1,0.2,0.2,0.3,0.4,1.5,7.2,5.4],
-    food:[2.0,1.8,1.6,1.4,1.3,1.2,1.1,1.0,1.0,1.0,1.1,1.3,1.8],
-    other:[1.0,1.0,0.9,0.8,0.7,0.7,0.6,0.6,0.6,0.7,0.7,0.8,1.2]
-  },
-  fuel:{
-    labels:['27-Feb','4-Mar','11-Mar','18-Mar','25-Mar','1-Apr','7-Apr','13-Apr','20-Apr','27-Apr','1-May'],
-    petrol:[100,125,148,155,162,175,190,185,170,158,142],
-    diesel:[100,130,160,195,230,260,275,255,220,195,165],
-    plattsP:[100,145,200,260,310,300,270,235,200,170,145],
-    plattsD:[100,150,220,310,340,295,250,185,140,120,100]
-  },
-  crude:{
-    labels:['27-Feb','8-Mar','17-Mar','26-Mar','4-Apr','13-Apr','22-Apr','1-May'],
-    brent:[82,90,98,112,126,118,110,104],wti:[78,85,92,105,112,106,99,95]
-  }
-};
 
-Chart.defaults.color='#8A9AB5';
-Chart.defaults.borderColor='rgba(0,158,219,0.1)';
-Chart.defaults.font.family="'IBM Plex Mono',monospace";
-Chart.defaults.font.size=10;
-
-// ── DEBUG LOG ─────────────────────────────────────
-let debugLog=[];
-let debugVisible=false;
-function log(msg){ debugLog.push('['+new Date().toLocaleTimeString()+'] '+msg); updateDebug(); }
-function updateDebug(){ document.getElementById('debugPanel').textContent=debugLog.slice(-30).join('\n'); }
-function toggleDebug(){
-  debugVisible=!debugVisible;
-  document.getElementById('debugPanel').className='debug-panel'+(debugVisible?' show':'');
-}
-
-// ── CONFIG ────────────────────────────────────────
-let cfgOpen=false;
-function toggleCfg(){
-  cfgOpen=!cfgOpen;
-  document.getElementById('cfgBody').className='cfg-body'+(cfgOpen?' open':'');
-  document.getElementById('cfgLbl').textContent=cfgOpen?'▲ collapse':'▼ expand';
-  if(cfgOpen) loadUrlsIntoForm();
-}
-function getUrls(){
-  return{kpis:localStorage.getItem('sh_kpis')||'',cpi:localStorage.getItem('sh_cpi')||'',fuel:localStorage.getItem('sh_fuel')||''};
-}
-function loadUrlsIntoForm(){
-  const u=getUrls();
-  document.getElementById('url-kpis').value=u.kpis;
-  document.getElementById('url-cpi').value=u.cpi;
-  document.getElementById('url-fuel').value=u.fuel;
-}
-function saveCfgAndReload(){
-  ['kpis','cpi','fuel'].forEach(k=>{
-    const v=document.getElementById('url-'+k).value.trim();
-    if(v) localStorage.setItem('sh_'+k,v); else localStorage.removeItem('sh_'+k);
-  });
-  setCS('Saved! Reloading…','info');
-  toggleCfg();
-  initDashboard();
-}
-function clearCfg(){
-  ['sh_kpis','sh_cpi','sh_fuel'].forEach(k=>localStorage.removeItem(k));
-  loadUrlsIntoForm(); setCS('Cleared.','info');
-}
-function setCS(msg,t){const e=document.getElementById('cfgStatus');e.textContent=msg;e.className='cfg-status '+(t||'');}
-
-async function testUrls(){
-  const panel=document.getElementById('testResults');
-  panel.style.display='block';
-  panel.innerHTML='<span style="color:#009EDB">Testing via Anthropic API...</span>\n\n';
-  setCS('Testing...','info');
-  const labels=['KPIs','CPI','Fuel'];
-  const ids=['url-kpis','url-cpi','url-fuel'];
-  const expectedKeys=[['key','value'],['month','transport'],['date','petrol_vte']];
-  for(let i=0;i<3;i++){
-    const url=document.getElementById(ids[i]).value.trim();
-    const label=labels[i];
-    panel.innerHTML+='<span style="color:#F5A623">--- '+label+' tab ---</span>\n';
-    if(!url){panel.innerHTML+='<span style="color:#E84C4C">No URL entered</span>\n\n';continue;}
-    const gidMatch=url.match(/[?&]gid=(\d+)/);
-    const gid=gidMatch?gidMatch[1]:'NOT FOUND IN URL';
-    panel.innerHTML+='gid detected: <span style="color:'+(gid==='NOT FOUND IN URL'?'#E84C4C':'#27AE60')+'">'+gid+'</span>\n';
-    panel.innerHTML+='Fetching via Claude API...\n';
-    const rows=await fetchSheetViaAPI(url,label);
-    if(!rows){
-      const lastLog=debugLog.filter(l=>l.includes(label)).slice(-1)[0]||'unknown error';
-      panel.innerHTML+='<span style="color:#E84C4C">FAILED: '+lastLog.replace(/</g,'&lt;')+'</span>\n\n';
-    } else {
-      panel.innerHTML+='Rows received: <span style="color:#27AE60">'+rows.length+'</span>\n';
-      if(rows.length>0){
-        panel.innerHTML+='Columns: <span style="color:#1ABC9C">'+Object.keys(rows[0]).join(', ')+'</span>\n';
-        panel.innerHTML+='Row 1: <span style="color:#1ABC9C">'+JSON.stringify(rows[0])+'</span>\n';
-        const headers=Object.keys(rows[0]).map(k=>k.toLowerCase());
-        const missing=expectedKeys[i].filter(k=>!headers.some(h=>h.includes(k)));
-        panel.innerHTML+=(missing.length?'<span style="color:#E84C4C">Missing columns: '+missing.join(', ')+'</span>':'<span style="color:#27AE60">All columns OK</span>')+'\n';
-      }
-      panel.innerHTML+='\n';
-    }
-    panel.scrollTop=panel.scrollHeight;
-  }
-  panel.innerHTML+='<span style="color:#009EDB">--- Done ---</span>';
-  setCS('Tests complete','ok');
-  panel.scrollTop=panel.scrollHeight;
-}
-
-function chip(id,text,type){const e=document.getElementById(id);e.textContent=text;e.className='chip '+(type||'');}
-function setProgress(pct,label){
-  const w=document.getElementById('progWrap'); w.className='prog-wrap show';
-  document.getElementById('progFill').style.width=pct+'%';
-  document.getElementById('progLbl').textContent=label;
-  if(pct>=100) setTimeout(()=>w.className='prog-wrap',1500);
-}
-
-// ── CSV PARSER ────────────────────────────────────
-function parseCSV(text){
-  const lines=text.trim().split(/\r?\n/).filter(l=>l.trim());
-  if(lines.length<2) return [];
-  // Handle quoted fields
-  function splitLine(line){
-    const result=[]; let cur=''; let inQ=false;
-    for(let i=0;i<line.length;i++){
-      if(line[i]==='"'){ inQ=!inQ; }
-      else if(line[i]===',' && !inQ){ result.push(cur.trim()); cur=''; }
-      else { cur+=line[i]; }
-    }
-    result.push(cur.trim());
-    return result;
-  }
-  const headers=splitLine(lines[0]).map(h=>h.replace(/^"|"$/g,'').toLowerCase().trim());
-  return lines.slice(1).map(line=>{
-    const vals=splitLine(line);
-    const row={};
-    headers.forEach((h,i)=>{ row[h]=(vals[i]||'').replace(/^"|"$/g,'').trim(); });
-    return row;
-  }).filter(r=>Object.values(r).some(v=>v));
-}
-
-// ══════════════════════════════════════════════════
-//  GOOGLE SHEETS: fetch directly from browser
-//  Google published CSVs DO allow CORS from any origin
-//  Key: add cache-busting param so browser doesn't
-//  serve stale cached version
-// ══════════════════════════════════════════════════
-// ══════════════════════════════════════════════════
-//  FETCH SHEET VIA ANTHROPIC API (bypasses CORS)
-//  The API server fetches the CSV on our behalf
-// ══════════════════════════════════════════════════
-// ══════════════════════════════════════════════════
-//  FETCH SHEET: direct browser fetch from GitHub Pages
-//  Google Sheets published CSVs allow CORS from real
-//  domains (GitHub Pages). The Claude.ai sandbox was
-//  the problem before — this won't affect GitHub Pages.
-//  Strategy:
-//    1. Try direct fetch (works on GitHub Pages)
-//    2. Try via allorigins CORS proxy as fallback
-// ══════════════════════════════════════════════════
 function buildCsvUrl(url){
-  // Ensure output=csv, single=true, cache-bust timestamp
   let u = url.trim();
-  u = u.replace(/[&?]output=[^&]*/g,'').replace(/[&?]single=[^&]*/g,'');
-  const sep = u.includes('?') ? '&' : '?';
-  return u + sep + 'output=csv&single=true&t=' + Date.now();
+  const idMatch = u.match(/\/d\/([a-zA-Z0-9-_]+)/);
+  const gidMatch = u.match(/[?&#]gid=([0-9]+)/);
+  const isPublished = u.includes('/pub') || u.includes('/d/e/');
+
+  if (idMatch && !isPublished) {
+    // Standard shared sheet: Convert to Google Visualization API (Natively supports CORS)
+    const id = idMatch[1];
+    const gid = gidMatch ? gidMatch[1] : '0';
+    return `https://docs.google.com/spreadsheets/d/${id}/gviz/tq?tqx=out:csv&gid=${gid}&_=${Date.now()}`;
+  } else {
+    // Published sheet: Clean up URL and ensure correct CSV parameters
+    u = u.replace(/[&?]output=[^&]*/g, '').replace(/[&?]single=[^&]*/g, '');
+    const sep = u.includes('?') ? '&' : '?';
+    return u + sep + `output=csv&single=true&_=${Date.now()}`;
+  }
 }
 
 async function fetchSheetViaAPI(url, tabName){
   if(!url) return null;
   const csvUrl = buildCsvUrl(url);
-  log('Fetching '+tabName+': '+csvUrl.slice(0,90)+'...');
+  log('Fetching '+tabName+': '+csvUrl.slice(0,80)+'...');
 
-  // ── Attempt 1: Direct fetch (works on GitHub Pages, not Claude sandbox) ──
-  try{
-    const res = await fetch(csvUrl, {
-      method: 'GET',
-      mode: 'cors',
-      cache: 'no-store'
-    });
+  // ── Attempt 1: Direct fetch (Works perfectly with gviz API) ──
+  try {
+    const res = await fetch(csvUrl, { cache: 'no-store' });
     if(res.ok){
       const text = await res.text();
       if(text && !text.trim().startsWith('<!') && text.includes(',')){
@@ -497,15 +349,15 @@ async function fetchSheetViaAPI(url, tabName){
         return rows;
       }
     }
-    log(tabName+' direct fetch status '+res.status+', trying proxy...');
-  }catch(e){
-    log(tabName+' direct fetch blocked ('+e.message.slice(0,50)+'), trying proxy...');
+    log(tabName+' direct fetch status '+res.status+', trying proxies...');
+  } catch(e) {
+    log(tabName+' direct fetch blocked ('+e.message.slice(0,40)+'), trying proxies...');
   }
 
-  // ── Attempt 2: allorigins.win CORS proxy ──
-  try{
-    const proxyUrl = 'https://api.allorigins.win/raw?url=' + encodeURIComponent(csvUrl);
-    log(tabName+' trying proxy: allorigins.win...');
+  // ── Attempt 2: corsproxy.io (Reliable fallback) ──
+  try {
+    const proxyUrl = 'https://corsproxy.io/?' + encodeURIComponent(csvUrl);
+    log(tabName+' trying proxy: corsproxy.io...');
     const res2 = await fetch(proxyUrl, {cache:'no-store'});
     if(res2.ok){
       const text2 = await res2.text();
@@ -514,33 +366,27 @@ async function fetchSheetViaAPI(url, tabName){
         log(tabName+' proxy OK: '+rows.length+' rows');
         return rows;
       }
-      throw new Error('Proxy returned non-CSV: '+text2.slice(0,80));
     }
-    throw new Error('Proxy HTTP '+res2.status);
-  }catch(e2){
-    log(tabName+' proxy failed: '+e2.message.slice(0,80));
-  }
+  } catch(e2) {}
 
-  // ── Attempt 3: corsproxy.io ──
-  try{
-    const proxy2 = 'https://corsproxy.io/?' + encodeURIComponent(csvUrl);
-    log(tabName+' trying proxy: corsproxy.io...');
-    const res3 = await fetch(proxy2, {cache:'no-store'});
+  // ── Attempt 3: allorigins.win (Final fallback) ──
+  try {
+    const proxyUrl2 = 'https://api.allorigins.win/raw?url=' + encodeURIComponent(csvUrl);
+    log(tabName+' trying proxy: allorigins.win...');
+    const res3 = await fetch(proxyUrl2, {cache:'no-store'});
     if(res3.ok){
       const text3 = await res3.text();
       if(text3 && !text3.trim().startsWith('<!') && text3.includes(',')){
         const rows = parseCSV(text3);
-        log(tabName+' corsproxy OK: '+rows.length+' rows');
+        log(tabName+' proxy OK: '+rows.length+' rows');
         return rows;
       }
     }
-    throw new Error('corsproxy HTTP '+res3.status);
-  }catch(e3){
-    log(tabName+' all fetch attempts failed: '+e3.message.slice(0,80));
-    return null;
-  }
-}
+  } catch(e3) {}
 
+  log(tabName+' all fetch attempts failed.');
+  return null;
+}
 // ── CHARTS ────────────────────────────────────────
 const CH={};
 function dc(id){if(CH[id]){CH[id].destroy();delete CH[id];}}
