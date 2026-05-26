@@ -398,7 +398,8 @@ async function testUrls(){
     panel.innerHTML+='Fetching via Claude API...\n';
     const rows=await fetchSheetViaAPI(url,label);
     if(!rows){
-      panel.innerHTML+='<span style="color:#E84C4C">FAILED - see debug log for details</span>\n\n';
+      const lastLog=debugLog.filter(l=>l.includes(label)).slice(-1)[0]||'unknown error';
+      panel.innerHTML+='<span style="color:#E84C4C">FAILED: '+lastLog.replace(/</g,'&lt;')+'</span>\n\n';
     } else {
       panel.innerHTML+='Rows received: <span style="color:#27AE60">'+rows.length+'</span>\n';
       if(rows.length>0){
@@ -459,37 +460,61 @@ function parseCSV(text){
 //  FETCH SHEET VIA ANTHROPIC API (bypasses CORS)
 //  The API server fetches the CSV on our behalf
 // ══════════════════════════════════════════════════
+// ══════════════════════════════════════════════════
+//  FETCH SHEET: use Anthropic url_document source
+//  This passes the CSV URL directly to the API as a
+//  document — Claude reads it server-side, no CORS.
+//  Falls back to trying all 3 sheets in one call.
+// ══════════════════════════════════════════════════
 async function fetchSheetViaAPI(url, tabName){
   if(!url) return null;
-  log('Fetching '+tabName+' via Claude API: '+url.slice(0,70)+'…');
+  // Force CSV output and add cache-bust
+  const csvUrl = url.replace(/[&?]output=[^&]*/,'')
+                    .replace(/[&?]single=[^&]*/,'') +
+                    (url.includes('?') ? '&' : '?') +
+                    'output=csv&single=true&t=' + Date.now();
+  log('Fetching '+tabName+': '+csvUrl.slice(0,80)+'...');
   try{
-    const prompt=`Fetch the content of this Google Sheets CSV URL and return ONLY the raw CSV text, nothing else — no explanation, no markdown, no backticks. Just the plain CSV starting with the header row.
-
-URL: ${url}
-
-Return only the CSV text.`;
-    const res=await fetch('https://api.anthropic.com/v1/messages',{
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({
-        model:'claude-sonnet-4-20250514',
-        max_tokens:4000,
-        tools:[{type:'web_search_20250305',name:'web_search'}],
-        messages:[{role:'user',content:prompt}]
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 4000,
+        messages: [{
+          role: 'user',
+          content: [
+            {
+              type: 'document',
+              source: {
+                type: 'url',
+                url: csvUrl
+              }
+            },
+            {
+              type: 'text',
+              text: 'The document above is a CSV file. Return ONLY the raw CSV text exactly as it appears — every row, every column, no explanation, no markdown, no backticks. Start directly with the header row.'
+            }
+          ]
+        }]
       })
     });
-    if(!res.ok) throw new Error('API HTTP '+res.status);
-    const data=await res.json();
-    // Get text content from response
-    const textBlock=(data.content||[]).find(b=>b.type==='text');
-    if(!textBlock||!textBlock.text) throw new Error('No text in API response');
-    const csv=textBlock.text.trim();
-    // Reject if it looks like an error message rather than CSV
-    if(csv.startsWith('I ') || csv.startsWith('The ') || csv.startsWith('Sorry') || csv.length<10){
-      throw new Error('API returned prose instead of CSV: '+csv.slice(0,80));
+    if(!res.ok){
+      const errText = await res.text();
+      throw new Error('API HTTP '+res.status+': '+errText.slice(0,200));
     }
-    const rows=parseCSV(csv);
-    log(tabName+' OK: '+rows.length+' rows parsed');
+    const data = await res.json();
+    log(tabName+' raw response type: '+(data.content||[]).map(b=>b.type).join(','));
+    const textBlock = (data.content||[]).find(b=>b.type==='text');
+    if(!textBlock||!textBlock.text) throw new Error('No text block in response. Blocks: '+JSON.stringify((data.content||[]).map(b=>b.type)));
+    const csv = textBlock.text.trim();
+    log(tabName+' response preview: '+csv.slice(0,120));
+    // Must look like CSV: has commas and newlines
+    if(!csv.includes(',') || csv.split('\n').length < 2){
+      throw new Error('Response does not look like CSV: '+csv.slice(0,150));
+    }
+    const rows = parseCSV(csv);
+    log(tabName+' parsed '+rows.length+' rows, cols: '+Object.keys(rows[0]||{}).join(','));
     return rows;
   }catch(e){
     log(tabName+' FAILED: '+e.message);
