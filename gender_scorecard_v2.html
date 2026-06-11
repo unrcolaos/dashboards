@@ -242,4 +242,811 @@
   /* INDICATOR CARDS */
   .dimensions-grid {
     display: flex;
-    flex-direction
+    flex-direction: column;
+    gap: 2.5rem;
+  }
+  .dim-header {
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 0.75rem;
+    padding-left: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .dim-detail-link {
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: none;
+    color: var(--accent);
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 3px 10px;
+    border: 1.5px solid #d4b896;
+    border-radius: 99px;
+    transition: all 0.15s;
+    background: transparent;
+  }
+  .dim-detail-link:hover {
+    background: var(--accent);
+    color: #fff;
+    border-color: var(--accent);
+  }
+  .indicators-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(310px, 1fr));
+    gap: 1rem;
+  }
+  .indicator-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1.25rem 1.4rem;
+    position: relative;
+    transition: transform 0.15s, box-shadow 0.15s;
+    overflow: hidden;
+  }
+  .indicator-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.07);
+  }
+  .indicator-card .card-accent {
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 4px;
+    border-radius: 10px 10px 0 0;
+  }
+  .indicator-card.exceeds .card-accent { background: var(--exceeds-mid); }
+  .indicator-card.meets .card-accent { background: var(--meets-mid); }
+  .indicator-card.approaches .card-accent { background: var(--approaches-mid); }
+  .indicator-card.missing .card-accent { background: var(--missing-mid); }
+  .indicator-card.not-assessed .card-accent { background: var(--not-assessed-mid); }
+  .card-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 0.6rem;
+  }
+  .pi-id {
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    color: var(--text-muted);
+  }
+  .status-pill {
+    font-size: 0.7rem;
+    font-weight: 600;
+    padding: 3px 10px;
+    border-radius: 99px;
+    letter-spacing: 0.03em;
+  }
+  .pill-exceeds { background: var(--exceeds-bg); color: var(--exceeds); }
+  .pill-meets { background: var(--meets-bg); color: var(--meets); }
+  .pill-approaches { background: var(--approaches-bg); color: var(--approaches); }
+  .pill-missing { background: var(--missing-bg); color: var(--missing); }
+  .pill-not-assessed { background: var(--not-assessed-bg); color: var(--not-assessed); }
+  .indicator-name {
+    font-size: 0.95rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    line-height: 1.3;
+  }
+  .card-meta {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    margin-bottom: 0.9rem;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+
+  /* TREND BAR */
+  .trend-label { font-size: 0.68rem; color: var(--text-muted); margin-bottom: 0.35rem; font-weight: 500; letter-spacing: 0.05em; text-transform: uppercase; }
+  .trend-dots {
+    display: flex;
+    gap: 0.4rem;
+    align-items: flex-start;
+  }
+  .trend-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    flex: 1;
+  }
+  .trend-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+  .dot-exceeds { background: var(--exceeds-mid); }
+  .dot-meets { background: var(--meets-mid); }
+  .dot-approaches { background: var(--approaches-mid); }
+  .dot-missing { background: var(--missing-mid); }
+  .dot-not-assessed { background: #d1d5db; }
+  .trend-year { font-size: 0.6rem; color: var(--text-muted); font-weight: 600;}
+  .trend-status { 
+    font-size: 0.55rem; 
+    color: var(--text-muted); 
+    margin-top: -2px; 
+    font-weight: 600; 
+    letter-spacing: 0.02em; 
+    text-transform: uppercase;
+  }
+  .trend-connector {
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+    margin-top: 4px;
+  }
+  .card-agency {
+    margin-top: 0.9rem;
+    padding-top: 0.75rem;
+    border-top: 1px solid var(--border);
+    font-size: 0.72rem;
+    color: var(--text-muted);
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+  }
+
+  /* PROGRESS BAR SECTION */
+  .progress-section {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1.75rem 2rem;
+    margin-bottom: 2.5rem;
+  }
+  .progress-title {
+    font-size: 0.8rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 1.2rem;
+  }
+  .stacked-bar {
+    display: flex;
+    height: 36px;
+    border-radius: 6px;
+    overflow: hidden;
+    margin-bottom: 1rem;
+  }
+  .bar-seg {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: #fff;
+    transition: width 0.4s ease;
+    min-width: 0;
+    overflow: hidden;
+    white-space: nowrap;
+  }
+  .bar-seg.exceeds { background: var(--exceeds-mid); }
+  .bar-seg.meets { background: var(--meets-mid); }
+  .bar-seg.approaches { background: var(--approaches-mid); }
+  .bar-seg.missing { background: var(--missing-mid); }
+  .bar-legend {
+    display: flex;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+  }
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.78rem;
+    color: var(--text-muted);
+  }
+  .legend-dot {
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  /* QUICK WINS */
+  .quickwins-section {
+    margin-bottom: 3.5rem;
+  }
+  .qw-header {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-wrap: wrap;
+    margin-bottom: 0.4rem;
+  }
+  .qw-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+  }
+  .qw-bolt {
+    width: 28px; height: 28px;
+    background: #f59e0b;
+    border-radius: 7px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-size: 0.95rem;
+  }
+  .qw-subtitle {
+    font-size: 0.88rem;
+    color: var(--text-muted);
+    margin-bottom: 1.5rem;
+    line-height: 1.6;
+    max-width: 720px;
+  }
+  .qw-subtitle strong { color: var(--missing); }
+  .qw-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1rem;
+  }
+  .qw-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1.3rem 1.4rem;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.15s, box-shadow 0.15s;
+  }
+  .qw-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.07);
+  }
+  .qw-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; bottom: 0;
+    width: 4px;
+    background: #f59e0b;
+  }
+  .qw-card.start-here::before { background: var(--exceeds-mid); }
+  .qw-card-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    margin-bottom: 0.6rem;
+  }
+  .qw-pi {
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    color: var(--text-muted);
+  }
+  .qw-badges { display: flex; gap: 0.4rem; align-items: center; }
+  .qw-effort {
+    font-size: 0.66rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    padding: 3px 9px;
+    border-radius: 99px;
+  }
+  .effort-low { background: var(--exceeds-bg); color: var(--exceeds); }
+  .effort-medium { background: var(--approaches-bg); color: var(--approaches); }
+  .effort-high { background: var(--missing-bg); color: var(--missing); }
+  .qw-starthere {
+    font-size: 0.66rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    padding: 3px 9px;
+    border-radius: 99px;
+    background: var(--exceeds);
+    color: #fff;
+  }
+  .qw-name {
+    font-size: 1.02rem;
+    font-weight: 600;
+    margin-bottom: 0.8rem;
+    line-height: 1.3;
+  }
+  .qw-actions {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+    flex: 1;
+  }
+  .qw-action {
+    display: flex;
+    gap: 0.55rem;
+    align-items: flex-start;
+    font-size: 0.81rem;
+    line-height: 1.45;
+    color: var(--text);
+  }
+  
+  .qw-action-dot {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    font-size: 0.7rem;
+    font-weight: 700;
+    flex-shrink: 0;
+    background: var(--missing-bg);
+    color: var(--missing);
+    border: 1px solid #fca5a5;
+    margin-top: 2px;
+  }
+  .qw-action-dot.done {
+    background: var(--meets-bg);
+    color: var(--meets);
+    border: 1px solid #86efac;
+  }
+
+  .qw-card-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 1rem;
+    border-top: 1px solid var(--border);
+    margin-top: auto;
+  }
+  .qw-resp {
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+  }
+  .qw-link {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--accent);
+    text-decoration: none;
+    transition: color 0.15s;
+  }
+  .qw-link:hover { color: #5a3c24; }
+
+  /* ACTIVITIES TABLE */
+  .activities-section { margin-top: 3.5rem; }
+  .act-type-pill {
+    font-size: 0.65rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    background: var(--border);
+    padding: 3px 8px;
+    border-radius: 4px;
+    letter-spacing: 0.05em;
+  }
+  .act-completed {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--meets);
+    display: flex;
+    align-items: center;
+    gap: 0.2rem;
+  }
+  .act-completed::before {
+    content: '';
+    width: 6px; height: 6px;
+    background: var(--meets);
+    border-radius: 50%;
+  }
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="header-left">
+    <h1>UNCT-SWAP Gender Equality Scorecard</h1>
+    <span class="header-badge">Lao PDR</span>
+  </div>
+  <button id="refresh-btn" class="refresh-btn" onclick="loadData(true)">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 2v6h-6"></path><path d="M3 12a9 9 0 1 0 2.13-5.88L21 8"></path></svg>
+    Refresh Data
+  </button>
+</header>
+
+<section class="hero">
+  <div class="hero-inner">
+    <p class="hero-label">Performance Indicator Dashboard</p>
+    <h2>Gender Equality<br><em>Progress Overview</em></h2>
+    <p>Live view of UNCT-SWAP scorecard indicators across seven dimensions. Data sourced from the Indicator Data tab of the shared workbook.</p>
+    <a href="dimension_pages.html" class="hero-cta">Explore by Dimension →</a>
+    <div class="summary-grid" id="summary-grid">
+      </div>
+  </div>
+</section>
+
+<main class="main">
+  <div class="progress-section">
+    <div class="progress-title">Latest Status Distribution — All 15 Indicators</div>
+    <div class="stacked-bar" id="stacked-bar"></div>
+    <div class="bar-legend">
+      <div class="legend-item"><div class="legend-dot" style="background:var(--exceeds-mid)"></div> Exceeds</div>
+      <div class="legend-item"><div class="legend-dot" style="background:var(--meets-mid)"></div> Meets</div>
+      <div class="legend-item"><div class="legend-dot" style="background:var(--approaches-mid)"></div> Approaches</div>
+      <div class="legend-item"><div class="legend-dot" style="background:var(--missing-mid)"></div> Missing</div>
+    </div>
+  </div>
+
+  <div class="quickwins-section">
+    <div class="qw-header">
+      <div class="qw-title"><span class="qw-bolt">⚡</span> Quick Wins & Priority Actions</div>
+    </div>
+    <div class="qw-subtitle">Actions that require low-to-medium effort but resolve <strong>Missing</strong> or <strong>Approaches</strong> indicators.</div>
+    <div class="qw-grid" id="qw-grid">
+      </div>
+  </div>
+
+  <div class="section-title">Scorecard Indicators</div>
+  
+  <div class="filter-bar">
+    <span class="filter-label">Filter by Status:</span>
+    <button class="filter-btn active" onclick="setFilter('All', this)">All</button>
+    <button class="filter-btn" onclick="setFilter('Exceeds', this)">Exceeds</button>
+    <button class="filter-btn" onclick="setFilter('Meets', this)">Meets</button>
+    <button class="filter-btn" onclick="setFilter('Approaches', this)">Approaches</button>
+    <button class="filter-btn" onclick="setFilter('Missing', this)">Missing</button>
+  </div>
+
+  <div class="dimensions-grid" id="dimensions-grid">
+    </div>
+
+  <div class="activities-section">
+    <div class="section-title">Recent & Upcoming Activities</div>
+    <div style="overflow-x:auto;">
+      <table style="width:100%; border-collapse: collapse; text-align: left;">
+        <thead>
+          <tr style="border-bottom: 1px solid var(--border); font-size: 0.8rem; color: var(--text-muted);">
+            <th style="padding: 10px">Date</th>
+            <th style="padding: 10px">Indicator</th>
+            <th style="padding: 10px">Description</th>
+            <th style="padding: 10px">Type</th>
+            <th style="padding: 10px">Lead</th>
+            <th style="padding: 10px">Status</th>
+            <th style="padding: 10px">Notes</th>
+          </tr>
+        </thead>
+        <tbody id="act-tbody">
+          </tbody>
+      </table>
+    </div>
+  </div>
+
+</main>
+
+<script>
+// --- GLOBAL DATA CONTAINERS ---
+let INDICATORS = [];
+let ACTIVITIES = [];
+let QUICK_WINS = [];
+let activeFilter = 'All';
+
+// --- GOOGLE SHEETS CSV ENDPOINTS ---
+const INDICATORS_CSV = "https://docs.google.com/spreadsheets/d/1Q7i_Unq9No-kO8aumvJ1MBoUIk0jkqFLA_rmpaR2BeM/gviz/tq?tqx=out:csv&sheet=Indicators";
+const ACTIVITIES_CSV = "https://docs.google.com/spreadsheets/d/1Q7i_Unq9No-kO8aumvJ1MBoUIk0jkqFLA_rmpaR2BeM/gviz/tq?tqx=out:csv&sheet=Activities";
+const QUICK_WINS_CSV = "https://docs.google.com/spreadsheets/d/1Q7i_Unq9No-kO8aumvJ1MBoUIk0jkqFLA_rmpaR2BeM/gviz/tq?tqx=out:csv&sheet=Quick+Wins";
+
+// Wrapped fetching logic into loadData
+async function loadData(isRefresh = false) {
+  const refreshBtn = document.getElementById('refresh-btn');
+  
+  if (isRefresh && refreshBtn) {
+    refreshBtn.disabled = true;
+    refreshBtn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="animation: spin 1s linear infinite;"><path d="M21 2v6h-6"></path><path d="M3 12a9 9 0 1 0 2.13-5.88L21 8"></path></svg> Refreshing...`;
+    // Add a simple spin animation for the icon dynamically
+    if (!document.getElementById('spin-style')) {
+      const style = document.createElement('style');
+      style.id = 'spin-style';
+      style.innerHTML = `@keyframes spin { 100% { transform: rotate(360deg); } }`;
+      document.head.appendChild(style);
+    }
+  }
+
+  try {
+    // Append a cache-busting parameter during refresh to ensure fresh data
+    const cacheBuster = isRefresh ? `&_=${new Date().getTime()}` : '';
+    
+    const [indRes, actRes, qwRes] = await Promise.all([
+      fetch(INDICATORS_CSV + cacheBuster).then(r => r.text()),
+      fetch(ACTIVITIES_CSV + cacheBuster).then(r => r.text()),
+      fetch(QUICK_WINS_CSV + cacheBuster).then(r => r.text())
+    ]);
+
+    // Parse Indicators
+    const parsedInd = Papa.parse(indRes, { header: false, skipEmptyLines: true }).data;
+    const newIndicators = parsedInd
+      .filter(row => row[1] && row[1].match(/^PI \d/))
+      .map(row => ({
+        dimension: row[0],
+        pi_id: row[1],
+        indicator_name: row[2],
+        status_2022: row[3],
+        status_2023: row[4],
+        status_2024: row[5],
+        status_2025: row[6],
+        latest_status: row[7],
+        last_assessed: row[8],
+        agency: row[9]
+      }));
+    if (newIndicators.length > 0) INDICATORS = newIndicators;
+
+    // Parse Activities
+    const parsedAct = Papa.parse(actRes, { header: false, skipEmptyLines: true }).data;
+    const newActivities = parsedAct
+      .filter(row => row[1] && row[1].match(/^PI \d/))
+      .map(row => ({
+        date: row[0],
+        pi_id: row[1],
+        indicator: row[2],
+        description: row[3],
+        type: row[4],
+        lead: row[5],
+        status: row[6],
+        notes: row[7]
+      }));
+    if (newActivities.length > 0) ACTIVITIES = newActivities;
+
+    // Parse Quick Wins
+    const parsedQw = Papa.parse(qwRes, { header: false, skipEmptyLines: true }).data;
+    const qwRows = parsedQw.filter(row => row[2] && row[2].trim() !== "" && row[2] !== "Action"); 
+    
+    const newQuickWins = [];
+    let currentQw = null;
+    
+    for (const row of qwRows) {
+      const piId = row[0] ? row[0].trim() : "";
+      if (piId && piId.match(/^PI \d/)) {
+        if (currentQw) newQuickWins.push(currentQw);
+        
+        let dim = parseInt(piId.replace('PI ', '').split('.')[0], 10) - 1;
+
+        currentQw = {
+          pi_id: piId,
+          name: row[1],
+          effort: row[5],
+          status: row[6],
+          responsible: row[4],
+          dim: dim,
+          actions: [],
+          actions_done: [] 
+        };
+      }
+      if (currentQw) {
+        currentQw.actions.push(row[2]);
+        currentQw.actions_done.push(row[3] && row[3].trim().toUpperCase() === "TRUE");
+      }
+    }
+    if (currentQw) newQuickWins.push(currentQw);
+    if (newQuickWins.length > 0) QUICK_WINS = newQuickWins;
+
+  } catch (err) {
+    console.warn("Failed to fetch from Google Sheets. Using fallbacks if available.", err);
+  } finally {
+    // Reset button state
+    if (isRefresh && refreshBtn) {
+      refreshBtn.disabled = false;
+      refreshBtn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 2v6h-6"></path><path d="M3 12a9 9 0 1 0 2.13-5.88L21 8"></path></svg> Refresh Data`;
+    }
+  }
+
+  // Trigger builders
+  buildSummary();
+  buildStackedBar();
+  buildDimensions();
+  buildActivities();
+  buildQuickWins();
+  
+  // Re-apply filter if active
+  const activeBtn = document.querySelector('.filter-btn.active');
+  if (activeBtn) setFilter(activeFilter, activeBtn);
+}
+
+// --- RENDER FUNCTIONS ---
+
+function buildSummary() {
+  const counts = { Exceeds: 0, Meets: 0, Approaches: 0, Missing: 0 };
+  INDICATORS.forEach(ind => {
+    const s = ind.latest_status;
+    if (counts[s] !== undefined) counts[s]++;
+  });
+  const el = document.getElementById('summary-grid');
+  if (!el) return;
+  el.innerHTML = Object.entries(counts).map(([key, val]) => `
+    <div class="summary-card ${key.toLowerCase()}">
+      <div class="summary-num">${val}</div>
+      <div class="summary-label">${key}</div>
+    </div>
+  `).join('');
+}
+
+function buildStackedBar() {
+  const total = INDICATORS.length;
+  const counts = { Exceeds: 0, Meets: 0, Approaches: 0, Missing: 0 };
+  INDICATORS.forEach(ind => {
+    const s = ind.latest_status;
+    if (counts[s] !== undefined) counts[s]++;
+  });
+  const bar = document.getElementById('stacked-bar');
+  if (!bar) return;
+  bar.innerHTML = Object.entries(counts).map(([key, val]) => {
+    if (val === 0) return '';
+    const pct = ((val / total) * 100).toFixed(1);
+    const label = pct > 10 ? `${val} (${pct}%)` : val;
+    return `<div class="bar-seg ${key.toLowerCase()}" style="width:${pct}%">${label}</div>`;
+  }).join('');
+}
+
+function getShortStatus(stat) {
+  if (!stat) return 'N/A';
+  const s = stat.toLowerCase();
+  if (s.includes('exceeds')) return 'Exc.';
+  if (s.includes('meets')) return 'Meet';
+  if (s.includes('approaches')) return 'Appr.';
+  if (s.includes('missing')) return 'Miss';
+  return stat;
+}
+
+function buildDimensions() {
+  const grid = document.getElementById('dimensions-grid');
+  if (!grid) return;
+  
+  const dims = {};
+  INDICATORS.forEach(ind => {
+    if (!dims[ind.dimension]) dims[ind.dimension] = [];
+    dims[ind.dimension].push(ind);
+  });
+
+  let html = '';
+  Object.keys(dims).sort().forEach((dimName) => {
+    const dimIdxStr = dimName.split('.')[0] || '1';
+    const dimIdx = parseInt(dimIdxStr, 10) - 1;
+    
+    html += `
+      <div class="dimension-group">
+        <div class="dim-header">
+          <span>${dimName}</span>
+          <a href="dimension_pages.html#dim-${dimIdx}" class="dim-detail-link">View Criteria →</a>
+        </div>
+        <div class="indicators-row">
+          ${dims[dimName].map(ind => {
+            const sc = ind.latest_status ? ind.latest_status.toLowerCase().replace(' ', '-') : 'not-assessed';
+            return `
+              <div class="indicator-card ${sc}">
+                <div class="card-accent"></div>
+                <div class="card-top">
+                  <span class="pi-id">${ind.pi_id}</span>
+                  <span class="status-pill pill-${sc}">${ind.latest_status}</span>
+                </div>
+                <div class="indicator-name">${ind.indicator_name}</div>
+                <div class="card-meta">
+                  <span>Last assessed: ${ind.last_assessed}</span>
+                </div>
+                
+                <div class="trend-label">4-Year Trend</div>
+                <div class="trend-dots">
+                  ${[
+                    {year: '2022', stat: ind.status_2022},
+                    {year: '2023', stat: ind.status_2023},
+                    {year: '2024', stat: ind.status_2024},
+                    {year: '2025', stat: ind.status_2025}
+                  ].map((t, idx) => {
+                    const ts = t.stat ? t.stat.toLowerCase().replace(' ', '-') : 'not-assessed';
+                    return `
+                      <div class="trend-item">
+                        <div class="trend-dot dot-${ts}"></div>
+                        <div class="trend-year">${t.year}</div>
+                        <div class="trend-status">${getShortStatus(t.stat)}</div>
+                      </div>
+                      ${idx < 3 ? `<div class="trend-connector"></div>` : ''}
+                    `;
+                  }).join('')}
+                </div>
+                
+                <div class="card-agency">
+                  <span>Lead: ${ind.agency}</span>
+                </div>
+              </div>
+            `;
+          }).join('')}
+        </div>
+      </div>
+    `;
+  });
+  grid.innerHTML = html;
+}
+
+function buildActivities() {
+  const tbody = document.getElementById('act-tbody');
+  if (!tbody) return;
+  tbody.innerHTML = ACTIVITIES.map(a => `
+    <tr style="border-bottom: 1px solid var(--border);">
+      <td style="padding: 10px; font-weight:500;">${a.date}</td>
+      <td style="padding: 10px;"><strong>${a.pi_id}</strong><br><span style="color:var(--text-muted);font-size:0.75rem">${a.indicator}</span></td>
+      <td style="padding: 10px; font-size:0.9rem;">${a.description}</td>
+      <td style="padding: 10px;"><span class="act-type-pill">${a.type}</span></td>
+      <td style="padding: 10px; font-size:0.9rem;">${a.lead}</td>
+      <td style="padding: 10px;"><span class="act-completed">${a.status}</span></td>
+      <td style="padding: 10px; color:var(--text-muted); font-size:0.85rem;">${a.notes}</td>
+    </tr>
+  `).join('');
+}
+
+function buildQuickWins() {
+  const grid = document.getElementById('qw-grid');
+  if (!grid) return;
+
+  const effortRank = { "Low": 0, "Medium": 1, "High": 2 };
+  const minEffort = Math.min(...QUICK_WINS.map(q => effortRank[q.effort] !== undefined ? effortRank[q.effort] : 99));
+
+  grid.innerHTML = QUICK_WINS.map(q => {
+    const isStartHere = effortRank[q.effort] === minEffort;
+    const statusClass = q.status ? q.status.toLowerCase().replace(' ', '-') : '';
+    
+    const actionsHtml = q.actions.map((a, i) => {
+      const isDone = q.actions_done && q.actions_done[i];
+      const dotClass = isDone ? "qw-action-dot done" : "qw-action-dot";
+      const dotSymbol = isDone ? "✓" : "–";
+      return `<li class="qw-action"><span class="${dotClass}">${dotSymbol}</span>${a}</li>`;
+    }).join('');
+
+    return `
+      <div class="qw-card ${isStartHere ? 'start-here' : ''}">
+        <div class="qw-card-top">
+          <span class="qw-pi">${q.pi_id}</span>
+          <div class="qw-badges">
+            ${isStartHere ? '<span class="qw-starthere">Start here</span>' : ''}
+            <span class="qw-effort effort-${q.effort.toLowerCase()}">${q.effort} effort</span>
+            <span class="qw-status ${statusClass}">${q.status}</span>
+          </div>
+        </div>
+        <div class="qw-name">${q.name}</div>
+        <ul class="qw-actions">${actionsHtml}</ul>
+        <div class="qw-card-footer">
+          <span class="qw-resp">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+            ${q.responsible || 'UNCT'}
+          </span>
+          <a class="qw-link" href="dimension_pages.html#dim-${q.dim}">View criteria →</a>
+        </div>
+      </div>`;
+  }).join('');
+}
+
+// --- FILTERING ---
+function setFilter(filter, btn) {
+  activeFilter = filter;
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active', 'exceeds', 'meets', 'approaches', 'missing'));
+  btn.classList.add('active');
+  if (filter !== 'All') btn.classList.add(filter.toLowerCase());
+  
+  document.querySelectorAll('.indicator-card').forEach(card => {
+    if (filter === 'All' || card.classList.contains(filter.toLowerCase())) {
+      card.style.display = '';
+    } else {
+      card.style.display = 'none';
+    }
+  });
+}
+
+// Start sequence on load
+document.addEventListener("DOMContentLoaded", () => loadData(false));
+</script>
+</body>
+</html>
