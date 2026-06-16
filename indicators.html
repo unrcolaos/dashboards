@@ -705,15 +705,6 @@ function renderCards() {
   // Show/hide clear button
   const clearBtn = document.getElementById('clear-btn');
   if (clearBtn) clearBtn.classList.toggle('visible', activeDim !== 'all' || activeStatus !== 'all');
-
-  // Scroll to hash after render
-  const hash = window.location.hash;
-  if (hash) {
-    setTimeout(() => {
-      const el = document.querySelector(hash);
-      if (el) el.scrollIntoView({ behavior: 'smooth' });
-    }, 50);
-  }
 }
 
 function renderCard(ind) {
@@ -795,36 +786,50 @@ function renderCard(ind) {
 }
 
 // ── FILTER LOGIC ─────────────────────────────────────────────────────────────
+// Keep the viewport exactly where it is while the list re-renders.
+function preserveScroll(action) {
+  const y = window.scrollY;
+  action();
+  window.scrollTo(0, y);                          // restore immediately
+  requestAnimationFrame(() => window.scrollTo(0, y)); // and after reflow
+}
+
 function setDimFilter(val, btn) {
-  activeDim = val;
-  document.querySelectorAll('[data-dim]').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-  updateUrl();
-  render();
+  preserveScroll(() => {
+    activeDim = val;
+    document.querySelectorAll('[data-dim]').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    updateUrl();
+    render();
+  });
 }
 
 function setStatusFilter(val, btn) {
-  activeStatus = val;
-  document.querySelectorAll('[data-status]').forEach(b => {
-    b.classList.remove('active', 'exceeds', 'meets', 'approaches', 'missing');
+  preserveScroll(() => {
+    activeStatus = val;
+    document.querySelectorAll('[data-status]').forEach(b => {
+      b.classList.remove('active', 'exceeds', 'meets', 'approaches', 'missing');
+    });
+    btn.classList.add('active');
+    if (val !== 'all') btn.classList.add(val);
+    updateUrl();
+    render();
   });
-  btn.classList.add('active');
-  if (val !== 'all') btn.classList.add(val);
-  updateUrl();
-  render();
 }
 
 function clearFilters() {
-  activeDim    = 'all';
-  activeStatus = 'all';
-  document.querySelectorAll('[data-dim]').forEach(b => b.classList.remove('active'));
-  document.querySelectorAll('[data-status]').forEach(b => {
-    b.classList.remove('active','exceeds','meets','approaches','missing');
+  preserveScroll(() => {
+    activeDim    = 'all';
+    activeStatus = 'all';
+    document.querySelectorAll('[data-dim]').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('[data-status]').forEach(b => {
+      b.classList.remove('active','exceeds','meets','approaches','missing');
+    });
+    document.querySelector('[data-dim="all"]').classList.add('active');
+    document.querySelector('[data-status="all"]').classList.add('active');
+    updateUrl();
+    render();
   });
-  document.querySelector('[data-dim="all"]').classList.add('active');
-  document.querySelector('[data-status="all"]').classList.add('active');
-  updateUrl();
-  render();
 }
 
 // ── URL PARAMS ───────────────────────────────────────────────────────────────
