@@ -169,7 +169,19 @@
   .dim-section-name {
     font-family: 'Lato', sans-serif; font-size: 1.35rem; line-height: 1;
   }
+  .dim-section-desc {
+    font-size: 0.82rem; color: var(--text-muted); line-height: 1.5;
+    margin-top: 0.2rem; max-width: 680px;
+  }
   .dim-section-badges { display: flex; gap: 0.4rem; margin-left: auto; flex-shrink: 0; }
+  .dim-badge {
+    font-size: 0.68rem; font-weight: 700; padding: 3px 9px;
+    border-radius: 99px;
+  }
+  .dim-badge.exceeds   { background: var(--exceeds-bg);   color: var(--exceeds); }
+  .dim-badge.meets     { background: var(--meets-bg);     color: var(--meets); }
+  .dim-badge.approaches { background: var(--approaches-bg); color: var(--approaches); }
+  .dim-badge.missing   { background: var(--missing-bg);   color: var(--missing); }
 
   /* ── INDICATOR DETAIL CARD ── */
   .indicator-detail {
@@ -177,6 +189,9 @@
     border-radius: 12px; margin-bottom: 1.25rem; overflow: hidden;
     scroll-margin-top: calc(var(--header-h) + 80px);
     transition: box-shadow 0.15s;
+  }
+  .indicator-detail:target, .indicator-detail.highlight {
+    box-shadow: 0 0 0 3px var(--accent);
   }
   .ind-header {
     padding: 1.4rem 1.75rem; border-bottom: 1px solid var(--border);
@@ -187,24 +202,49 @@
   .ind-pi-label { font-size: 0.7rem; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 0.3rem; }
   .ind-title { font-family: 'Lato', sans-serif; font-size: 1.25rem; line-height: 1.25; margin-bottom: 0.45rem; }
   .ind-summary { font-size: 0.86rem; color: var(--text-muted); line-height: 1.6; max-width: 580px; }
-  
-  /* Status, Year, Dots Right side */
-  .ind-header-right { display: flex; flex-direction: column; align-items: flex-end; flex-shrink: 0; }
-  .history-dots { display: flex; gap: 5px; margin-bottom: 0.6rem; justify-content: flex-end; }
-  .h-dot { width: 9px; height: 9px; border-radius: 50%; background: var(--not-assessed-bg); border: 1px solid rgba(0,0,0,0.05); }
-  .h-dot.exceeds { background: var(--exceeds-mid); }
-  .h-dot.meets { background: var(--meets-mid); }
-  .h-dot.approaches { background: var(--approaches-mid); }
-  .h-dot.missing { background: var(--missing-mid); }
-
-  .status-pill { font-size: 0.72rem; font-weight: 600; padding: 5px 14px; border-radius: 99px; letter-spacing: 0.03em; white-space: nowrap; margin-bottom: 0.4rem;}
+  .ind-header-right { display: flex; flex-direction: column; align-items: flex-end; gap: 0.5rem; flex-shrink: 0; }
+  .status-pill { font-size: 0.72rem; font-weight: 600; padding: 5px 14px; border-radius: 99px; letter-spacing: 0.03em; white-space: nowrap; }
   .pill-exceeds    { background: var(--exceeds-bg);    color: var(--exceeds); }
   .pill-meets      { background: var(--meets-bg);      color: var(--meets); }
   .pill-approaches { background: var(--approaches-bg); color: var(--approaches); }
   .pill-missing    { background: var(--missing-bg);    color: var(--missing); }
   .pill-not-assessed { background: var(--not-assessed-bg); color: var(--not-assessed); }
-  
-  .ind-year { font-size: 0.7rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; text-align: right; }
+
+  /* trend mini */
+  .trend-mini { display: flex; gap: 0.35rem; align-items: flex-start; }
+  .trend-mini-item { display: flex; flex-direction: column; align-items: center; gap: 3px; }
+  .trend-dot-sm { width: 9px; height: 9px; border-radius: 50%; }
+  .dot-exceeds    { background: var(--exceeds-mid); }
+  .dot-meets      { background: var(--meets-mid); }
+  .dot-approaches { background: var(--approaches-mid); }
+  .dot-missing    { background: var(--missing-mid); }
+  .dot-not-assessed { background: #d1d5db; }
+  .trend-year-sm  { font-size: 0.58rem; color: var(--text-muted); }
+  .trend-status-sm { font-size: 0.52rem; font-weight: 600; color: var(--text-muted); text-align: center; max-width: 36px; line-height: 1.2; }
+  .trend-status-sm.s-exceeds    { color: var(--exceeds); }
+  .trend-status-sm.s-meets      { color: var(--meets); }
+  .trend-status-sm.s-approaches { color: var(--approaches); }
+  .trend-status-sm.s-missing    { color: var(--missing); }
+
+  /* achieved bar */
+  .achieved-bar {
+    margin: 0 1.75rem 1.25rem;
+    background: #f9f7f4; border: 1px solid var(--border); border-radius: 8px;
+    padding: 0.9rem 1.1rem; display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;
+  }
+  .achieved-label { font-size: 0.76rem; color: var(--text-muted); font-weight: 500; }
+  .achieved-dots { display: flex; gap: 0.4rem; flex-wrap: wrap; }
+  .achieved-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--exceeds-mid); }
+  .unachieved-dot { width: 10px; height: 10px; border-radius: 50%; background: #e5e7eb; border: 1px solid #d1d5db; }
+  .achieved-fraction { font-size: 0.84rem; font-weight: 600; margin-left: auto; }
+  .achieved-fraction .num { color: var(--exceeds); }
+  .achieved-fraction .denom { color: var(--text-muted); }
+  .missing-banner {
+    margin: 0 1.75rem 1.25rem;
+    background: var(--missing-bg); border: 1px solid #fca5a5;
+    border-radius: 8px; padding: 0.85rem 1.1rem;
+    font-size: 0.81rem; color: var(--missing); font-weight: 500;
+  }
 
   /* criteria */
   .criteria-section { padding: 1.5rem 1.75rem; }
@@ -238,10 +278,9 @@
     .filter-bar-inner { padding: 0.75rem 1rem; }
     .main { padding: 1.5rem 1rem 4rem; }
     .ind-header { padding: 1.1rem; flex-direction: column; }
-    .ind-header-right { align-items: flex-start; width: 100%; margin-top: 10px; }
-    .history-dots { justify-content: flex-start; }
-    .ind-year { text-align: left; }
+    .ind-header-right { align-items: flex-start; }
     .criteria-section { padding: 1.1rem; }
+    .achieved-bar, .missing-banner { margin: 0 1rem 1rem; }
     .filter-row-label { min-width: 60px; font-size: 0.65rem; }
     .dim-section-badges { display: none; }
   }
@@ -316,7 +355,9 @@
   </div>
 </div>
 
-<main class="main" id="main-content"></main>
+<main class="main" id="main-content">
+  <!-- Rendered by JS -->
+</main>
 
 <footer>UNCT-SWAP Gender Equality Scorecard · Lao PDR · Data current as of 2025</footer>
 
@@ -346,6 +387,17 @@ const PI_META = {
   "PI 7.1": { title: "UN Programmes Make a Significant Contribution to Gender Equality Results", summary: "The ultimate question: are gender equality results actually being achieved? Requires evidence of on-track delivery across all planned GEWE outcomes — and transformative change in at least one to exceed.", criteria: [] }
 };
 
+// ── DIMENSION SUMMARIES ──────────────────────────────────────────────────────
+const DIMENSIONS_META = {
+  "1": { name:"Planning", desc:"Ensures gender equality is systematically integrated into the CCA and UNSDCF. Without a strong gender lens at the planning stage, all downstream programming risks reinforcing inequalities." },
+  "2": { name:"Programming, Monitoring, Evaluation & Learning", desc:"Ensures gender equality is woven into how the UN designs joint programmes, communicates publicly, and tracks its results." },
+  "3": { name:"Partnerships", desc:"Measures how actively the UNCT collaborates with government and civil society on gender equality, multiplying reach and embedding GEWE in national systems." },
+  "4": { name:"Leadership & Organizational Culture", desc:"Leadership commitment signals that GEWE is a genuine priority. Assesses staffing parity, organizational culture, and internal policies." },
+  "5": { name:"Gender Architecture & Capacities", desc:"A functioning Gender Thematic Group and adequate staff capacity development are the structural backbone for sustained GEWE performance." },
+  "6": { name:"Financial Resources", desc:"Tracks whether the UNCT allocates and reports on resources dedicated to gender equality through the UN Gender Equality Marker (UNCT-GEM)." },
+  "7": { name:"Results", desc:"The ultimate measure: is UN programming actually achieving gender equality results in Lao PDR?" }
+};
+
 // ── FETCH & PARSE DATA ───────────────────────────────────────────────────────
 async function loadData() {
   try {
@@ -354,7 +406,6 @@ async function loadData() {
     const indText = await indRes.text();
     const indParsed = Papa.parse(indText, { header: false, skipEmptyLines: true }).data;
     
-    // Using .trim() avoids matching issues if a cell has an accidental space
     INDICATORS = indParsed
       .filter(r => r[1] && String(r[1]).trim().match(/^PI \d/))
       .map(r => ({
@@ -366,16 +417,15 @@ async function loadData() {
         status_2024: String(r[5] || '').trim(), 
         status_2025: String(r[6] || '').trim(),
         latest_status: String(r[7] || '').trim(), 
-        last_assessed: String(r[8] || '').trim(), 
-        agency: String(r[9] || '').trim()
+        last_assessed: String(r[8] || '').trim()
       }));
 
-    // 2. Fetch Criteria Data
+    // 2. Fetch Criteria Data with extremely loose matching
     const critRes = await fetch(CRITERIA_CSV_URL);
     const critText = await critRes.text();
     const critParsed = Papa.parse(critText, { header: true, skipEmptyLines: true }).data;
     
-    // Reset Criteria
+    // Clear out the arrays first
     Object.keys(PI_META).forEach(id => {
       if (PI_META[id]) PI_META[id].criteria = [];
     });
@@ -383,22 +433,24 @@ async function loadData() {
     if (critParsed && critParsed.length > 0) {
       critParsed.forEach(row => {
          const keys = Object.keys(row);
-         // Find column keys dynamically to handle weird invisible BOM characters or spaces from Google Sheets
-         const getVal = (searchStr) => {
-            const matchedKey = keys.find(k => k.replace(/^\uFEFF/, '').trim() === searchStr);
-            return matchedKey ? String(row[matchedKey] || '').trim() : null;
-         };
          
-         const id = getVal("PI ID");
+         const findKey = (str) => keys.find(k => k.toLowerCase().replace(/[^a-z]/g, '').includes(str));
+         
+         const idKey = findKey('piid');
+         const levelKey = findKey('level');
+         const critTextKey = findKey('text');
+         const metKey = findKey('met');
+         
+         // Exact match for 'criterion' to avoid grabbing 'criteriontext'
+         const critLetterKey = keys.find(k => k.toLowerCase().replace(/[^a-z]/g, '') === 'criterion');
+
+         const id = idKey ? String(row[idKey] || '').trim() : null;
          if (!id || !PI_META[id]) return; 
          
-         const levelText = getVal("Level");
-         const criterionLetter = getVal("Criterion");
-         const critText = getVal("Criterion Text");
-         
-         // Dynamically find the Met column regardless of the exact naming in the Sheet
-         const metKey = keys.find(k => k.toLowerCase().includes('met'));
-         const isMetStr = metKey ? String(row[metKey] || "").trim().toUpperCase() : "FALSE";
+         const levelText = levelKey ? String(row[levelKey] || '').trim() : null;
+         const criterionLetter = critLetterKey ? String(row[critLetterKey] || '').trim() : null;
+         const critText = critTextKey ? String(row[critTextKey] || '').trim() : null;
+         const isMetStr = metKey ? String(row[metKey] || '').trim().toUpperCase() : "FALSE";
          
          if (levelText && critText) {
             const formattedText = criterionLetter ? `(${criterionLetter}) ${critText}` : critText;
@@ -418,169 +470,279 @@ async function loadData() {
   readUrlParams();
 }
 
+// ── HELPERS FOR ORIGINAL DOTS & PILLS ────────────────────────────────────────
+function dotClass(s) {
+  if(!s) return 'dot-not-assessed';
+  const l = s.toLowerCase();
+  if(l.includes('exceeds')) return 'dot-exceeds';
+  if(l.includes('meets')) return 'dot-meets';
+  if(l.includes('approaches')) return 'dot-approaches';
+  if(l.includes('missing')) return 'dot-missing';
+  return 'dot-not-assessed';
+}
+function pillClass(s) {
+  if(!s) return 'pill-not-assessed';
+  const l = s.toLowerCase();
+  if(l.includes('exceeds')) return 'pill-exceeds';
+  if(l.includes('meets')) return 'pill-meets';
+  if(l.includes('approaches')) return 'pill-approaches';
+  if(l.includes('missing')) return 'pill-missing';
+  return 'pill-not-assessed';
+}
+function statusAbbr(s) {
+  if(!s) return 'N/A';
+  const l = s.toLowerCase();
+  if(l.includes('exceeds')) return 'Exc.';
+  if(l.includes('meets')) return 'Meet';
+  if(l.includes('approaches')) return 'Appr.';
+  if(l.includes('missing')) return 'Miss';
+  return 'N/A';
+}
+function statusSClass(s) {
+  if(!s) return '';
+  const l = s.toLowerCase();
+  if(l.includes('exceeds')) return 's-exceeds';
+  if(l.includes('meets')) return 's-meets';
+  if(l.includes('approaches')) return 's-approaches';
+  if(l.includes('missing')) return 's-missing';
+  return '';
+}
+
 // ── RENDER & FILTER LOGIC ────────────────────────────────────────────────────
 let activeDim = 'all';
 let activeStatus = 'all';
 
-// Helper for status pill and dot colors
-function getStatusClass(statusText) {
-    if (!statusText) return 'not-assessed';
-    const s = statusText.toLowerCase();
-    if (s.includes('exceeds')) return 'exceeds';
-    if (s.includes('meets')) return 'meets';
-    if (s.includes('approaches')) return 'approaches';
-    if (s.includes('missing')) return 'missing';
-    return 'not-assessed';
+function preserveScroll(action) {
+  const y = window.scrollY;
+  action();
+  window.scrollTo(0, y);
+  requestAnimationFrame(() => window.scrollTo(0, y));
 }
 
 function render() {
-  const grid = document.getElementById('summary-grid');
   const main = document.getElementById('main-content');
-  if (!grid || !main) return;
+  const grid = document.getElementById('summary-grid');
+  if (!main || !grid) return;
 
-  grid.innerHTML = ''; main.innerHTML = '';
+  // 1. Build Summary Cards
+  const statusCounts = { Exceeds: 0, Meets: 0, Approaches: 0, Missing: 0 };
+  INDICATORS.forEach(ind => {
+    if(!ind.latest_status) return;
+    const l = ind.latest_status.toLowerCase();
+    if(l.includes('exceeds')) statusCounts.Exceeds++;
+    else if(l.includes('meets')) statusCounts.Meets++;
+    else if(l.includes('approaches')) statusCounts.Approaches++;
+    else if(l.includes('missing')) statusCounts.Missing++;
+  });
+  
+  grid.innerHTML = Object.entries(statusCounts).map(([key, val]) => {
+    const k = key.toLowerCase();
+    const sel = activeStatus === k ? 'selected' : '';
+    return `<button class="summary-card ${k} ${sel}" onclick="toggleStatusFromCard('${k}')">
+      <div class="summary-num">${val}</div>
+      <div class="summary-label">${key}</div>
+    </button>`;
+  }).join('');
 
+  // 2. Filter indicators
   const filtered = INDICATORS.filter(ind => {
-    const dMatch = (activeDim === 'all' || ind.pi_id.startsWith(`PI ${activeDim}`));
-    const sMatch = (activeStatus === 'all' || (ind.latest_status && ind.latest_status.toLowerCase().includes(activeStatus.toLowerCase())));
-    return dMatch && sMatch;
+    const dimNum = ind.pi_id.match(/\d/)[0];
+    if (activeDim !== 'all' && dimNum !== activeDim) return false;
+    if (activeStatus !== 'all' && !(ind.latest_status||'').toLowerCase().includes(activeStatus)) return false;
+    return true;
   });
 
-  document.getElementById('filter-count').innerHTML = `Showing <strong>${filtered.length}</strong> of ${INDICATORS.length} indicators`;
+  // Update Counters
+  ['exceeds','meets','approaches','missing'].forEach(s => {
+    const label = s.charAt(0).toUpperCase() + s.slice(1);
+    const n = INDICATORS.filter(i => {
+      const dn = i.pi_id.match(/\d/)[0];
+      if (activeDim !== 'all' && dn !== activeDim) return false;
+      return (i.latest_status||'').toLowerCase().includes(s);
+    }).length;
+    const el = document.getElementById(`chip-count-${s}`);
+    if (el) el.textContent = `${label} ${n}`;
+  });
+
+  const countEl = document.getElementById('filter-count');
+  if (countEl) countEl.innerHTML = `Showing <strong>${filtered.length}</strong> of ${INDICATORS.length} indicators`;
+  
   const clearBtn = document.getElementById('clear-btn');
-  if (activeDim !== 'all' || activeStatus !== 'all') clearBtn.classList.add('visible');
-  else clearBtn.classList.remove('visible');
+  if (clearBtn) clearBtn.classList.toggle('visible', activeDim !== 'all' || activeStatus !== 'all');
 
   if (filtered.length === 0) {
     main.innerHTML = `<div class="empty-state">
-      <h3>No indicators found</h3>
-      <p>Try adjusting your dimension or status filters.</p>
-      <span class="empty-clear" onclick="clearFilters()">Clear filters</span>
+      <h3>No indicators match these filters</h3>
+      <p>Try removing a filter to see results.</p>
+      <span class="empty-clear" onclick="clearFilters()">Clear all filters</span>
     </div>`;
     return;
   }
 
-  const statusCounts = { exceeds: 0, meets: 0, approaches: 0, missing: 0 };
+  // 3. Group by Dimension
+  const dimMap = {};
   filtered.forEach(ind => {
-    if(!ind.latest_status) return;
-    const s = ind.latest_status.toLowerCase();
-    if(s.includes('exceeds')) statusCounts.exceeds++;
-    else if(s.includes('meets')) statusCounts.meets++;
-    else if(s.includes('approaches')) statusCounts.approaches++;
-    else if(s.includes('missing')) statusCounts.missing++;
+    const dn = ind.pi_id.match(/\d/)[0];
+    if (!dimMap[dn]) dimMap[dn] = [];
+    dimMap[dn].push(ind);
   });
 
-  ['exceeds','meets','approaches','missing'].forEach(s => {
-    if (activeStatus === 'all' || activeStatus === s) {
-      const card = document.createElement('div');
-      card.className = `summary-card ${s} ${activeStatus === s ? 'selected' : ''}`;
-      card.onclick = () => {
-        const btn = document.querySelector(`[data-status="${s}"]`);
-        setStatusFilter(activeStatus === s ? 'all' : s, activeStatus === s ? document.querySelector('[data-status="all"]') : btn);
-      };
-      card.innerHTML = `<div class="summary-num">${statusCounts[s]}</div>
-                        <div class="summary-label">${s.charAt(0).toUpperCase() + s.slice(1)} Minimum Req.</div>`;
-      grid.appendChild(card);
-    }
-  });
+  let html = '';
+  Object.keys(dimMap).sort().forEach(dn => {
+    const inds = dimMap[dn];
+    const meta = DIMENSIONS_META[dn] || { name: `Dimension ${dn}`, desc: '' };
 
-  const dims = {};
-  filtered.forEach(ind => {
-    if (!dims[ind.dimension]) dims[ind.dimension] = [];
-    dims[ind.dimension].push(ind);
-  });
-
-  Object.keys(dims).sort().forEach(dimName => {
-    const section = document.createElement('section');
-    section.className = 'dim-section';
-    
-    let sectionHtml = `<div class="dim-section-header">
-      <div>
-        <h3 class="dim-section-name">Dimension ${dimName}</h3>
-      </div>
-    </div>`;
-    
-    dims[dimName].forEach(ind => {
-      const meta = PI_META[ind.pi_id] || { title: ind.indicator_name, summary: "Details not provided.", criteria: [] };
-      const pillClass = ind.latest_status ? `pill-${getStatusClass(ind.latest_status)}` : 'pill-not-assessed';
-      const cleanId = ind.pi_id.replace(/\s+/g, '-').toLowerCase();
-
-      // Historical Status Dots Generation
-      let dotsHtml = `<div class="history-dots" title="Historical Performance: 2022 to 2025">`;
-      [ind.status_2022, ind.status_2023, ind.status_2024, ind.status_2025].forEach((st, idx) => {
-         dotsHtml += `<div class="h-dot ${getStatusClass(st)}" title="${2022 + idx}: ${st || 'Not Assessed'}"></div>`;
-      });
-      dotsHtml += `</div>`;
-
-      let criteriaHtml = '';
-      if (meta.criteria && meta.criteria.length > 0) {
-        const levels = { 'Approaches': [], 'Meets': [], 'Exceeds': [] };
-        meta.criteria.forEach(c => { if(levels[c.level]) levels[c.level].push(c); });
-        
-        criteriaHtml = `<div class="criteria-section">
-          <div class="criteria-title">Criteria Requirements</div>
-          <div class="criteria-levels">`;
-          
-        ['Approaches', 'Meets', 'Exceeds'].forEach(lvl => {
-          if (levels[lvl].length > 0) {
-            criteriaHtml += `<div class="criteria-level level-${lvl.toLowerCase()}">
-              <div class="criteria-level-header">${lvl} Minimum Requirements</div>
-              <ul class="criteria-list">
-                ${levels[lvl].map(c => `
-                  <li class="criteria-item">
-                    <div class="criteria-check ${c.met ? 'check-met' : 'check-unmet'}">${c.met ? '✓' : '—'}</div>
-                    <span>${c.text}</span>
-                  </li>
-                `).join('')}
-              </ul>
-            </div>`;
-          }
-        });
-        criteriaHtml += `</div></div>`;
-      }
-
-      sectionHtml += `<article class="indicator-detail" id="${cleanId}">
-        <div class="ind-header">
-          <div class="ind-header-left">
-            <div class="ind-pi-label">${ind.pi_id}</div>
-            <h4 class="ind-title">${meta.title}</h4>
-            <p class="ind-summary">${meta.summary}</p>
-          </div>
-          <div class="ind-header-right">
-            ${dotsHtml}
-            <span class="status-pill ${pillClass}">${ind.latest_status || 'Not Assessed'}</span>
-            <div class="ind-year">Assessed ${ind.last_assessed || 'N/A'}</div>
-          </div>
-        </div>
-        ${criteriaHtml}
-      </article>`;
+    const dimCounts = {};
+    inds.forEach(i => { 
+        const s = i.latest_status ? i.latest_status.trim() : "Not Assessed";
+        dimCounts[s] = (dimCounts[s]||0)+1; 
     });
+    const badgesHtml = Object.entries(dimCounts).map(([s,n]) =>
+      `<span class="dim-badge ${s.toLowerCase().split(' ')[0]}">${n} ${s}</span>`
+    ).join('');
 
-    section.innerHTML = sectionHtml;
-    main.appendChild(section);
+    html += `<div class="dim-section" data-dim="${dn}">
+      <div class="dim-section-header">
+        <div>
+          <div class="dim-section-name">${dn}. ${meta.name}</div>
+          ${meta.desc ? `<div class="dim-section-desc">${meta.desc}</div>` : ''}
+        </div>
+        <div class="dim-section-badges">${badgesHtml}</div>
+      </div>
+      ${inds.map(ind => renderCard(ind)).join('')}
+    </div>`;
+  });
+
+  main.innerHTML = html;
+}
+
+function renderCard(ind) {
+  const meta = PI_META[ind.pi_id] || { title: ind.indicator_name, summary: '', criteria: [] };
+  const latest = ind.latest_status || 'Not assessed';
+  const anchor = ind.pi_id.replace(/\s+/g, '-').toLowerCase();
+  const year = ind.last_assessed || '';
+
+  // Trend dots (Restored 2022-2025 layout)
+  const years = ['2022','2023','2024','2025'];
+  const statuses = [ind.status_2022, ind.status_2023, ind.status_2024, ind.status_2025];
+  const trendHtml = years.map((yr, i) => {
+    const s = statuses[i] || 'Not assessed';
+    return `<div class="trend-mini-item">
+      <div class="trend-dot-sm ${dotClass(s)}" title="${yr}: ${s}"></div>
+      <div class="trend-year-sm">${yr}</div>
+      <div class="trend-status-sm ${statusSClass(s)}">${statusAbbr(s)}</div>
+    </div>`;
+  }).join('');
+
+  // Criteria arrays
+  const metCriteria  = meta.criteria.filter(c => c.met);
+  const totalCriteria = meta.criteria.length;
+
+  // Achieved Bar (Restored from source 1)
+  let achievedHtml = '';
+  if (latest.toLowerCase().includes('missing') && metCriteria.length === 0) {
+    achievedHtml = `<div class="missing-banner">⚠ No criteria met. Action required to reach Approaches level.</div>`;
+  } else if (totalCriteria > 0) {
+    const dotsHtml = meta.criteria.map(c =>
+      c.met
+        ? `<div class="achieved-dot" title="${c.level}: met"></div>`
+        : `<div class="unachieved-dot" title="${c.level}: not met"></div>`
+    ).join('');
+    achievedHtml = `<div class="achieved-bar">
+      <span class="achieved-label">Criteria achieved (${year} assessment):</span>
+      <div class="achieved-dots">${dotsHtml}</div>
+      <div class="achieved-fraction"><span class="num">${metCriteria.length}</span><span class="denom"> / ${totalCriteria} criteria met</span></div>
+    </div>`;
+  }
+
+  // Criteria Table (Restored from source 1)
+  let criteriaHtml = '';
+  if (totalCriteria > 0) {
+    const levels = ['Approaches','Meets','Exceeds'];
+    const levelClass = { Approaches:'level-approaches', Meets:'level-meets', Exceeds:'level-exceeds' };
+    const criteriaColsHtml = levels.map(lvl => {
+      const items = meta.criteria.filter(c => c.level === lvl);
+      if (items.length === 0) return `<div class="criteria-level ${levelClass[lvl]}">
+        <div class="criteria-level-header">${lvl} Requirements</div>
+        <ul class="criteria-list"><li class="criteria-item"><span class="criteria-check check-unmet">○</span><span style="font-size:0.81rem;color:#9ca3af">Not separately assessed at this level.</span></li></ul>
+      </div>`;
+      return `<div class="criteria-level ${levelClass[lvl]}">
+        <div class="criteria-level-header">${lvl} Requirements</div>
+        <ul class="criteria-list">
+          ${items.map(c => `<li class="criteria-item">
+            <span class="criteria-check ${c.met ? 'check-met' : 'check-unmet'}">${c.met ? '✓' : '○'}</span>
+            <span class="criteria-item-text">${c.text}</span>
+          </li>`).join('')}
+        </ul>
+      </div>`;
+    }).join('');
+    
+    criteriaHtml = `<div class="criteria-section">
+      <div class="criteria-title">Scoring Criteria by Level</div>
+      <div class="criteria-levels">${criteriaColsHtml}</div>
+    </div>`;
+  }
+
+  return `<div class="indicator-detail" id="${anchor}">
+    <div class="ind-header">
+      <div class="ind-header-left">
+        <div class="ind-pi-label">${ind.pi_id}</div>
+        <div class="ind-title">${meta.title}</div>
+        <div class="ind-summary">${meta.summary}</div>
+      </div>
+      <div class="ind-header-right">
+        <span class="status-pill ${pillClass(latest)}">${latest} · ${year}</span>
+        <div class="trend-mini">${trendHtml}</div>
+      </div>
+    </div>
+    ${achievedHtml}
+    ${criteriaHtml}
+  </div>`;
+}
+
+function toggleStatusFromCard(status) {
+  const chip = document.querySelector(`[data-status="${status}"]`);
+  if (activeStatus === status) {
+    const allChip = document.querySelector('[data-status="all"]');
+    setStatusFilter('all', allChip);
+  } else {
+    setStatusFilter(status, chip);
+  }
+}
+
+function setDimFilter(val, btn) {
+  preserveScroll(() => {
+    activeDim = val;
+    document.querySelectorAll('[data-dim]').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    updateUrl(); render();
   });
 }
 
-function setDimFilter(dim, btn) {
-  activeDim = dim;
-  document.querySelectorAll('[data-dim]').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-  updateUrl(); render();
-}
-
-function setStatusFilter(status, btn) {
-  activeStatus = status;
-  document.querySelectorAll('[data-status]').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-  updateUrl(); render();
+function setStatusFilter(val, btn) {
+  preserveScroll(() => {
+    activeStatus = val;
+    document.querySelectorAll('[data-status]').forEach(b => {
+      b.classList.remove('active', 'exceeds', 'meets', 'approaches', 'missing');
+    });
+    btn.classList.add('active');
+    if (val !== 'all') btn.classList.add(val);
+    updateUrl(); render();
+  });
 }
 
 function clearFilters() {
-  activeDim = 'all'; activeStatus = 'all';
-  document.querySelectorAll('.chip').forEach(b => b.classList.remove('active'));
-  document.querySelector('[data-dim="all"]').classList.add('active');
-  document.querySelector('[data-status="all"]').classList.add('active');
-  updateUrl(); render();
+  preserveScroll(() => {
+    activeDim    = 'all';
+    activeStatus = 'all';
+    document.querySelectorAll('[data-dim]').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('[data-status]').forEach(b => {
+      b.classList.remove('active','exceeds','meets','approaches','missing');
+    });
+    document.querySelector('[data-dim="all"]').classList.add('active');
+    document.querySelector('[data-status="all"]').classList.add('active');
+    updateUrl(); render();
+  });
 }
 
 function readUrlParams() {
@@ -596,7 +758,6 @@ function readUrlParams() {
     const btn = document.querySelector(`[data-status="${status}"]`);
     if (btn) setStatusFilter(status, btn);
   }
-  
   if (window.location.hash) {
     setTimeout(() => {
       const el = document.querySelector(window.location.hash);
@@ -613,7 +774,6 @@ function updateUrl() {
   history.replaceState(null, '', qs ? `?${qs}` : window.location.pathname);
 }
 
-// ── INIT ─────────────────────────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', () => {
   if (typeof Papa === 'undefined') {
     const s = document.createElement('script');
