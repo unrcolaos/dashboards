@@ -656,7 +656,6 @@
       <div class="legend-item"><div class="legend-dot" style="background:var(--meets-mid)"></div> Meets</div>
       <div class="legend-item"><div class="legend-dot" style="background:var(--approaches-mid)"></div> Approaches</div>
       <div class="legend-item"><div class="legend-dot" style="background:var(--missing-mid)"></div> Missing</div>
-      <div class="legend-item"><div class="legend-dot" style="background:var(--not-assessed-mid)"></div> Not assessed</div>
     </div>
   </div>
 
@@ -796,10 +795,10 @@ function buildYearlyBars() {
     { yr: '2023', key: 'status_2023' },
     { yr: '2022', key: 'status_2022' }
   ];
-  const order = ['Exceeds', 'Meets', 'Approaches', 'Missing', 'Not assessed'];
+  const order = ['Exceeds', 'Meets', 'Approaches', 'Missing'];
 
   container.innerHTML = years.map(({ yr, key }) => {
-    const counts = { Exceeds: 0, Meets: 0, Approaches: 0, Missing: 0, 'Not assessed': 0 };
+    const counts = { Exceeds: 0, Meets: 0, Approaches: 0, Missing: 0};
     INDICATORS.forEach(ind => {
       const s = ind[key];
       if (counts[s] !== undefined) counts[s]++;
