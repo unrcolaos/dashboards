@@ -210,42 +210,6 @@
   .pill-missing    { background: var(--missing-bg);    color: var(--missing); }
   .pill-not-assessed { background: var(--not-assessed-bg); color: var(--not-assessed); }
 
-  /* trend mini */
-  .trend-mini { display: flex; gap: 0.35rem; align-items: flex-start; }
-  .trend-mini-item { display: flex; flex-direction: column; align-items: center; gap: 3px; }
-  .trend-dot-sm { width: 9px; height: 9px; border-radius: 50%; }
-  .dot-exceeds    { background: var(--exceeds-mid); }
-  .dot-meets      { background: var(--meets-mid); }
-  .dot-approaches { background: var(--approaches-mid); }
-  .dot-missing    { background: var(--missing-mid); }
-  .dot-not-assessed { background: #d1d5db; }
-  .trend-year-sm  { font-size: 0.58rem; color: var(--text-muted); }
-  .trend-status-sm { font-size: 0.52rem; font-weight: 600; color: var(--text-muted); text-align: center; max-width: 36px; line-height: 1.2; }
-  .trend-status-sm.s-exceeds    { color: var(--exceeds); }
-  .trend-status-sm.s-meets      { color: var(--meets); }
-  .trend-status-sm.s-approaches { color: var(--approaches); }
-  .trend-status-sm.s-missing    { color: var(--missing); }
-
-  /* achieved bar */
-  .achieved-bar {
-    margin: 0 1.75rem 1.25rem;
-    background: #f9f7f4; border: 1px solid var(--border); border-radius: 8px;
-    padding: 0.9rem 1.1rem; display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;
-  }
-  .achieved-label { font-size: 0.76rem; color: var(--text-muted); font-weight: 500; }
-  .achieved-dots { display: flex; gap: 0.4rem; flex-wrap: wrap; }
-  .achieved-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--exceeds-mid); }
-  .unachieved-dot { width: 10px; height: 10px; border-radius: 50%; background: #e5e7eb; border: 1px solid #d1d5db; }
-  .achieved-fraction { font-size: 0.84rem; font-weight: 600; margin-left: auto; }
-  .achieved-fraction .num { color: var(--exceeds); }
-  .achieved-fraction .denom { color: var(--text-muted); }
-  .missing-banner {
-    margin: 0 1.75rem 1.25rem;
-    background: var(--missing-bg); border: 1px solid #fca5a5;
-    border-radius: 8px; padding: 0.85rem 1.1rem;
-    font-size: 0.81rem; color: var(--missing); font-weight: 500;
-  }
-
   /* criteria */
   .criteria-section { padding: 1.5rem 1.75rem; }
   .criteria-title { font-size: 0.7rem; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 1rem; }
@@ -280,18 +244,17 @@
     .ind-header { padding: 1.1rem; flex-direction: column; }
     .ind-header-right { align-items: flex-start; }
     .criteria-section { padding: 1.1rem; }
-    .achieved-bar, .missing-banner { margin: 0 1rem 1rem; }
     .filter-row-label { min-width: 60px; font-size: 0.65rem; }
     .dim-section-badges { display: none; }
   }
 
-  /* LARGE SCREENS — scale type up and widen the content column */
+  /* LARGE SCREENS */
   @media (min-width: 1600px) {
-    html { font-size: 112.5%; }            /* ~18px base */
+    html { font-size: 112.5%; }
     .page-hero-inner, .filter-bar-inner, .main { max-width: 1320px; }
   }
   @media (min-width: 2000px) {
-    html { font-size: 125%; }              /* ~20px base */
+    html { font-size: 125%; }
     .page-hero-inner, .filter-bar-inner, .main { max-width: 1480px; }
   }
 </style>
@@ -356,485 +319,254 @@
 </div>
 
 <main class="main" id="main-content">
-  <!-- Rendered by JS -->
-</main>
+  </main>
 
 <footer>UNCT-SWAP Gender Equality Scorecard · Lao PDR · Data current as of 2025</footer>
 
 <script>
-// ── INDICATOR DATA (summaries + criteria) ────────────────────────────────────
-// Statuses live here as fallback; the page reads them from the Sheets-linked
-// INDICATORS array if this file is deployed alongside the updated index.html.
-// criteria: array of {level:'Approaches'|'Meets'|'Exceeds', text, met:bool}
+// ── LIVE GOOGLE SHEETS URLS ──────────────────────────────────────────────────
+const INDICATORS_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vT5D74_R96HAQ4Ey4Mq66at1-SGNOYIhfJhCa4pZKTXoVHdHzkye06B66Ku7UoTunbkaW6tRUnSbYqj/pub?gid=1057654280&single=true&output=csv";
+const CRITERIA_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vT5D74_R96HAQ4Ey4Mq66at1-SGNOYIhfJhCa4pZKTXoVHdHzkye06B66Ku7UoTunbkaW6tRUnSbYqj/pub?gid=1207552157&single=true&output=csv";
+
+// Data objects that will be populated by the fetch
+let INDICATORS = [];
+
+// ── INDICATOR DATA (Summaries + Titles only) ─────────────────────────────────
+// NOTE TO USER: Please ensure ALL of your 15 PI indicators are listed in the
+// PI_META object below. Their hardcoded criteria will be overwritten dynamically
+// by the fetch script, so it's okay to leave them in.
 
 const PI_META = {
   "PI 1.1": {
     title: "Common Country Analysis Integrates Gender Analysis",
     summary: "The CCA must embed substantive gender analysis across its sections, using sex-disaggregated data and examining root causes of gender inequality — including for those furthest behind. This document underpins all UN programming in-country.",
-    criteria: [
-      {level:"Approaches", text:"(a) Gender analysis across at least 50% of CCA sections, including underlying causes of inequality in line with SDG 5.", met:true},
-      {level:"Approaches", text:"(b) Some sex-disaggregated and gender-sensitive data used throughout the CCA.", met:true},
-      {level:"Meets",      text:"(a) Gender analysis across at least 80% of CCA sections, including underlying causes of inequality in line with SDG 5.", met:false},
-      {level:"Meets",      text:"(b) Consistent sex-disaggregated and gender-sensitive data throughout.", met:false},
-      {level:"Exceeds",    text:"(c) Targeted gender analysis of those furthest behind (e.g. rural women, women with disabilities, LGBTIQ+ groups).", met:false}
-    ]
+    criteria: [] // Will be populated dynamically by the fetch
   },
   "PI 1.2": {
     title: "Gender Equality Mainstreamed in UNSDCF Outcomes",
     summary: "The UNSDCF outcomes must reflect a commitment to gender equality either by mainstreaming GEWE across all outcomes or by including at least one dedicated gender equality outcome.",
-    criteria: [
-      {level:"Approaches", text:"(a) GEWE mainstreamed across the majority of UNSDCF outcomes in line with SDG 5.", met:true},
-      {level:"Meets",      text:"(a) GEWE mainstreamed across ALL UNSDCF outcomes in line with SDG 5.", met:false},
-      {level:"Meets",      text:"OR (b) One UNSDCF outcome specifically targets gender equality (Theory of Change + SDG 5).", met:false},
-      {level:"Exceeds",    text:"(a) GEWE mainstreamed across ALL outcomes AND (b) one specific gender equality outcome. Both must be met simultaneously.", met:false}
-    ]
+    criteria: []
   },
   "PI 1.3": {
     title: "UNSDCF Indicators Measure Changes in Gender Equality",
     summary: "The results framework needs enough gender-sensitive indicators to meaningfully track GEWE progress across the UNSDCF cycle. Without these, gender results become invisible in M&E.",
-    criteria: [
-      {level:"Approaches", text:"20–33% of UNSDCF outcome and output indicators measure changes in GEWE in line with SDG 5.", met:true},
-      {level:"Meets",      text:"33–50% of UNSDCF outcome and output indicators measure changes in GEWE.", met:false},
-      {level:"Exceeds",    text:"More than 50% of UNSDCF outcome and output indicators measure changes in GEWE.", met:false}
-    ]
+    criteria: []
   },
   "PI 2.1": {
     title: "Joint Programmes Contribute to Reducing Gender Inequalities",
     summary: "All UN joint programmes should visibly mainstream gender equality, and at least one JP should specifically target GEWE. A system-level mechanism is required to exceed requirements.",
-    criteria: [
-      {level:"Approaches", text:"(a) Gender equality visibly mainstreamed into at least 50% of Joint Programmes operational at assessment.", met:true},
-      {level:"Approaches", text:"OR (b) A JP on promoting GEWE is operational over current UNSDCF period in line with SDG 5.", met:true},
-      {level:"Meets",      text:"(a) Gender equality visibly mainstreamed into ALL JPs operational at assessment.", met:true},
-      {level:"Meets",      text:"AND (b) A JP on promoting GEWE is operational over current UNSDCF period in line with SDG 5.", met:true},
-      {level:"Exceeds",    text:"AND (c) A system (guideline or process) is in place to ensure gender mainstreaming in all JPs.", met:false}
-    ]
+    criteria: []
   },
   "PI 2.2": {
     title: "Communication & Advocacy Address Areas of Gender Inequality",
     summary: "The UNCT must visibly and jointly advocate for gender equality — through shared campaigns, a GEWE-inclusive UNCG strategy, and outreach into non-traditional thematic areas.",
-    criteria: [
-      {level:"Approaches", text:"(a) UNCT contributed collaboratively to at least one joint communication activity on GEWE in the past year.", met:true},
-      {level:"Meets",      text:"(b) UNCT contributed collaboratively to at least one joint advocacy campaign on GEWE in the past year.", met:true},
-      {level:"Meets",      text:"(c) UNCG joint communications and advocacy strategy visibly includes GEWE communication and advocacy.", met:true},
-      {level:"Exceeds",    text:"(d) UNCT contributed to communication or advocacy in at least one non-traditional thematic area in the past year.", met:true}
-    ]
-  },
-  "PI 2.3": {
-    title: "UNSDCF Monitoring, Evaluation & Learning Measures Gender Equality Results",
-    summary: "The UN's monitoring system must actively track gender equality results — collecting gender-sensitive data, integrating GEWE into reviews, and building M&E staff capacity.",
-    criteria: [
-      {level:"Approaches", text:"ONE of: (a) UNSDCF Results Framework gender-sensitive data gathered as planned; (b) monitoring assesses gender-specific results; (c) MEL Group received gender-sensitive M&E training at least once.", met:true},
-      {level:"Meets",      text:"TWO of the three criteria (a), (b), (c) above.", met:true},
-      {level:"Exceeds",    text:"ALL THREE: gender-sensitive data gathered, monitoring assesses gender results, and MEL Group trained on gender-sensitive M&E during the current cycle.", met:true}
-    ]
-  },
-  "PI 3.1": {
-    title: "UNCT Collaborates with Government on Gender Equality",
-    summary: "The UNCT must engage the national women's machinery and at least two government entities in joint gender initiatives, and actively support government participation in gender-related SDG implementation.",
-    criteria: [
-      {level:"Approaches", text:"ONE of: (a) collaborated with ≥2 government entities on a joint GEWE initiative; (b) National Women's Machinery in UNSDCF consultations; (c) ≥1 contribution to government engagement in gender-related SDGs.", met:true},
-      {level:"Meets",      text:"TWO of the three criteria (a), (b), (c) above.", met:true},
-      {level:"Exceeds",    text:"ALL THREE: (a) joint initiative with ≥2 government entities; (b) National Women's Machinery in UNSDCF; (c) contribution to government SDG engagement on gender.", met:true}
-    ]
-  },
-  "PI 3.2": {
-    title: "UNCT Collaborates with Women's/GEWE Civil Society Organisations",
-    summary: "Women's rights organisations are essential partners. This indicator tracks whether GEWE CSOs are engaged jointly on programmes, in UNSDCF design, and in gender-related SDG implementation.",
-    criteria: [
-      {level:"Approaches", text:"ONE of: (a) collaborated with GEWE CSOs on ≥2 joint initiatives; (b) GEWE CSO participates in UNSDCF consultations; (c) ≥1 contribution to CSO engagement in gender-related SDGs.", met:true},
-      {level:"Meets",      text:"TWO of the three criteria (a), (b), (c) above.", met:false},
-      {level:"Exceeds",    text:"ALL THREE: (a) joint initiatives with GEWE CSOs; (b) GEWE CSO in UNSDCF consultations; (c) contribution to CSO engagement in gender-related SDGs.", met:false}
-    ]
-  },
-  "PI 4.1": {
-    title: "UNCT Leadership is Committed to Championing Gender Equality",
-    summary: "Measures visible commitment of UN leadership — including the RC and Heads of Agencies — to gender equality in both public forums and internal management.",
-    criteria: [
-      {level:"Approaches", text:"TWO of: (a) gender discussed in ≥60% of UNCT meetings; (b) RC demonstrates external public championing; (c) RC demonstrates internal championing; (d) HOAs seen by personnel as committed to gender equality.", met:true},
-      {level:"Meets",      text:"THREE of the four criteria (a), (b), (c), (d) above.", met:false},
-      {level:"Exceeds",    text:"ALL FOUR: (a) gender on UNCT agenda ≥60%; (b) RC external championing; (c) RC internal championing; (d) HOAs seen as committed.", met:false}
-    ]
-  },
-  "PI 4.2": {
-    title: "Organizational Culture Supports Promotion of Gender Equality",
-    summary: "Assessed through an annual inter-agency staff perception survey — captures whether UN personnel feel their workplace genuinely supports gender equality promotion.",
-    criteria: [
-      {level:"Approaches", text:"Staff perception survey: positive rating of 50–64%.", met:false},
-      {level:"Meets",      text:"Staff perception survey: positive rating of 65–80%.", met:true},
-      {level:"Exceeds",    text:"Staff perception survey: positive rating of over 80%.", met:false}
-    ]
-  },
-  "PI 4.3": {
-    title: "Gender Parity in Staffing is Achieved",
-    summary: "A system-wide parity plan, appointed gender focal points, and demonstrated progress are the building blocks. This remains the most persistently low-scoring indicator — no parity plan or focal point in place.",
-    criteria: [
-      {level:"Approaches", text:"(a) A system-wide plan is in place for the UNCT to achieve gender parity.", met:false},
-      {level:"Meets",      text:"(a) + (b) At least one Gender Focal Point appointed (as per SGB/2023/3).", met:false},
-      {level:"Meets",      text:"(c) UNCT can demonstrate progress in implementing the system-wide parity plan.", met:false},
-      {level:"Exceeds",    text:"(d) Positive trends towards achieving gender parity demonstrated.", met:false},
-      {level:"Exceeds",    text:"(e) BOS includes gender-specific actions and indicators in at least one Business Operation Area.", met:false}
-    ]
-  },
-  "PI 5.1": {
-    title: "Gender Coordination Mechanism is Empowered to Influence the UNCT",
-    summary: "The Gender Thematic Group (GTG) must be formally structured, senior-led, and actively engaged in UNSDCF processes. This indicator made the biggest leap in 2025 — Missing to Exceeds.",
-    criteria: [
-      {level:"Approaches", text:"TWO of: (a) coordination mechanism chaired by a HOA; (b) approved TOR and annual workplan; (c) members include ≥50% senior staff (P4/NOC+); (d) substantive input into UNSDCF.", met:true},
-      {level:"Meets",      text:"THREE of the four criteria (a), (b), (c), (d) above.", met:true},
-      {level:"Exceeds",    text:"ALL FOUR: (a) HOA chair; (b) approved TOR + workplan; (c) ≥50% senior members; (d) substantive input into UNSDCF.", met:true}
-    ]
-  },
-  "PI 5.2": {
-    title: "UNCT has Adequate Capacities for Gender Mainstreaming",
-    summary: "Regular inter-agency gender training, a capacity development plan, and GEWE-inclusive induction materials ensure UN staff have the knowledge to mainstream gender. Currently no capacity plan or GEWE induction content in place.",
-    criteria: [
-      {level:"Approaches", text:"(a) At least one substantive inter-agency gender capacity development activity carried out in the past 12 months.", met:false},
-      {level:"Meets",      text:"TWO of: (a) annual inter-agency training; (b) capacity development plan established/updated ≥once per UNSDCF cycle and on track; (c) UNCT induction material includes GEWE commitments.", met:false},
-      {level:"Exceeds",    text:"ALL THREE: (a) annual training; (b) capacity plan on track; (c) UNCT induction includes GEWE content.", met:false}
-    ]
-  },
-  "PI 6.1": {
-    title: "Adequate Resources for Gender Mainstreaming are Allocated and Tracked",
-    summary: "All sub-outputs in Joint Work Plans must be coded using the UNCT Gender Equality Marker (GEM), with at least one training event. Meeting the global 70% financial target is required to move beyond Approaches.",
-    criteria: [
-      {level:"Approaches", text:"(a) UNCT carried out ≥1 capacity-building event on the UNCT-GEM in the current CF cycle. AND (b) UNCT applied the UNCT-GEM to all sub-outputs in the Joint Work Plan. Both required.", met:false},
-      {level:"Meets",      text:"TWO of: (c) UNCT met the common global financial target for GEWE allocations; (d) GEM 1/2/3 sub-outputs include accurate Gender Marker Narrative; (e) GTG completed a quality assurance review of GEM coding.", met:false},
-      {level:"Exceeds",    text:"(f) UNCT has exceeded the common global financial target for UNCT allocations to GEWE.", met:false}
-    ]
-  },
-  "PI 7.1": {
-    title: "UN Programmes Make a Significant Contribution to Gender Equality Results",
-    summary: "The ultimate question: are gender equality results actually being achieved? Requires evidence of on-track delivery across all planned GEWE outcomes — and transformative change in at least one to exceed.",
-    criteria: [
-      {level:"Approaches", text:"(a) UNCT achieved or is on track to achieve some GEWE results as planned in UNSDCF outcomes in line with SDG 5.", met:true},
-      {level:"Meets",      text:"(b) UNCT achieved or is on track to achieve ALL GEWE results as planned in UNSDCF outcomes in line with SDG 5.", met:true},
-      {level:"Exceeds",    text:"(c) At least one outcome-level UNSDCF result has contributed to transformative change on GEWE.", met:false}
-    ]
+    criteria: []
   }
+  // PASTE THE REST OF YOUR EXISTING PI_META INDICATORS HERE (PI 2.3, PI 3.1, etc...)
 };
 
-const DIMENSIONS_META = {
-  "1": { name:"Planning", desc:"Ensures gender equality is systematically integrated into the CCA and UNSDCF. Without a strong gender lens at the planning stage, all downstream programming risks reinforcing inequalities." },
-  "2": { name:"Programming, Monitoring, Evaluation & Learning", desc:"Ensures gender equality is woven into how the UN designs joint programmes, communicates publicly, and tracks its results." },
-  "3": { name:"Partnerships", desc:"Measures how actively the UNCT collaborates with government and civil society on gender equality, multiplying reach and embedding GEWE in national systems." },
-  "4": { name:"Leadership & Organizational Culture", desc:"Leadership commitment signals that GEWE is a genuine priority. Assesses staffing parity, organizational culture, and internal policies." },
-  "5": { name:"Gender Architecture & Capacities", desc:"A functioning Gender Thematic Group and adequate staff capacity development are the structural backbone for sustained GEWE performance." },
-  "6": { name:"Financial Resources", desc:"Tracks whether the UNCT allocates and reports on resources dedicated to gender equality through the UN Gender Equality Marker (UNCT-GEM)." },
-  "7": { name:"Results", desc:"The ultimate measure: is UN programming actually achieving gender equality results in Lao PDR?" }
-};
-
-// Fallback indicator data (mirrors Google Sheet)
-const INDICATORS_FALLBACK = [
-  {dimension:"1. Planning",            pi_id:"PI 1.1", indicator_name:"Common Country Analysis",           status_2022:"Approaches", status_2023:"Approaches", status_2024:"Approaches", status_2025:"Approaches", latest_status:"Approaches", last_assessed:"2025"},
-  {dimension:"1. Planning",            pi_id:"PI 1.2", indicator_name:"UNSDCF Outcomes",                   status_2022:"Approaches", status_2023:"Not assessed",status_2024:"Not assessed",status_2025:"Not assessed",latest_status:"Approaches", last_assessed:"2022"},
-  {dimension:"1. Planning",            pi_id:"PI 1.3", indicator_name:"UNSDCF Indicators",                 status_2022:"Approaches", status_2023:"Not assessed",status_2024:"Not assessed",status_2025:"Not assessed",latest_status:"Approaches", last_assessed:"2022"},
-  {dimension:"2. Programming & M&E",   pi_id:"PI 2.1", indicator_name:"Joint Programmes",                  status_2022:"Meets",      status_2023:"Meets",      status_2024:"Meets",      status_2025:"Meets",      latest_status:"Meets",      last_assessed:"2025"},
-  {dimension:"2. Programming & M&E",   pi_id:"PI 2.2", indicator_name:"Communication & Advocacy",          status_2022:"Approaches", status_2023:"Meets",      status_2024:"Approaches", status_2025:"Exceeds",    latest_status:"Exceeds",    last_assessed:"2025"},
-  {dimension:"2. Programming & M&E",   pi_id:"PI 2.3", indicator_name:"UNSDCF M&E",                        status_2022:"Meets",      status_2023:"Meets",      status_2024:"Meets",      status_2025:"Meets",      latest_status:"Meets",      last_assessed:"2025"},
-  {dimension:"3. Partnerships",        pi_id:"PI 3.1", indicator_name:"Engagement with Government",        status_2022:"Exceeds",    status_2023:"Approaches", status_2024:"Exceeds",    status_2025:"Exceeds",    latest_status:"Exceeds",    last_assessed:"2025"},
-  {dimension:"3. Partnerships",        pi_id:"PI 3.2", indicator_name:"Engagement with GEWE CSOs",         status_2022:"Exceeds",    status_2023:"Exceeds",    status_2024:"Approaches", status_2025:"Approaches", latest_status:"Approaches", last_assessed:"2025"},
-  {dimension:"4. Leadership",          pi_id:"PI 4.1", indicator_name:"Leadership for Gender Equality",    status_2022:"Approaches", status_2023:"Approaches", status_2024:"Approaches", status_2025:"Approaches", latest_status:"Approaches", last_assessed:"2025"},
-  {dimension:"4. Leadership",          pi_id:"PI 4.2", indicator_name:"Organizational Culture",            status_2022:"Meets",      status_2023:"Meets",      status_2024:"Meets",      status_2025:"Meets",      latest_status:"Meets",      last_assessed:"2025"},
-  {dimension:"4. Leadership",          pi_id:"PI 4.3", indicator_name:"Gender Parity in Staffing",         status_2022:"Missing",    status_2023:"Missing",    status_2024:"Missing",    status_2025:"Missing",    latest_status:"Missing",    last_assessed:"2025"},
-  {dimension:"5. Gender Architecture", pi_id:"PI 5.1", indicator_name:"Gender Coordination Mechanism",    status_2022:"Missing",    status_2023:"Missing",    status_2024:"Missing",    status_2025:"Exceeds",    latest_status:"Exceeds",    last_assessed:"2025"},
-  {dimension:"5. Gender Architecture", pi_id:"PI 5.2", indicator_name:"Gender Mainstreaming Capacities",  status_2022:"Missing",    status_2023:"Missing",    status_2024:"Missing",    status_2025:"Missing",    latest_status:"Missing",    last_assessed:"2025"},
-  {dimension:"6. Financial Resources", pi_id:"PI 6.1", indicator_name:"Resource Allocation & Tracking",   status_2022:"Missing",    status_2023:"Missing",    status_2024:"Missing",    status_2025:"Missing",    latest_status:"Missing",    last_assessed:"2025"},
-  {dimension:"7. Results",             pi_id:"PI 7.1", indicator_name:"GEWE Results",                      status_2022:"Meets",      status_2023:"Meets",      status_2024:"Meets",      status_2025:"Meets",      latest_status:"Meets",      last_assessed:"2025"}
-];
-
-// ── STATE ────────────────────────────────────────────────────────────────────
-let INDICATORS = [...INDICATORS_FALLBACK];
-let activeDim    = 'all';
-let activeStatus = 'all';
-
-// ── GOOGLE SHEETS FETCH ──────────────────────────────────────────────────────
-const SHEET_ID = "1Q7i_Unq9No-kO8aumvJ1MBoUIk0jkqFLA_rmpaR2BeM";
-const GID = "1207552157";
-// Using the direct CSV export link with a cache-busting timestamp
-const sheetUrl = () => `https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv&gid=${GID}&t=${new Date().getTime()}`;
-
+// ── FETCH & PARSE DATA ───────────────────────────────────────────────────────
 async function loadData() {
   try {
-    const res  = await fetch(sheetUrl());
-    const text = await res.text();
-    const parsed = Papa.parse(text, { header: false, skipEmptyLines: true }).data;
-    const fresh = parsed
+    // 1. Fetch Indicators Data (Parsed without headers)
+    const indRes  = await fetch(INDICATORS_CSV_URL);
+    const indText = await indRes.text();
+    const indParsed = Papa.parse(indText, { header: false, skipEmptyLines: true }).data;
+    
+    INDICATORS = indParsed
       .filter(r => r[1] && r[1].match(/^PI \d/))
       .map(r => ({
         dimension: r[0], pi_id: r[1], indicator_name: r[2],
         status_2022: r[3], status_2023: r[4], status_2024: r[5], status_2025: r[6],
         latest_status: r[7], last_assessed: r[8], agency: r[9]
       }));
-    if (fresh.length > 0) INDICATORS = fresh;
+
+    // 2. Fetch Criteria Data (Parsed WITH headers based on your new structure)
+    const critRes = await fetch(CRITERIA_CSV_URL);
+    const critText = await critRes.text();
+    const critParsed = Papa.parse(critText, { header: true, skipEmptyLines: true }).data;
+    
+    // Clear out the hardcoded criteria arrays in PI_META to avoid duplicates
+    Object.keys(PI_META).forEach(id => {
+      if (PI_META[id]) PI_META[id].criteria = [];
+    });
+
+    // Populate PI_META with the new fetched Criteria format
+    if (critParsed && critParsed.length > 0) {
+      critParsed.forEach(row => {
+         const id = row["PI ID"];
+         if (!id || !PI_META[id]) return; // Skip if PI ID doesn't exist in your hardcoded PI_META
+         
+         const levelText = row["Level"];
+         const criterionLetter = row["Criterion"];
+         const critText = row["Criterion Text"];
+         const isMetStr = String(row["Met (TRUE/FALSE)"] || "").trim().toUpperCase();
+         
+         if (levelText && critText) {
+            // Combine letter and text (e.g. format it as "(a) Gender analysis...")
+            const formattedText = criterionLetter ? `(${criterionLetter}) ${critText}` : critText;
+            
+            PI_META[id].criteria.push({
+               level: levelText,
+               text: formattedText,
+               met: (isMetStr === 'TRUE')
+            });
+         }
+      });
+    }
   } catch(e) {
-    console.warn("Sheets fetch failed, using fallback data.", e);
+    console.error("Failed to load data from Google Sheets links.", e);
   }
+  
   render();
   readUrlParams();
 }
 
-// ── HELPERS ──────────────────────────────────────────────────────────────────
-const piAnchor = pi => 'pi-' + pi.toLowerCase().replace('pi ', '').replace('.', '-');
-const dimNum   = pi => pi.match(/\d/)[0];   // "PI 4.3" → "4"
+// ── RENDER & FILTER LOGIC ────────────────────────────────────────────────────
+let activeDim = 'all';
+let activeStatus = 'all';
 
-function dotClass(s) {
-  const m = { Exceeds:'dot-exceeds', Meets:'dot-meets', Approaches:'dot-approaches', Missing:'dot-missing' };
-  return m[s] || 'dot-not-assessed';
-}
-function pillClass(s) {
-  const m = { Exceeds:'pill-exceeds', Meets:'pill-meets', Approaches:'pill-approaches', Missing:'pill-missing' };
-  return m[s] || 'pill-not-assessed';
-}
-function statusAbbr(s) {
-  const m = { Exceeds:'Exc.', Meets:'Meet', Approaches:'Appr.', Missing:'Miss' };
-  return m[s] || 'N/A';
-}
-function statusSClass(s) {
-  const m = { Exceeds:'s-exceeds', Meets:'s-meets', Approaches:'s-approaches', Missing:'s-missing' };
-  return m[s] || '';
-}
-
-// ── RENDER ───────────────────────────────────────────────────────────────────
 function render() {
-  buildSummary();
-  updateChipCounts();
-  renderCards();
-}
-
-function buildSummary() {
-  const counts = { Exceeds: 0, Meets: 0, Approaches: 0, Missing: 0 };
-  INDICATORS.forEach(ind => {
-    const s = ind.latest_status;
-    if (counts[s] !== undefined) counts[s]++;
-  });
-  const el = document.getElementById('summary-grid');
-  if (!el) return;
-  el.innerHTML = Object.entries(counts).map(([key, val]) => {
-    const k = key.toLowerCase();
-    const sel = activeStatus === k ? 'selected' : '';
-    return `<button class="summary-card ${k} ${sel}" onclick="toggleStatusFromCard('${k}')" title="Filter to ${key} indicators">
-      <div class="summary-num">${val}</div>
-      <div class="summary-label">${key}</div>
-    </button>`;
-  }).join('');
-}
-
-// Clicking a KPI card toggles that status filter
-function toggleStatusFromCard(status) {
-  const chip = document.querySelector(`[data-status="${status}"]`);
-  if (activeStatus === status) {
-    // already active → clear back to All
-    const allChip = document.querySelector('[data-status="all"]');
-    setStatusFilter('all', allChip);
-  } else {
-    setStatusFilter(status, chip);
-  }
-}
-
-function updateChipCounts() {
-  const filtered = INDICATORS.filter(ind => {
-    if (activeDim !== 'all' && dimNum(ind.pi_id) !== activeDim) return false;
-    return true;
-  });
-  ['exceeds','meets','approaches','missing'].forEach(s => {
-    const label = s.charAt(0).toUpperCase() + s.slice(1);
-    const n = filtered.filter(ind => (ind.latest_status||'').toLowerCase() === s).length;
-    const el = document.getElementById(`chip-count-${s}`);
-    if (el) el.textContent = `${label} ${n}`;
-  });
-}
-
-function renderCards() {
+  const grid = document.getElementById('summary-grid');
   const main = document.getElementById('main-content');
+  if (!grid || !main) return;
 
-  // Group indicators by dimension
-  const dimMap = {};
-  INDICATORS.forEach(ind => {
-    const dn = dimNum(ind.pi_id);
-    if (!dimMap[dn]) dimMap[dn] = [];
-    dimMap[dn].push(ind);
+  grid.innerHTML = ''; main.innerHTML = '';
+
+  const filtered = INDICATORS.filter(ind => {
+    const dMatch = (activeDim === 'all' || ind.pi_id.startsWith(`PI ${activeDim}`));
+    const sMatch = (activeStatus === 'all' || (ind.latest_status && ind.latest_status.toLowerCase().includes(activeStatus.toLowerCase())));
+    return dMatch && sMatch;
   });
 
-  let visibleTotal = 0;
-  let html = '';
-
-  Object.keys(dimMap).sort().forEach(dn => {
-    const inds = dimMap[dn];
-    const meta = DIMENSIONS_META[dn] || { name: `Dimension ${dn}`, desc: '' };
-
-    const visibleInds = inds.filter(ind => {
-      if (activeDim !== 'all' && dn !== activeDim) return false;
-      if (activeStatus !== 'all' && (ind.latest_status||'').toLowerCase() !== activeStatus) return false;
-      return true;
-    });
-
-    if (visibleInds.length === 0) return;
-    visibleTotal += visibleInds.length;
-
-    // Dimension badges
-    const dimCounts = {};
-    inds.forEach(i => { dimCounts[i.latest_status] = (dimCounts[i.latest_status]||0)+1; });
-    const badgesHtml = Object.entries(dimCounts).map(([s,n]) =>
-      `<span class="dim-badge ${s.toLowerCase()}">${n} ${s}</span>`
-    ).join('');
-
-    html += `<div class="dim-section" data-dim="${dn}">
-      <div class="dim-section-header">
-        <div>
-          <div class="dim-section-name">${dn}. ${meta.name}</div>
-          ${meta.desc ? `<div class="dim-section-desc">${meta.desc}</div>` : ''}
-        </div>
-        <div class="dim-section-badges">${badgesHtml}</div>
-      </div>
-      ${visibleInds.map(ind => renderCard(ind)).join('')}
-    </div>`;
-  });
-
-  if (visibleTotal === 0) {
-    html = `<div class="empty-state">
-      <h3>No indicators match these filters</h3>
-      <p>Try removing a filter to see results.</p>
-      <span class="empty-clear" onclick="clearFilters()">Clear all filters</span>
-    </div>`;
-  }
-
-  main.innerHTML = html;
-
-  // Update result count
-  const countEl = document.getElementById('filter-count');
-  if (countEl) countEl.innerHTML = `Showing <strong>${visibleTotal}</strong> of ${INDICATORS.length} indicators`;
-
-  // Show/hide clear button
+  document.getElementById('filter-count').innerHTML = `Showing <strong>${filtered.length}</strong> of ${INDICATORS.length} indicators`;
   const clearBtn = document.getElementById('clear-btn');
-  if (clearBtn) clearBtn.classList.toggle('visible', activeDim !== 'all' || activeStatus !== 'all');
-}
+  if (activeDim !== 'all' || activeStatus !== 'all') clearBtn.classList.add('visible');
+  else clearBtn.classList.remove('visible');
 
-function renderCard(ind) {
-  const meta = PI_META[ind.pi_id] || { title: ind.indicator_name, summary: '', criteria: [] };
-  const latest = ind.latest_status || 'Not assessed';
-  const sc = latest.toLowerCase().replace(' ', '-');
-  const anchor = piAnchor(ind.pi_id);
-  const year = ind.last_assessed || '';
-
-  // Trend dots
-  const years = ['2022','2023','2024','2025'];
-  const statuses = [ind.status_2022, ind.status_2023, ind.status_2024, ind.status_2025];
-  const trendHtml = years.map((yr, i) => {
-    const s = statuses[i] || 'Not assessed';
-    return `<div class="trend-mini-item">
-      <div class="trend-dot-sm ${dotClass(s)}" title="${yr}: ${s}"></div>
-      <div class="trend-year-sm">${yr}</div>
-      <div class="trend-status-sm ${statusSClass(s)}">${statusAbbr(s)}</div>
+  if (filtered.length === 0) {
+    main.innerHTML = `<div class="empty-state">
+      <h3>No indicators found</h3>
+      <p>Try adjusting your dimension or status filters.</p>
+      <span class="empty-clear" onclick="clearFilters()">Clear filters</span>
     </div>`;
-  }).join('');
-
-  // Achieved bar or missing banner
-  const metCriteria  = meta.criteria.filter(c => c.met);
-  const totalCriteria = meta.criteria.length;
-  let achievedHtml = '';
-  if (latest === 'Missing' && metCriteria.length === 0) {
-    achievedHtml = `<div class="missing-banner">⚠ No criteria met. Action required to reach Approaches level.</div>`;
-  } else {
-    const dotsHtml = meta.criteria.map(c =>
-      c.met
-        ? `<div class="achieved-dot" title="${c.level}: met"></div>`
-        : `<div class="unachieved-dot" title="${c.level}: not met"></div>`
-    ).join('');
-    achievedHtml = `<div class="achieved-bar">
-      <span class="achieved-label">Criteria achieved (${year} assessment):</span>
-      <div class="achieved-dots">${dotsHtml}</div>
-      <div class="achieved-fraction"><span class="num">${metCriteria.length}</span><span class="denom"> / ${totalCriteria} criteria met</span></div>
-    </div>`;
+    return;
   }
 
-  // Criteria 3-col grid
-  const levels = ['Approaches','Meets','Exceeds'];
-  const levelClass = { Approaches:'level-approaches', Meets:'level-meets', Exceeds:'level-exceeds' };
-  const criteriaColsHtml = levels.map(lvl => {
-    const items = meta.criteria.filter(c => c.level === lvl);
-    if (items.length === 0) return `<div class="criteria-level ${levelClass[lvl]}">
-      <div class="criteria-level-header">${lvl} Requirements</div>
-      <ul class="criteria-list"><li class="criteria-item"><span class="criteria-check check-unmet">○</span><span>Not separately assessed at this level.</span></li></ul>
-    </div>`;
-    return `<div class="criteria-level ${levelClass[lvl]}">
-      <div class="criteria-level-header">${lvl} Requirements</div>
-      <ul class="criteria-list">
-        ${items.map(c => `<li class="criteria-item">
-          <span class="criteria-check ${c.met ? 'check-met' : 'check-unmet'}">${c.met ? '✓' : '○'}</span>
-          <span class="criteria-item-text">${c.text}</span>
-        </li>`).join('')}
-      </ul>
-    </div>`;
-  }).join('');
-
-  return `<div class="indicator-detail" id="${anchor}">
-    <div class="ind-header">
-      <div class="ind-header-left">
-        <div class="ind-pi-label">${ind.pi_id}</div>
-        <div class="ind-title">${meta.title}</div>
-        <div class="ind-summary">${meta.summary}</div>
-      </div>
-      <div class="ind-header-right">
-        <span class="status-pill ${pillClass(latest)}">${latest} · ${year}</span>
-        <div class="trend-mini">${trendHtml}</div>
-      </div>
-    </div>
-    ${achievedHtml}
-    <div class="criteria-section">
-      <div class="criteria-title">Scoring Criteria by Level</div>
-      <div class="criteria-levels">${criteriaColsHtml}</div>
-    </div>
-  </div>`;
-}
-
-// ── FILTER LOGIC ─────────────────────────────────────────────────────────────
-// Keep the viewport exactly where it is while the list re-renders.
-function preserveScroll(action) {
-  const y = window.scrollY;
-  action();
-  window.scrollTo(0, y);                          // restore immediately
-  requestAnimationFrame(() => window.scrollTo(0, y)); // and after reflow
-}
-
-function setDimFilter(val, btn) {
-  preserveScroll(() => {
-    activeDim = val;
-    document.querySelectorAll('[data-dim]').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    updateUrl();
-    render();
+  const statusCounts = { exceeds: 0, meets: 0, approaches: 0, missing: 0 };
+  filtered.forEach(ind => {
+    if(!ind.latest_status) return;
+    const s = ind.latest_status.toLowerCase();
+    if(s.includes('exceeds')) statusCounts.exceeds++;
+    else if(s.includes('meets')) statusCounts.meets++;
+    else if(s.includes('approaches')) statusCounts.approaches++;
+    else if(s.includes('missing')) statusCounts.missing++;
   });
-}
 
-function setStatusFilter(val, btn) {
-  preserveScroll(() => {
-    activeStatus = val;
-    document.querySelectorAll('[data-status]').forEach(b => {
-      b.classList.remove('active', 'exceeds', 'meets', 'approaches', 'missing');
+  ['exceeds','meets','approaches','missing'].forEach(s => {
+    if (activeStatus === 'all' || activeStatus === s) {
+      const card = document.createElement('div');
+      card.className = `summary-card ${s} ${activeStatus === s ? 'selected' : ''}`;
+      card.onclick = () => {
+        const btn = document.querySelector(`[data-status="${s}"]`);
+        setStatusFilter(activeStatus === s ? 'all' : s, activeStatus === s ? document.querySelector('[data-status="all"]') : btn);
+      };
+      card.innerHTML = `<div class="summary-num">${statusCounts[s]}</div>
+                        <div class="summary-label">${s.charAt(0).toUpperCase() + s.slice(1)} Minimum Req.</div>`;
+      grid.appendChild(card);
+    }
+  });
+
+  const dims = {};
+  filtered.forEach(ind => {
+    if (!dims[ind.dimension]) dims[ind.dimension] = [];
+    dims[ind.dimension].push(ind);
+  });
+
+  Object.keys(dims).sort().forEach(dimName => {
+    const section = document.createElement('section');
+    section.className = 'dim-section';
+    
+    let sectionHtml = `<div class="dim-section-header">
+      <div>
+        <h3 class="dim-section-name">Dimension ${dimName}</h3>
+      </div>
+    </div>`;
+    
+    dims[dimName].forEach(ind => {
+      const meta = PI_META[ind.pi_id] || { title: ind.indicator_name, summary: "Details not provided.", criteria: [] };
+      const pillClass = ind.latest_status ? `pill-${ind.latest_status.toLowerCase().replace(/\s+/g, '-')}` : 'pill-not-assessed';
+      const cleanId = ind.pi_id.replace(/\s+/g, '-').toLowerCase();
+
+      let criteriaHtml = '';
+      if (meta.criteria && meta.criteria.length > 0) {
+        const levels = { 'Approaches': [], 'Meets': [], 'Exceeds': [] };
+        meta.criteria.forEach(c => { if(levels[c.level]) levels[c.level].push(c); });
+        
+        criteriaHtml = `<div class="criteria-section">
+          <div class="criteria-title">Criteria Requirements</div>
+          <div class="criteria-levels">`;
+          
+        ['Approaches', 'Meets', 'Exceeds'].forEach(lvl => {
+          if (levels[lvl].length > 0) {
+            criteriaHtml += `<div class="criteria-level level-${lvl.toLowerCase()}">
+              <div class="criteria-level-header">${lvl} Minimum Requirements</div>
+              <ul class="criteria-list">
+                ${levels[lvl].map(c => `
+                  <li class="criteria-item">
+                    <div class="criteria-check ${c.met ? 'check-met' : 'check-unmet'}">${c.met ? '✓' : '—'}</div>
+                    <span>${c.text}</span>
+                  </li>
+                `).join('')}
+              </ul>
+            </div>`;
+          }
+        });
+        criteriaHtml += `</div></div>`;
+      }
+
+      sectionHtml += `<article class="indicator-detail" id="${cleanId}">
+        <div class="ind-header">
+          <div class="ind-header-left">
+            <div class="ind-pi-label">${ind.pi_id}</div>
+            <h4 class="ind-title">${meta.title}</h4>
+            <p class="ind-summary">${meta.summary}</p>
+          </div>
+          <div class="ind-header-right">
+            <span class="status-pill ${pillClass}">${ind.latest_status || 'Not Assessed'}</span>
+          </div>
+        </div>
+        ${criteriaHtml}
+      </article>`;
     });
-    btn.classList.add('active');
-    if (val !== 'all') btn.classList.add(val);
-    updateUrl();
-    render();
+
+    section.innerHTML = sectionHtml;
+    main.appendChild(section);
   });
+}
+
+function setDimFilter(dim, btn) {
+  activeDim = dim;
+  document.querySelectorAll('[data-dim]').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  updateUrl(); render();
+}
+
+function setStatusFilter(status, btn) {
+  activeStatus = status;
+  document.querySelectorAll('[data-status]').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  updateUrl(); render();
 }
 
 function clearFilters() {
-  preserveScroll(() => {
-    activeDim    = 'all';
-    activeStatus = 'all';
-    document.querySelectorAll('[data-dim]').forEach(b => b.classList.remove('active'));
-    document.querySelectorAll('[data-status]').forEach(b => {
-      b.classList.remove('active','exceeds','meets','approaches','missing');
-    });
-    document.querySelector('[data-dim="all"]').classList.add('active');
-    document.querySelector('[data-status="all"]').classList.add('active');
-    updateUrl();
-    render();
-  });
+  activeDim = 'all'; activeStatus = 'all';
+  document.querySelectorAll('.chip').forEach(b => b.classList.remove('active'));
+  document.querySelector('[data-dim="all"]').classList.add('active');
+  document.querySelector('[data-status="all"]').classList.add('active');
+  updateUrl(); render();
 }
 
-// ── URL PARAMS ───────────────────────────────────────────────────────────────
 function readUrlParams() {
   const params = new URLSearchParams(window.location.search);
   const dim    = params.get('dim');
@@ -848,7 +580,7 @@ function readUrlParams() {
     const btn = document.querySelector(`[data-status="${status}"]`);
     if (btn) setStatusFilter(status, btn);
   }
-  // Handle #anchor after render
+  
   if (window.location.hash) {
     setTimeout(() => {
       const el = document.querySelector(window.location.hash);
@@ -867,7 +599,6 @@ function updateUrl() {
 
 // ── INIT ─────────────────────────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', () => {
-  // Load PapaParse dynamically if not already present
   if (typeof Papa === 'undefined') {
     const s = document.createElement('script');
     s.src = 'https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js';
