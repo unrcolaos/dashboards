@@ -774,6 +774,16 @@
     .hero-buttons { flex-direction: column; align-items: stretch; }
     .year-bar-label { min-width: 40px; font-size: 0.78rem; }
   }
+
+  /* LARGE SCREENS — scale type up and widen the content column */
+  @media (min-width: 1600px) {
+    html { font-size: 112.5%; }            /* ~18px base */
+    .hero-inner, .main { max-width: 1320px; }
+  }
+  @media (min-width: 2000px) {
+    html { font-size: 125%; }              /* ~20px base */
+    .hero-inner, .main { max-width: 1480px; }
+  }
 </style>
 </head>
 <body>

@@ -284,6 +284,16 @@
     .filter-row-label { min-width: 60px; font-size: 0.65rem; }
     .dim-section-badges { display: none; }
   }
+
+  /* LARGE SCREENS — scale type up and widen the content column */
+  @media (min-width: 1600px) {
+    html { font-size: 112.5%; }            /* ~18px base */
+    .page-hero-inner, .filter-bar-inner, .main { max-width: 1320px; }
+  }
+  @media (min-width: 2000px) {
+    html { font-size: 125%; }              /* ~20px base */
+    .page-hero-inner, .filter-bar-inner, .main { max-width: 1480px; }
+  }
 </style>
 </head>
 <body>
