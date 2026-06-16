@@ -549,11 +549,13 @@ let activeStatus = 'all';
 
 // ── GOOGLE SHEETS FETCH ──────────────────────────────────────────────────────
 const SHEET_ID = "1Q7i_Unq9No-kO8aumvJ1MBoUIk0jkqFLA_rmpaR2BeM";
-const sheetUrl = tab => `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(tab)}`;
+const GID = "1207552157";
+// Using the direct CSV export link with a cache-busting timestamp
+const sheetUrl = () => `https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv&gid=${GID}&t=${new Date().getTime()}`;
 
 async function loadData() {
   try {
-    const res  = await fetch(sheetUrl('Indicators'));
+    const res  = await fetch(sheetUrl());
     const text = await res.text();
     const parsed = Papa.parse(text, { header: false, skipEmptyLines: true }).data;
     const fresh = parsed
