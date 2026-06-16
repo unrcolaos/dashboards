@@ -732,7 +732,10 @@
 
   /* ACTIVITIES TABLE */
   .activities-section { margin-top: 3.5rem; }
+  .activities-section td { vertical-align: top; }
   .act-type-pill {
+    display: inline-block;
+    white-space: nowrap;
     font-size: 0.65rem;
     font-weight: 600;
     text-transform: uppercase;
@@ -745,16 +748,23 @@
     font-size: 0.75rem;
     font-weight: 600;
     color: var(--meets);
-    display: flex;
+    display: inline-flex;
     align-items: center;
-    gap: 0.2rem;
+    gap: 0.3rem;
+    white-space: nowrap;
   }
   .act-completed::before {
     content: '';
     width: 6px; height: 6px;
     background: var(--meets);
     border-radius: 50%;
+    flex-shrink: 0;
   }
+  /* Multi-line / list rendering inside Description & Notes cells */
+  .cell-list { margin: 0; padding-left: 1.15rem; }
+  .cell-list li { margin-bottom: 0.25rem; }
+  .cell-list li:last-child { margin-bottom: 0; }
+  .cell-text { white-space: pre-line; }
 
   @media (max-width: 760px) {
     .site-header { padding: 0 1rem; }
@@ -796,10 +806,6 @@
     </p>
     <div class="summary-grid" id="summary-grid">
       </div>
-    <p class="kpi-emphasis">
-      <span class="kpi-emphasis-dot"></span>
-      <strong>Missing</strong> indicators need urgent attention — click the Missing card to see exactly which indicators require action.
-    </p>
   </div>
 </section>
 
@@ -822,13 +828,13 @@
       <table style="width:100%; border-collapse: collapse; text-align: left;">
         <thead>
           <tr style="border-bottom: 1px solid var(--border); font-size: 0.8rem; color: var(--text-muted);">
-            <th style="padding: 10px">Date</th>
-            <th style="padding: 10px">Indicator</th>
-            <th style="padding: 10px">Description</th>
-            <th style="padding: 10px">Type</th>
-            <th style="padding: 10px">Lead</th>
-            <th style="padding: 10px">Status</th>
-            <th style="padding: 10px">Notes</th>
+            <th style="padding: 10px; white-space: nowrap;">Date</th>
+            <th style="padding: 10px;">Indicator</th>
+            <th style="padding: 10px; width: 26%;">Description</th>
+            <th style="padding: 10px; white-space: nowrap;">Type</th>
+            <th style="padding: 10px;">Lead</th>
+            <th style="padding: 10px; white-space: nowrap;">Status</th>
+            <th style="padding: 10px; width: 20%;">Notes</th>
           </tr>
         </thead>
         <tbody id="act-tbody">
@@ -984,13 +990,45 @@ function buildActivities() {
     <tr style="border-bottom: 1px solid var(--border);">
       <td style="padding: 10px; font-weight:500;">${a.date}</td>
       <td style="padding: 10px;"><strong>${a.pi_id}</strong><br><span style="color:var(--text-muted);font-size:0.75rem">${a.indicator}</span></td>
-      <td style="padding: 10px; font-size:0.9rem;">${a.description}</td>
+      <td style="padding: 10px; font-size:0.9rem;">${formatCell(a.description)}</td>
       <td style="padding: 10px;"><span class="act-type-pill">${a.type}</span></td>
       <td style="padding: 10px; font-size:0.9rem;">${a.lead}</td>
       <td style="padding: 10px;"><span class="act-completed">${a.status}</span></td>
-      <td style="padding: 10px; color:var(--text-muted); font-size:0.85rem;">${a.notes}</td>
+      <td style="padding: 10px; color:var(--text-muted); font-size:0.85rem;">${formatCell(a.notes)}</td>
     </tr>
   `).join('');
+}
+
+// Turn a sheet cell that may contain manual line breaks / bullets / numbering
+// into proper HTML. Handles: all-numbered -> <ol>, all-bulleted -> <ul>,
+// otherwise preserves line breaks. Escapes HTML for safety.
+function formatCell(raw) {
+  if (raw === undefined || raw === null) return '';
+  const esc = s => String(s)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;');
+  const text = String(raw).trim();
+  if (!text) return '';
+
+  const lines = text.split(/\r\n|\r|\n/).map(l => l.trim()).filter(l => l.length);
+  if (lines.length <= 1) return esc(text);
+
+  const numRe = /^(\d+)[.):\-]\s+(.*)$/;
+  const bulRe = /^[-*•·–]\s+(.*)$/;
+
+  if (lines.every(l => numRe.test(l))) {
+    return '<ol class="cell-list">' +
+      lines.map(l => `<li>${esc(l.match(numRe)[2])}</li>`).join('') +
+      '</ol>';
+  }
+  if (lines.every(l => bulRe.test(l))) {
+    return '<ul class="cell-list">' +
+      lines.map(l => `<li>${esc(l.match(bulRe)[1])}</li>`).join('') +
+      '</ul>';
+  }
+  // Mixed or plain multi-line: preserve each line break
+  return lines.map(l => esc(l)).join('<br>');
 }
 
 // Start sequence on load
