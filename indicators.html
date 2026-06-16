@@ -46,6 +46,57 @@
   .page-hero h2 { font-family: 'DM Serif Display', serif; font-size: clamp(1.6rem, 3vw, 2.4rem); line-height: 1.1; margin-bottom: 0.5rem; }
   .page-hero-sub { color: #b0a89c; font-size: 0.9rem; }
 
+  /* KPI SUMMARY CARDS */
+  .summary-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1rem;
+    margin-top: 1.75rem;
+  }
+  .summary-card {
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 8px;
+    padding: 1.1rem 1.3rem;
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+    text-align: left;
+    width: 100%;
+    font-family: 'DM Sans', sans-serif;
+    transition: transform 0.15s, box-shadow 0.15s, border-color 0.15s;
+  }
+  .summary-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+  }
+  .summary-card.exceeds::before { background: var(--exceeds-mid); }
+  .summary-card.meets::before { background: var(--meets-mid); }
+  .summary-card.approaches::before { background: var(--approaches-mid); }
+  .summary-card.missing::before { background: var(--missing-mid); }
+  .summary-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.25);
+    border-color: rgba(255,255,255,0.22);
+  }
+  .summary-card.selected {
+    border-color: rgba(255,255,255,0.5);
+    background: rgba(255,255,255,0.12);
+  }
+  .summary-num {
+    font-family: 'DM Serif Display', serif;
+    font-size: 2.6rem;
+    line-height: 1;
+    margin-bottom: 0.2rem;
+  }
+  .summary-card.exceeds .summary-num { color: var(--exceeds-mid); }
+  .summary-card.meets .summary-num { color: var(--meets-mid); }
+  .summary-card.approaches .summary-num { color: var(--approaches-mid); }
+  .summary-card.missing .summary-num { color: var(--missing-mid); }
+  .summary-label { font-size: 0.8rem; color: #b0a89c; font-weight: 500; }
+
   /* ── STICKY FILTER BAR ── */
   .filter-bar-wrap {
     background: var(--surface); border-bottom: 1px solid var(--border);
@@ -209,6 +260,8 @@
   footer { text-align: center; padding: 2rem; font-size: 0.75rem; color: var(--text-muted); border-top: 1px solid var(--border); margin-top: 2rem; }
 
   @media (max-width: 700px) {
+    .summary-grid { grid-template-columns: repeat(2, 1fr); gap: 0.6rem; }
+    .summary-num { font-size: 2.1rem; }
     .criteria-levels { grid-template-columns: 1fr; }
     .filter-bar-inner { padding: 0.75rem 1rem; }
     .main { padding: 1.5rem 1rem 4rem; }
@@ -226,7 +279,7 @@
 <header class="site-header">
   <h1>UNCT-SWAP Gender Equality Scorecard</h1>
   <div class="header-right">
-    <a href="index.html" class="back-link">← Overview</a>
+    <a href="https://unanou17.github.io/RCOLaos/gender_scorecard_v2.html" class="back-link">← Overview</a>
     <span class="header-badge">Lao PDR</span>
   </div>
 </header>
@@ -235,7 +288,8 @@
   <div class="page-hero-inner">
     <div class="page-hero-label">Performance Indicators</div>
     <h2>All 15 Indicators</h2>
-    <p class="page-hero-sub">7 dimensions · assessed 2022–2025 · scroll or filter to explore</p>
+    <p class="page-hero-sub">7 dimensions · assessed 2022–2025 · click a card or use the filters below</p>
+    <div class="summary-grid" id="summary-grid"></div>
   </div>
 </section>
 
@@ -514,8 +568,40 @@ function statusSClass(s) {
 
 // ── RENDER ───────────────────────────────────────────────────────────────────
 function render() {
+  buildSummary();
   updateChipCounts();
   renderCards();
+}
+
+function buildSummary() {
+  const counts = { Exceeds: 0, Meets: 0, Approaches: 0, Missing: 0 };
+  INDICATORS.forEach(ind => {
+    const s = ind.latest_status;
+    if (counts[s] !== undefined) counts[s]++;
+  });
+  const el = document.getElementById('summary-grid');
+  if (!el) return;
+  el.innerHTML = Object.entries(counts).map(([key, val]) => {
+    const k = key.toLowerCase();
+    const sel = activeStatus === k ? 'selected' : '';
+    return `<button class="summary-card ${k} ${sel}" onclick="toggleStatusFromCard('${k}')" title="Filter to ${key} indicators">
+      <div class="summary-num">${val}</div>
+      <div class="summary-label">${key}</div>
+    </button>`;
+  }).join('');
+}
+
+// Clicking a KPI card toggles that status filter
+function toggleStatusFromCard(status) {
+  const chip = document.querySelector(`[data-status="${status}"]`);
+  if (activeStatus === status) {
+    // already active → clear back to All
+    const allChip = document.querySelector('[data-status="all"]');
+    setStatusFilter('all', allChip);
+  } else {
+    setStatusFilter(status, chip);
+  }
+  document.getElementById('filter-bar-wrap').scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
 function updateChipCounts() {
