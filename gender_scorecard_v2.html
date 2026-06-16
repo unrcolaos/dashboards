@@ -569,6 +569,8 @@
   /* ACTIVITIES TABLE */
   .activities-section { margin-top: 3.5rem; }
   .activities-section td { vertical-align: top; }
+  .pi-link { color: var(--accent); text-decoration: none; border-bottom: 1px dotted transparent; transition: border-color .15s; }
+  .pi-link:hover { border-bottom-color: var(--accent); }
   .act-type-pill {
     display: inline-block;
     white-space: nowrap;
@@ -834,13 +836,24 @@ function buildYearlyBars() {
   }).join('');
 }
 
+// Build a deep-link from an Activities PI code to its detail card in indicators.html.
+// Mirrors the anchor logic in indicators.html exactly: "PI 1.1" -> id="pi-1.1".
+function piLink(piId) {
+  const raw = String(piId || '').trim();
+  if (!raw) return '';
+  // Only linkify values that look like a PI reference (e.g. "PI 1.1").
+  if (!/^PI\s*\d/i.test(raw)) return `<strong>${raw}</strong>`;
+  const anchor = raw.replace(/\s+/g, '-').toLowerCase();
+  return `<a href="indicators.html#${anchor}" class="pi-link" title="View ${raw} details"><strong>${raw}</strong></a>`;
+}
+
 function buildActivities() {
   const tbody = document.getElementById('act-tbody');
   if (!tbody) return;
   tbody.innerHTML = ACTIVITIES.map(a => `
     <tr style="border-bottom: 1px solid var(--border);">
       <td style="padding: 10px; font-weight:500;">${a.date}</td>
-      <td style="padding: 10px;"><strong>${a.pi_id}</strong><br><span style="color:var(--text-muted);font-size:0.75rem">${a.indicator}</span></td>
+      <td style="padding: 10px;">${piLink(a.pi_id)}<br><span style="color:var(--text-muted);font-size:0.75rem">${a.indicator}</span></td>
       <td style="padding: 10px; font-size:0.9rem;">${formatCell(a.description)}</td>
       <td style="padding: 10px;"><span class="act-type-pill">${a.type}</span></td>
       <td style="padding: 10px; font-size:0.9rem;">${a.lead}</td>
