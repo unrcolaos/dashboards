@@ -370,21 +370,149 @@ const CRITERIA_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vT5D74
 let INDICATORS = [];
 
 const PI_META = {
-  "PI 1.1": { title: "Common Country Analysis Integrates Gender Analysis", summary: "The CCA must embed substantive gender analysis across its sections, using sex-disaggregated data and examining root causes of gender inequality — including for those furthest behind. This document underpins all UN programming in-country.", criteria: [] },
-  "PI 1.2": { title: "Gender Equality Mainstreamed in UNSDCF Outcomes", summary: "The UNSDCF outcomes must reflect a commitment to gender equality either by mainstreaming GEWE across all outcomes or by including at least one dedicated gender equality outcome.", criteria: [] },
-  "PI 1.3": { title: "UNSDCF Indicators Measure Changes in Gender Equality", summary: "The results framework needs enough gender-sensitive indicators to meaningfully track GEWE progress across the UNSDCF cycle. Without these, gender results become invisible in M&E.", criteria: [] },
-  "PI 2.1": { title: "Joint Programmes Contribute to Reducing Gender Inequalities", summary: "All UN joint programmes should visibly mainstream gender equality, and at least one JP should specifically target GEWE. A system-level mechanism is required to exceed requirements.", criteria: [] },
-  "PI 2.2": { title: "Communication & Advocacy Address Areas of Gender Inequality", summary: "The UNCT must visibly and jointly advocate for gender equality — through shared campaigns, a GEWE-inclusive UNCG strategy, and outreach into non-traditional thematic areas.", criteria: [] },
-  "PI 2.3": { title: "UNSDCF Monitoring, Evaluation & Learning Measures Gender Equality Results", summary: "The UN's monitoring system must actively track gender equality results — collecting gender-sensitive data, integrating GEWE into reviews, and building M&E staff capacity.", criteria: [] },
-  "PI 3.1": { title: "UNCT Collaborates with Government on Gender Equality", summary: "The UNCT must engage the national women's machinery and at least two government entities in joint gender initiatives, and actively support government participation in gender-related SDG implementation.", criteria: [] },
-  "PI 3.2": { title: "UNCT Collaborates with Women's/GEWE Civil Society Organisations", summary: "Women's rights organisations are essential partners. This indicator tracks whether GEWE CSOs are engaged jointly on programmes, in UNSDCF design, and in gender-related SDG implementation.", criteria: [] },
-  "PI 4.1": { title: "UNCT Leadership is Committed to Championing Gender Equality", summary: "Measures visible commitment of UN leadership — including the RC and Heads of Agencies — to gender equality in both public forums and internal management.", criteria: [] },
-  "PI 4.2": { title: "Organizational Culture Supports Promotion of Gender Equality", summary: "Assessed through an annual inter-agency staff perception survey — captures whether UN personnel feel their workplace genuinely supports gender equality promotion.", criteria: [] },
-  "PI 4.3": { title: "Gender Parity in Staffing is Achieved", summary: "A system-wide parity plan, appointed gender focal points, and demonstrated progress are the building blocks. This remains the most persistently low-scoring indicator — no parity plan or focal point in place.", criteria: [] },
-  "PI 5.1": { title: "Gender Coordination Mechanism is Empowered to Influence the UNCT", summary: "The Gender Thematic Group (GTG) must be formally structured, senior-led, and actively engaged in UNSDCF processes. This indicator made the biggest leap in 2025 — Missing to Exceeds.", criteria: [] },
-  "PI 5.2": { title: "UNCT has Adequate Capacities for Gender Mainstreaming", summary: "Regular inter-agency gender training, a capacity development plan, and GEWE-inclusive induction materials ensure UN staff have the knowledge to mainstream gender. Currently no capacity plan or GEWE induction content in place.", criteria: [] },
-  "PI 6.1": { title: "Adequate Resources for Gender Mainstreaming are Allocated and Tracked", summary: "All sub-outputs in Joint Work Plans must be coded using the UNCT Gender Equality Marker (GEM), with at least one training event. Meeting the global 70% financial target is required to move beyond Approaches.", criteria: [] },
-  "PI 7.1": { title: "UN Programmes Make a Significant Contribution to Gender Equality Results", summary: "The ultimate question: are gender equality results actually being achieved? Requires evidence of on-track delivery across all planned GEWE outcomes — and transformative change in at least one to exceed.", criteria: [] }
+  "PI 1.1": {
+    title: "Common Country Analysis Integrates Gender Analysis",
+    summary: "The CCA must embed substantive gender analysis across its sections, using sex-disaggregated data and examining root causes of gender inequality — including for those furthest behind. This document underpins all UN programming in-country.",
+    criteria: [
+      {level:"Approaches", text:"(a) Gender analysis across at least 50% of CCA sections, including underlying causes of inequality in line with SDG 5.", met:true},
+      {level:"Approaches", text:"(b) Some sex-disaggregated and gender-sensitive data used throughout the CCA.", met:true},
+      {level:"Meets",      text:"(a) Gender analysis across at least 80% of CCA sections, including underlying causes of inequality in line with SDG 5.", met:false},
+      {level:"Meets",      text:"(b) Consistent sex-disaggregated and gender-sensitive data throughout.", met:false},
+      {level:"Exceeds",    text:"(c) Targeted gender analysis of those furthest behind (e.g. rural women, women with disabilities, LGBTIQ+ groups).", met:false}
+    ]
+  },
+  "PI 1.2": {
+    title: "Gender Equality Mainstreamed in UNSDCF Outcomes",
+    summary: "The UNSDCF outcomes must reflect a commitment to gender equality either by mainstreaming GEWE across all outcomes or by including at least one dedicated gender equality outcome.",
+    criteria: [
+      {level:"Approaches", text:"(a) GEWE mainstreamed across the majority of UNSDCF outcomes in line with SDG 5.", met:true},
+      {level:"Meets",      text:"(a) GEWE mainstreamed across ALL UNSDCF outcomes in line with SDG 5.", met:false},
+      {level:"Meets",      text:"OR (b) One UNSDCF outcome specifically targets gender equality (Theory of Change + SDG 5).", met:false},
+      {level:"Exceeds",    text:"(a) GEWE mainstreamed across ALL outcomes AND (b) one specific gender equality outcome. Both must be met simultaneously.", met:false}
+    ]
+  },
+  "PI 1.3": {
+    title: "UNSDCF Indicators Measure Changes in Gender Equality",
+    summary: "The results framework needs enough gender-sensitive indicators to meaningfully track GEWE progress across the UNSDCF cycle. Without these, gender results become invisible in M&E.",
+    criteria: [
+      {level:"Approaches", text:"20–33% of UNSDCF outcome and output indicators measure changes in GEWE in line with SDG 5.", met:true},
+      {level:"Meets",      text:"33–50% of UNSDCF outcome and output indicators measure changes in GEWE.", met:false},
+      {level:"Exceeds",    text:"More than 50% of UNSDCF outcome and output indicators measure changes in GEWE.", met:false}
+    ]
+  },
+  "PI 2.1": {
+    title: "Joint Programmes Contribute to Reducing Gender Inequalities",
+    summary: "All UN joint programmes should visibly mainstream gender equality, and at least one JP should specifically target GEWE. A system-level mechanism is required to exceed requirements.",
+    criteria: [
+      {level:"Approaches", text:"(a) Gender equality visibly mainstreamed into at least 50% of Joint Programmes operational at assessment.", met:true},
+      {level:"Approaches", text:"OR (b) A JP on promoting GEWE is operational over current UNSDCF period in line with SDG 5.", met:true},
+      {level:"Meets",      text:"(a) Gender equality visibly mainstreamed into ALL JPs operational at assessment.", met:true},
+      {level:"Meets",      text:"AND (b) A JP on promoting GEWE is operational over current UNSDCF period in line with SDG 5.", met:true},
+      {level:"Exceeds",    text:"AND (c) A system (guideline or process) is in place to ensure gender mainstreaming in all JPs.", met:false}
+    ]
+  },
+  "PI 2.2": {
+    title: "Communication & Advocacy Address Areas of Gender Inequality",
+    summary: "The UNCT must visibly and jointly advocate for gender equality — through shared campaigns, a GEWE-inclusive UNCG strategy, and outreach into non-traditional thematic areas.",
+    criteria: [
+      {level:"Approaches", text:"(a) UNCT contributed collaboratively to at least one joint communication activity on GEWE in the past year.", met:true},
+      {level:"Meets",      text:"(b) UNCT contributed collaboratively to at least one joint advocacy campaign on GEWE in the past year.", met:true},
+      {level:"Meets",      text:"(c) UNCG joint communications and advocacy strategy visibly includes GEWE communication and advocacy.", met:true},
+      {level:"Exceeds",    text:"(d) UNCT contributed to communication or advocacy in at least one non-traditional thematic area in the past year.", met:true}
+    ]
+  },
+  "PI 2.3": {
+    title: "UNSDCF Monitoring, Evaluation & Learning Measures Gender Equality Results",
+    summary: "The UN's monitoring system must actively track gender equality results — collecting gender-sensitive data, integrating GEWE into reviews, and building M&E staff capacity.",
+    criteria: [
+      {level:"Approaches", text:"ONE of: (a) UNSDCF Results Framework gender-sensitive data gathered as planned; (b) monitoring assesses gender-specific results; (c) MEL Group received gender-sensitive M&E training at least once.", met:true},
+      {level:"Meets",      text:"TWO of the three criteria (a), (b), (c) above.", met:true},
+      {level:"Exceeds",    text:"ALL THREE: gender-sensitive data gathered, monitoring assesses gender results, and MEL Group trained on gender-sensitive M&E during the current cycle.", met:true}
+    ]
+  },
+  "PI 3.1": {
+    title: "UNCT Collaborates with Government on Gender Equality",
+    summary: "The UNCT must engage the national women's machinery and at least two government entities in joint gender initiatives, and actively support government participation in gender-related SDG implementation.",
+    criteria: [
+      {level:"Approaches", text:"ONE of: (a) collaborated with ≥2 government entities on a joint GEWE initiative; (b) National Women's Machinery in UNSDCF consultations; (c) ≥1 contribution to government engagement in gender-related SDGs.", met:true},
+      {level:"Meets",      text:"TWO of the three criteria (a), (b), (c) above.", met:true},
+      {level:"Exceeds",    text:"ALL THREE: (a) joint initiative with ≥2 government entities; (b) National Women's Machinery in UNSDCF; (c) contribution to government SDG engagement on gender.", met:true}
+    ]
+  },
+  "PI 3.2": {
+    title: "UNCT Collaborates with Women's/GEWE Civil Society Organisations",
+    summary: "Women's rights organisations are essential partners. This indicator tracks whether GEWE CSOs are engaged jointly on programmes, in UNSDCF design, and in gender-related SDG implementation.",
+    criteria: [
+      {level:"Approaches", text:"ONE of: (a) collaborated with GEWE CSOs on ≥2 joint initiatives; (b) GEWE CSO participates in UNSDCF consultations; (c) ≥1 contribution to CSO engagement in gender-related SDGs.", met:true},
+      {level:"Meets",      text:"TWO of the three criteria (a), (b), (c) above.", met:false},
+      {level:"Exceeds",    text:"ALL THREE: (a) joint initiatives with GEWE CSOs; (b) GEWE CSO in UNSDCF consultations; (c) contribution to CSO engagement in gender-related SDGs.", met:false}
+    ]
+  },
+  "PI 4.1": {
+    title: "UNCT Leadership is Committed to Championing Gender Equality",
+    summary: "Measures visible commitment of UN leadership — including the RC and Heads of Agencies — to gender equality in both public forums and internal management.",
+    criteria: [
+      {level:"Approaches", text:"TWO of: (a) gender discussed in ≥60% of UNCT meetings; (b) RC demonstrates external public championing; (c) RC demonstrates internal championing; (d) HOAs seen by personnel as committed to gender equality.", met:true},
+      {level:"Meets",      text:"THREE of the four criteria (a), (b), (c), (d) above.", met:false},
+      {level:"Exceeds",    text:"ALL FOUR: (a) gender on UNCT agenda ≥60%; (b) RC external championing; (c) RC internal championing; (d) HOAs seen as committed.", met:false}
+    ]
+  },
+  "PI 4.2": {
+    title: "Organizational Culture Supports Promotion of Gender Equality",
+    summary: "Assessed through an annual inter-agency staff perception survey — captures whether UN personnel feel their workplace genuinely supports gender equality promotion.",
+    criteria: [
+      {level:"Approaches", text:"Staff perception survey: positive rating of 50–64%.", met:false},
+      {level:"Meets",      text:"Staff perception survey: positive rating of 65–80%.", met:true},
+      {level:"Exceeds",    text:"Staff perception survey: positive rating of over 80%.", met:false}
+    ]
+  },
+  "PI 4.3": {
+    title: "Gender Parity in Staffing is Achieved",
+    summary: "A system-wide parity plan, appointed gender focal points, and demonstrated progress are the building blocks. This remains the most persistently low-scoring indicator — no parity plan or focal point in place.",
+    criteria: [
+      {level:"Approaches", text:"(a) A system-wide plan is in place for the UNCT to achieve gender parity.", met:false},
+      {level:"Meets",      text:"(a) + (b) At least one Gender Focal Point appointed (as per SGB/2023/3).", met:false},
+      {level:"Meets",      text:"(c) UNCT can demonstrate progress in implementing the system-wide parity plan.", met:false},
+      {level:"Exceeds",    text:"(d) Positive trends towards achieving gender parity demonstrated.", met:false},
+      {level:"Exceeds",    text:"(e) BOS includes gender-specific actions and indicators in at least one Business Operation Area.", met:false}
+    ]
+  },
+  "PI 5.1": {
+    title: "Gender Coordination Mechanism is Empowered to Influence the UNCT",
+    summary: "The Gender Thematic Group (GTG) must be formally structured, senior-led, and actively engaged in UNSDCF processes. This indicator made the biggest leap in 2025 — Missing to Exceeds.",
+    criteria: [
+      {level:"Approaches", text:"TWO of: (a) coordination mechanism chaired by a HOA; (b) approved TOR and annual workplan; (c) members include ≥50% senior staff (P4/NOC+); (d) substantive input into UNSDCF.", met:true},
+      {level:"Meets",      text:"THREE of the four criteria (a), (b), (c), (d) above.", met:true},
+      {level:"Exceeds",    text:"ALL FOUR: (a) HOA chair; (b) approved TOR + workplan; (c) ≥50% senior members; (d) substantive input into UNSDCF.", met:true}
+    ]
+  },
+  "PI 5.2": {
+    title: "UNCT has Adequate Capacities for Gender Mainstreaming",
+    summary: "Regular inter-agency gender training, a capacity development plan, and GEWE-inclusive induction materials ensure UN staff have the knowledge to mainstream gender. Currently no capacity plan or GEWE induction content in place.",
+    criteria: [
+      {level:"Approaches", text:"(a) At least one substantive inter-agency gender capacity development activity carried out in the past 12 months.", met:false},
+      {level:"Meets",      text:"TWO of: (a) annual inter-agency training; (b) capacity development plan established/updated ≥once per UNSDCF cycle and on track; (c) UNCT induction material includes GEWE commitments.", met:false},
+      {level:"Exceeds",    text:"ALL THREE: (a) annual training; (b) capacity plan on track; (c) UNCT induction includes GEWE content.", met:false}
+    ]
+  },
+  "PI 6.1": {
+    title: "Adequate Resources for Gender Mainstreaming are Allocated and Tracked",
+    summary: "All sub-outputs in Joint Work Plans must be coded using the UNCT Gender Equality Marker (GEM), with at least one training event. Meeting the global 70% financial target is required to move beyond Approaches.",
+    criteria: [
+      {level:"Approaches", text:"(a) UNCT carried out ≥1 capacity-building event on the UNCT-GEM in the current CF cycle. AND (b) UNCT applied the UNCT-GEM to all sub-outputs in the Joint Work Plan. Both required.", met:false},
+      {level:"Meets",      text:"TWO of: (c) UNCT met the common global financial target for GEWE allocations; (d) GEM 1/2/3 sub-outputs include accurate Gender Marker Narrative; (e) GTG completed a quality assurance review of GEM coding.", met:false},
+      {level:"Exceeds",    text:"(f) UNCT has exceeded the common global financial target for UNCT allocations to GEWE.", met:false}
+    ]
+  },
+  "PI 7.1": {
+    title: "UN Programmes Make a Significant Contribution to Gender Equality Results",
+    summary: "The ultimate question: are gender equality results actually being achieved? Requires evidence of on-track delivery across all planned GEWE outcomes — and transformative change in at least one to exceed.",
+    criteria: [
+      {level:"Approaches", text:"(a) UNCT achieved or is on track to achieve some GEWE results as planned in UNSDCF outcomes in line with SDG 5.", met:true},
+      {level:"Meets",      text:"(b) UNCT achieved or is on track to achieve ALL GEWE results as planned in UNSDCF outcomes in line with SDG 5.", met:true},
+      {level:"Exceeds",    text:"(c) At least one outcome-level UNSDCF result has contributed to transformative change on GEWE.", met:false}
+    ]
+  }
 };
 
 // ── DIMENSION SUMMARIES ──────────────────────────────────────────────────────
@@ -400,13 +528,13 @@ const DIMENSIONS_META = {
 
 // ── FETCH & PARSE DATA ───────────────────────────────────────────────────────
 async function loadData() {
+  // 1. Fetch Indicators Data (statuses + years) — independent of criteria.
   try {
-    // 1. Fetch Indicators Data
     const indRes  = await fetch(INDICATORS_CSV_URL);
     const indText = await indRes.text();
     const indParsed = Papa.parse(indText, { header: false, skipEmptyLines: true }).data;
-    
-    INDICATORS = indParsed
+
+    const fresh = indParsed
       .filter(r => r[1] && String(r[1]).trim().match(/^PI \d/))
       .map(r => ({
         dimension: String(r[0] || '').trim(), 
@@ -420,41 +548,48 @@ async function loadData() {
         last_assessed: String(r[8] || '').trim()
       }));
 
-    // 2. Fetch Criteria Data with extremely loose matching
+    // Only replace if the fetch actually returned indicator rows.
+    if (fresh.length > 0) INDICATORS = fresh;
+  } catch(e) {
+    console.warn("Live indicators fetch failed.", e);
+  }
+
+  // 2. Fetch Criteria Data with extremely loose matching — independent of #1.
+  try {
     const critRes = await fetch(CRITERIA_CSV_URL);
     const critText = await critRes.text();
     const critParsed = Papa.parse(critText, { header: true, skipEmptyLines: true }).data;
     
-    // Clear out the arrays first
-    Object.keys(PI_META).forEach(id => {
-      if (PI_META[id]) PI_META[id].criteria = [];
-    });
+    // Accumulate live criteria into a temp map. We do NOT wipe the hardcoded
+    // criteria in PI_META — those stay as a fallback so the card UI never
+    // collapses if this sheet is unpublished, empty, or has odd headers.
+    const liveCriteria = {};
 
     if (critParsed && critParsed.length > 0) {
       critParsed.forEach(row => {
          const keys = Object.keys(row);
-         
+
          const findKey = (str) => keys.find(k => k.toLowerCase().replace(/[^a-z]/g, '').includes(str));
-         
+
          const idKey = findKey('piid');
          const levelKey = findKey('level');
          const critTextKey = findKey('text');
          const metKey = findKey('met');
-         
+
          // Exact match for 'criterion' to avoid grabbing 'criteriontext'
          const critLetterKey = keys.find(k => k.toLowerCase().replace(/[^a-z]/g, '') === 'criterion');
 
          const id = idKey ? String(row[idKey] || '').trim() : null;
-         if (!id || !PI_META[id]) return; 
-         
+         if (!id || !PI_META[id]) return;
+
          const levelText = levelKey ? String(row[levelKey] || '').trim() : null;
          const criterionLetter = critLetterKey ? String(row[critLetterKey] || '').trim() : null;
          const critText = critTextKey ? String(row[critTextKey] || '').trim() : null;
          const isMetStr = metKey ? String(row[metKey] || '').trim().toUpperCase() : "FALSE";
-         
+
          if (levelText && critText) {
             const formattedText = criterionLetter ? `(${criterionLetter}) ${critText}` : critText;
-            PI_META[id].criteria.push({
+            (liveCriteria[id] = liveCriteria[id] || []).push({
                level: levelText,
                text: formattedText,
                met: (isMetStr === 'TRUE' || isMetStr === '1' || isMetStr === 'YES')
@@ -462,8 +597,16 @@ async function loadData() {
          }
       });
     }
+
+    // Only override an indicator's hardcoded criteria when the sheet actually
+    // returned rows for it. Indicators with no live rows keep their fallback.
+    Object.keys(liveCriteria).forEach(id => {
+      if (PI_META[id] && liveCriteria[id].length > 0) {
+        PI_META[id].criteria = liveCriteria[id];
+      }
+    });
   } catch(e) {
-    console.error("Failed to load data from Google Sheets links.", e);
+    console.warn("Live criteria fetch failed — using built-in criteria as fallback.", e);
   }
   
   render();
