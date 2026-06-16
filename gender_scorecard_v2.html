@@ -863,7 +863,7 @@ function formatCell(raw) {
   if (!text) return '';
 
   const lines = text.split(/\r\n|\r|\n/).map(l => l.trim()).filter(l => l.length);
-  if (lines.length <= 1) return esc(text);
+  if (!lines.length) return '';
 
   const numRe = /^(\d+)[.):\-]\s+(.*)$/;
   const bulRe = /^[-*•·–]\s+(.*)$/;
