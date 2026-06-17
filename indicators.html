@@ -558,8 +558,38 @@ async function loadData() {
   try {
     const critRes = await fetch(CRITERIA_CSV_URL);
     const critText = await critRes.text();
-    const critParsed = Papa.parse(critText, { header: true, skipEmptyLines: true }).data;
-    
+
+    // Parse without assuming row 1 is the header — sheets sometimes have
+    // instructional note rows above the real header (as happened here: a
+    // 2-row note preceded the actual "PI ID, Level, ..." header on row 3).
+    // We scan the first few rows for one that looks like a real header
+    // (contains a cell matching "PI ID" once non-letters are stripped),
+    // and treat that as row 0 for parsing. If no such row is found within
+    // the first 5 rows, we fall back to assuming row 1 (index 0) is the
+    // header, preserving the old behavior.
+    const rawRows = Papa.parse(critText, { header: false, skipEmptyLines: true }).data;
+    const normalize = (s) => String(s || '').toLowerCase().replace(/[^a-z]/g, '');
+    let headerRowIndex = rawRows.findIndex(row =>
+      row.some(cell => normalize(cell) === 'piid')
+    );
+    if (headerRowIndex === -1) headerRowIndex = 0;
+
+    const headerRow = rawRows[headerRowIndex];
+    const dataRows = rawRows.slice(headerRowIndex + 1);
+    const critParsed = dataRows.map(row => {
+      const obj = {};
+      headerRow.forEach((h, i) => { obj[h] = row[i]; });
+      return obj;
+    });
+
+    if (headerRowIndex > 0) {
+      console.warn(
+        `[Criteria fetch] Skipped ${headerRowIndex} leading row(s) before ` +
+        `finding the real header row. Consider removing note rows from the ` +
+        `top of the Criteria tab so row 1 is the header.`
+      );
+    }
+
     // Accumulate live criteria into a temp map. We do NOT wipe the hardcoded
     // criteria in PI_META — those stay as a fallback so the card UI never
     // collapses if this sheet is unpublished, empty, or has odd headers.
