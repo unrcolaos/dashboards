@@ -255,6 +255,13 @@
   .level-approaches .criteria-level-header { background: var(--approaches-bg); color: var(--approaches); }
   .level-meets      .criteria-level-header { background: var(--meets-bg);      color: var(--meets); }
   .level-exceeds    .criteria-level-header { background: var(--exceeds-bg);    color: var(--exceeds); }
+  .criteria-level-rule {
+    padding: 0.5rem 0.9rem; font-size: 0.7rem; line-height: 1.4;
+    color: var(--text-muted); font-style: italic;
+    border-bottom: 1px dashed var(--border); background: rgba(0,0,0,0.015);
+    display: flex; align-items: flex-start; gap: 0.4rem;
+  }
+  .criteria-level-rule::before { content: '↳'; font-style: normal; opacity: 0.7; }
   .criteria-list { padding: 0.8rem 0.9rem; list-style: none; display: flex; flex-direction: column; gap: 0.6rem; }
   .criteria-item { display: flex; gap: 0.55rem; align-items: flex-start; font-size: 0.81rem; line-height: 1.5; }
   .criteria-check { width: 17px; height: 17px; border-radius: 50%; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 0.62rem; font-weight: 700; margin-top: 1px; }
@@ -398,13 +405,14 @@ const THRESHOLD_INDICATORS = {
   "PI 3.2": { approaches: 1, meets: 2, exceeds: 3 },
   "PI 4.1": { approaches: 2, meets: 3, exceeds: 4 },
   "PI 5.1": { approaches: 2, meets: 3, exceeds: 4 },
-  "PI 5.2": { approaches: 1, meets: 2, exceeds: 3 }
+  "PI 5.2": { approaches: 1, meets: 2, exceeds: 3, rule: "Approaches needs (a). To Meet or Exceed: (a) and (b), OR (c)." }
 };
 
 const PI_META = {
   "PI 1.1": {
     title: "Common Country Analysis Integrates Gender Analysis",
     summary: "The CCA must embed substantive gender analysis across its sections, using sex-disaggregated data and examining root causes of gender inequality — including for those furthest behind. This document underpins all UN programming in-country.",
+    levelRules: { Approaches: "Both criteria below required", Meets: "Both criteria below required (higher thresholds)", Exceeds: "Meet the Meets level, plus the criterion below" },
     criteria: [
       {level:"Approaches", text:"(a) Gender analysis across at least 50% of CCA sections, including underlying causes of inequality in line with SDG 5.", met:true},
       {level:"Approaches", text:"(b) Some sex-disaggregated and gender-sensitive data used throughout the CCA.", met:true},
@@ -416,6 +424,7 @@ const PI_META = {
   "PI 1.2": {
     title: "Gender Equality Mainstreamed in UNSDCF Outcomes",
     summary: "The UNSDCF outcomes must reflect a commitment to gender equality either by mainstreaming GEWE across all outcomes or by including at least one dedicated gender equality outcome.",
+    levelRules: { Meets: "Either criterion below", Exceeds: "Both criteria below — simultaneously" },
     criteria: [
       {level:"Approaches", text:"(a) GEWE mainstreamed across the majority of UNSDCF outcomes in line with SDG 5.", met:true},
       {level:"Meets",      text:"(a) GEWE mainstreamed across ALL UNSDCF outcomes in line with SDG 5.", met:false},
@@ -435,6 +444,7 @@ const PI_META = {
   "PI 2.1": {
     title: "Joint Programmes Contribute to Reducing Gender Inequalities",
     summary: "All UN joint programmes should visibly mainstream gender equality, and at least one JP should specifically target GEWE. A system-level mechanism is required to exceed requirements.",
+    levelRules: { Approaches: "Either criterion below (1 of 2)", Meets: "Both criteria below required", Exceeds: "Meet the Meets level, plus the criterion below" },
     criteria: [
       {level:"Approaches", text:"(a) Gender equality visibly mainstreamed into at least 50% of Joint Programmes operational at assessment.", met:true},
       {level:"Approaches", text:"OR (b) A JP on promoting GEWE is operational over current UNSDCF period in line with SDG 5.", met:true},
@@ -446,6 +456,7 @@ const PI_META = {
   "PI 2.2": {
     title: "Communication & Advocacy Address Areas of Gender Inequality",
     summary: "The UNCT must visibly and jointly advocate for gender equality — through shared campaigns, a GEWE-inclusive UNCG strategy, and outreach into non-traditional thematic areas.",
+    levelRules: { Meets: "Meet Approaches, plus both criteria below", Exceeds: "Meet the Meets level, plus the criterion below" },
     criteria: [
       {level:"Approaches", text:"(a) UNCT contributed collaboratively to at least one joint communication activity on GEWE in the past year.", met:true},
       {level:"Meets",      text:"(b) UNCT contributed collaboratively to at least one joint advocacy campaign on GEWE in the past year.", met:true},
@@ -502,6 +513,7 @@ const PI_META = {
   "PI 4.3": {
     title: "Gender Parity in Staffing is Achieved",
     summary: "A system-wide parity plan, appointed gender focal points, and demonstrated progress are the building blocks. This remains the most persistently low-scoring indicator — no parity plan or focal point in place.",
+    levelRules: { Meets: "Meet Approaches, plus both criteria below", Exceeds: "Meet the Meets level, plus both criteria below" },
     criteria: [
       {level:"Approaches", text:"(a) A system-wide plan is in place for the UNCT to achieve gender parity.", met:false},
       {level:"Meets",      text:"(b) At least one Gender Focal Point appointed (as per SGB/2023/3).", met:false},
@@ -544,6 +556,7 @@ const PI_META = {
   "PI 7.1": {
     title: "UN Programmes Make a Significant Contribution to Gender Equality Results",
     summary: "The ultimate question: are gender equality results actually being achieved? Requires evidence of on-track delivery across all planned GEWE outcomes — and transformative change in at least one to exceed.",
+    levelRules: { Exceeds: "Meet the Meets level, plus the criterion below" },
     criteria: [
       {level:"Approaches", text:"(a) UNCT achieved or is on track to achieve some GEWE results as planned in UNSDCF outcomes in line with SDG 5.", met:true},
       {level:"Meets",      text:"(b) UNCT achieved or is on track to achieve ALL GEWE results as planned in UNSDCF outcomes in line with SDG 5.", met:true},
@@ -642,6 +655,7 @@ async function loadData() {
          const levelKey = findKey('level');
          const critTextKey = findKey('text');
          const metKey = findKey('met');
+         const notesKey = findKey('notes');
 
          // Exact match for 'criterion' to avoid grabbing 'criteriontext'
          const critLetterKey = keys.find(k => k.toLowerCase().replace(/[^a-z]/g, '') === 'criterion');
@@ -657,13 +671,15 @@ async function loadData() {
          const criterionLetter = critLetterKey ? String(row[critLetterKey] || '').trim() : null;
          const critText = critTextKey ? String(row[critTextKey] || '').trim() : null;
          const isMetStr = metKey ? String(row[metKey] || '').trim().toUpperCase() : "FALSE";
+         const noteText = notesKey ? String(row[notesKey] || '').replace(/\s+/g, ' ').trim() : '';
 
          if (levelText && critText) {
             const formattedText = criterionLetter ? `(${criterionLetter}) ${critText}` : critText;
             (liveCriteria[id] = liveCriteria[id] || []).push({
                level: levelText,
                text: formattedText,
-               met: (isMetStr === 'TRUE' || isMetStr === '1' || isMetStr === 'YES')
+               met: (isMetStr === 'TRUE' || isMetStr === '1' || isMetStr === 'YES'),
+               note: noteText
             });
          }
       });
@@ -671,8 +687,14 @@ async function loadData() {
 
     // Only override an indicator's hardcoded criteria when the sheet actually
     // returned rows for it. Indicators with no live rows keep their fallback.
+    // Only override an indicator's hardcoded criteria when the sheet actually
+    // returned rows for it. Indicators with no live rows keep their fallback.
+    // Skip THRESHOLD indicators: their rows have a blank Level column (and PI 5.2
+    // mixes a filled first row with blank ones), so a level-gated capture would be
+    // partial and silently drop criteria. They keep their curated lists; their
+    // current score still comes live from the Indicators sheet.
     Object.keys(liveCriteria).forEach(id => {
-      if (PI_META[id] && liveCriteria[id].length > 0) {
+      if (PI_META[id] && liveCriteria[id].length > 0 && !THRESHOLD_INDICATORS[id]) {
         PI_META[id].criteria = liveCriteria[id];
       }
     });
@@ -935,14 +957,18 @@ function renderCard(ind) {
       <span class="threshold-item-text">${c.text}</span>
     </li>`).join('');
 
+    const legendHtml = threshold.rule
+      ? `<span>${threshold.rule}</span>`
+      : `<span>Approaches: any ${threshold.approaches} of ${totalCriteria} met</span>
+        <span>Meets: any ${threshold.meets} of ${totalCriteria} met</span>
+        <span>Exceeds: ${threshold.exceeds >= totalCriteria ? `all ${totalCriteria}` : `any ${threshold.exceeds} of ${totalCriteria}`} met</span>`;
+
     criteriaHtml = `<div class="criteria-section">
       <div class="criteria-title">Scoring Criteria</div>
       <div class="threshold-count">${metCount} of ${totalCriteria} criteria met &middot; computed level: <span class="status-pill ${pillClass(computedLevel)}" style="font-size:0.68rem;padding:0.15rem 0.5rem;">${computedLevel}</span></div>
       <ul class="threshold-list">${itemsHtml}</ul>
       <div class="threshold-legend">
-        <span>Approaches: any ${threshold.approaches} of ${totalCriteria}</span>
-        <span>Meets: any ${threshold.meets} of ${totalCriteria}</span>
-        <span>Exceeds: all ${totalCriteria}</span>
+        ${legendHtml}
       </div>
     </div>`;
   } else if (totalCriteria > 0) {
@@ -950,14 +976,18 @@ function renderCard(ind) {
     const levelClass = { Approaches:'level-approaches', Meets:'level-meets', Exceeds:'level-exceeds' };
     const criteriaColsHtml = levels.map(lvl => {
       const items = meta.criteria.filter(c => c.level === lvl);
+      const rule = meta.levelRules && meta.levelRules[lvl];
+      const ruleHtml = rule ? `<div class="criteria-level-rule">${rule}</div>` : '';
       if (items.length === 0) return `<div class="criteria-level ${levelClass[lvl]}">
         <div class="criteria-level-header">${lvl} Requirements</div>
+        ${ruleHtml}
         <ul class="criteria-list"><li class="criteria-item"><span class="criteria-check check-unmet">○</span><span style="font-size:0.81rem;color:#9ca3af">Not separately assessed at this level.</span></li></ul>
       </div>`;
       return `<div class="criteria-level ${levelClass[lvl]}">
         <div class="criteria-level-header">${lvl} Requirements</div>
+        ${ruleHtml}
         <ul class="criteria-list">
-          ${items.map(c => `<li class="criteria-item">
+          ${items.map(c => `<li class="criteria-item"${c.note ? ` title="${c.note.replace(/"/g, '&quot;')}"` : ''}>
             <span class="criteria-check ${c.met ? 'check-met' : 'check-unmet'}">${c.met ? '✓' : '○'}</span>
             <span class="criteria-item-text">${c.text}</span>
           </li>`).join('')}
