@@ -898,7 +898,9 @@ function formatCell(raw) {
 async function downloadScorecardPDF() {
   const printBtn = document.getElementById('print-btn');
   const headerActions = document.getElementById('header-actions');
-  if (!printBtn || typeof html2canvas === 'undefined' || !window.jspdf) return;
+  const heroEl = document.querySelector('section.hero');
+  const mainEl = document.querySelector('main.main');
+  if (!printBtn || !mainEl || typeof html2canvas === 'undefined' || !window.jspdf) return;
 
   const originalHTML = printBtn.innerHTML;
   printBtn.disabled = true;
@@ -909,17 +911,38 @@ async function downloadScorecardPDF() {
   if (headerActions) headerActions.style.display = 'none';
 
   try {
-    const canvas = await html2canvas(document.body, {
+    // Capture the hero (title + KPI cards, dark background) and the main
+    // report content as two separate canvases — this excludes only the
+    // top header bar, with no DOM nodes moved or restored.
+    const captureOpts = {
       scale: 2,
       useCORS: true,
-      backgroundColor: '#fafaf8',
       windowWidth: document.documentElement.scrollWidth,
       windowHeight: document.documentElement.scrollHeight
-    });
+    };
+    const heroCanvas = heroEl
+      ? await html2canvas(heroEl, { ...captureOpts, backgroundColor: '#1a1f2b' })
+      : null;
+    const mainCanvas = await html2canvas(mainEl, { ...captureOpts, backgroundColor: '#fafaf8' });
 
-    const imgData = canvas.toDataURL('image/jpeg', 0.95);
-    const imgWidth = canvas.width;
-    const imgHeight = canvas.height;
+    // Stack hero on top of main into one combined canvas, matching the
+    // wider of the two widths so neither gets cropped.
+    const combinedWidth = Math.max(heroCanvas ? heroCanvas.width : 0, mainCanvas.width);
+    const combinedHeight = (heroCanvas ? heroCanvas.height : 0) + mainCanvas.height;
+    const combined = document.createElement('canvas');
+    combined.width = combinedWidth;
+    combined.height = combinedHeight;
+    const ctx = combined.getContext('2d');
+    let yOffset = 0;
+    if (heroCanvas) {
+      ctx.drawImage(heroCanvas, 0, 0);
+      yOffset = heroCanvas.height;
+    }
+    ctx.drawImage(mainCanvas, 0, yOffset);
+
+    const imgData = combined.toDataURL('image/jpeg', 0.95);
+    const imgWidth = combined.width;
+    const imgHeight = combined.height;
 
     const { jsPDF } = window.jspdf;
     // Pick the A4 orientation that best matches the captured content's shape
