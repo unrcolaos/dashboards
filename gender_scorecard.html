@@ -118,8 +118,7 @@
   /* HERO */
   .hero {
     background: linear-gradient(135deg, #1a1f2b 55%, #00557a 100%);
-    color: #fff;
-    padding: 4rem 2rem 3rem;
+    padding: 2.5rem 2rem;
     position: relative;
     overflow: hidden;
   }
@@ -130,13 +129,20 @@
     background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
     opacity: 1;
   }
-  .hero-inner { max-width: 1100px; margin: 0 auto; position: relative; }
+  .hero-card {
+    max-width: 1100px;
+    margin: 0 auto;
+    position: relative;
+    background: var(--bg);
+    border-radius: 12px;
+    padding: 2.5rem 2rem;
+  }
   .hero-label {
     font-size: 0.75rem;
     font-weight: 600;
     letter-spacing: 0.15em;
     text-transform: uppercase;
-    color: #7fd4f0;
+    color: var(--accent);
     margin-bottom: 1rem;
   }
   .hero h2 {
@@ -144,9 +150,10 @@
     font-size: clamp(2rem, 4vw, 3.2rem);
     line-height: 1.1;
     margin-bottom: 0.75rem;
+    color: var(--text);
   }
   .hero p {
-    color: #b0a89c;
+    color: var(--text-muted);
     font-size: 1rem;
     max-width: 600px;
     line-height: 1.6;
@@ -179,7 +186,7 @@
   .hero-cta-alt {
     background: transparent;
     border: 1.5px solid var(--accent);
-    color: #5cc4ec;
+    color: var(--accent);
   }
   .hero-cta-alt:hover {
     background: var(--accent);
@@ -192,7 +199,7 @@
     align-items: center;
     gap: 0.5rem;
     font-size: 0.82rem;
-    color: #9fb6c9;
+    color: var(--text-muted);
     margin: 0 0 0.85rem;
     font-weight: 400;
   }
@@ -208,16 +215,16 @@
     align-items: center;
     gap: 0.6rem;
     font-size: 0.82rem;
-    color: #f3d5d5;
-    background: rgba(248, 113, 113, 0.12);
-    border: 1px solid rgba(248, 113, 113, 0.35);
+    color: var(--missing);
+    background: var(--missing-bg);
+    border: 1px solid var(--missing-bg);
     border-left: 3px solid var(--missing-mid);
     border-radius: 6px;
     padding: 0.65rem 0.9rem;
     margin: 1rem 0 0;
     line-height: 1.5;
   }
-  .kpi-emphasis strong { color: #fca5a5; }
+  .kpi-emphasis strong { color: var(--missing); }
   .kpi-emphasis-dot {
     width: 9px; height: 9px;
     border-radius: 50%;
@@ -231,8 +238,8 @@
     50% { box-shadow: 0 0 0 6px rgba(248,113,113,0.08); }
   }
   .summary-card {
-    background: rgba(255,255,255,0.06);
-    border: 1px solid rgba(255,255,255,0.1);
+    background: var(--surface);
+    border: 1px solid var(--border);
     border-radius: 8px;
     padding: 1.2rem 1.4rem;
     position: relative;
@@ -244,19 +251,19 @@
   }
   .summary-card:hover {
     transform: translateY(-3px);
-    box-shadow: 0 8px 24px rgba(0,0,0,0.25);
-    border-color: rgba(255,255,255,0.22);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+    border-color: var(--text-muted);
   }
   .summary-card .card-arrow {
     position: absolute;
     top: 0.65rem; right: 0.75rem;
     font-size: 0.75rem;
-    color: rgba(255,255,255,0.3);
+    color: var(--text-muted);
     transition: color 0.15s, transform 0.15s;
     line-height: 1;
   }
   .summary-card:hover .card-arrow {
-    color: rgba(255,255,255,0.7);
+    color: var(--text);
     transform: translate(2px, -2px);
   }
   .summary-card::before {
@@ -279,7 +286,7 @@
   .summary-card.meets .summary-num { color: var(--meets-mid); }
   .summary-card.approaches .summary-num { color: var(--approaches-mid); }
   .summary-card.missing .summary-num { color: var(--missing-mid); }
-  .summary-label { font-size: 0.8rem; color: #b0a89c; font-weight: 500; }
+  .summary-label { font-size: 0.8rem; color: var(--text-muted); font-weight: 500; }
 
   /* MAIN CONTENT */
   .main { max-width: 1100px; margin: 0 auto; padding: 2.5rem 2rem 4rem; }
@@ -613,11 +620,11 @@
   /* LARGE SCREENS — scale type up and widen the content column */
   @media (min-width: 1600px) {
     html { font-size: 112.5%; }            /* ~18px base */
-    .hero-inner, .main { max-width: 1320px; }
+    .hero-card, .main { max-width: 1320px; }
   }
   @media (min-width: 2000px) {
     html { font-size: 125%; }              /* ~20px base */
-    .hero-inner, .main { max-width: 1480px; }
+    .hero-card, .main { max-width: 1480px; }
   }
 </style>
 </head>
@@ -643,7 +650,7 @@
 </header>
 
 <section class="hero">
-  <div class="hero-inner">
+  <div class="hero-card">
     <p class="hero-label">Performance Indicator Dashboard</p>
     <h2>Gender Equality<br><em>Progress Overview</em></h2>
     <p>Live view of UNCT-SWAP scorecard indicators across seven dimensions. Data sourced from the Indicator Data tab of the shared workbook.</p>
@@ -898,7 +905,7 @@ function formatCell(raw) {
 async function downloadScorecardPDF() {
   const printBtn = document.getElementById('print-btn');
   const headerActions = document.getElementById('header-actions');
-  const heroEl = document.querySelector('section.hero');
+  const heroCardEl = document.querySelector('.hero-card');
   const mainEl = document.querySelector('main.main');
   if (!printBtn || !mainEl || typeof html2canvas === 'undefined' || !window.jspdf) return;
 
@@ -911,34 +918,40 @@ async function downloadScorecardPDF() {
   if (headerActions) headerActions.style.display = 'none';
 
   try {
-    // Capture the hero (title + KPI cards, dark background) and the main
-    // report content as two separate canvases — this excludes only the
-    // top header bar, with no DOM nodes moved or restored.
+    // Capture the hero card (title + KPI cards, light surface — no dark
+    // background at all) and the main report content as two canvases.
+    // This excludes the top header bar and the dark gradient frame.
     const captureOpts = {
       scale: 2,
       useCORS: true,
+      backgroundColor: '#fafaf8',
       windowWidth: document.documentElement.scrollWidth,
       windowHeight: document.documentElement.scrollHeight
     };
-    const heroCanvas = heroEl
-      ? await html2canvas(heroEl, { ...captureOpts, backgroundColor: '#1a1f2b' })
-      : null;
-    const mainCanvas = await html2canvas(mainEl, { ...captureOpts, backgroundColor: '#fafaf8' });
+    const heroCanvas = heroCardEl ? await html2canvas(heroCardEl, captureOpts) : null;
+    const mainCanvas = await html2canvas(mainEl, captureOpts);
 
-    // Stack hero on top of main into one combined canvas, matching the
-    // wider of the two widths so neither gets cropped.
-    const combinedWidth = Math.max(heroCanvas ? heroCanvas.width : 0, mainCanvas.width);
-    const combinedHeight = (heroCanvas ? heroCanvas.height : 0) + mainCanvas.height;
+    // The two elements can come back at slightly different pixel widths
+    // (different internal padding, scrollbar timing, etc). Scale both to
+    // a shared width before stacking so there's never a leftover gap —
+    // an uninitialized canvas gap renders solid black, which is the bug
+    // this fixes.
+    const targetWidth = Math.max(heroCanvas ? heroCanvas.width : 0, mainCanvas.width);
+    const scaledHeroHeight = heroCanvas ? Math.round(heroCanvas.height * (targetWidth / heroCanvas.width)) : 0;
+    const scaledMainHeight = Math.round(mainCanvas.height * (targetWidth / mainCanvas.width));
+
     const combined = document.createElement('canvas');
-    combined.width = combinedWidth;
-    combined.height = combinedHeight;
+    combined.width = targetWidth;
+    combined.height = scaledHeroHeight + scaledMainHeight;
     const ctx = combined.getContext('2d');
+    ctx.fillStyle = '#fafaf8';
+    ctx.fillRect(0, 0, combined.width, combined.height);
     let yOffset = 0;
     if (heroCanvas) {
-      ctx.drawImage(heroCanvas, 0, 0);
-      yOffset = heroCanvas.height;
+      ctx.drawImage(heroCanvas, 0, 0, targetWidth, scaledHeroHeight);
+      yOffset = scaledHeroHeight;
     }
-    ctx.drawImage(mainCanvas, 0, yOffset);
+    ctx.drawImage(mainCanvas, 0, yOffset, targetWidth, scaledMainHeight);
 
     const imgData = combined.toDataURL('image/jpeg', 0.95);
     const imgWidth = combined.width;
