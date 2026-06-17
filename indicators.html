@@ -579,7 +579,11 @@ async function loadData() {
          // Exact match for 'criterion' to avoid grabbing 'criteriontext'
          const critLetterKey = keys.find(k => k.toLowerCase().replace(/[^a-z]/g, '') === 'criterion');
 
-         const id = idKey ? String(row[idKey] || '').trim() : null;
+         // Normalize all whitespace (including non-breaking spaces, tabs, etc.
+         // that can sneak in from pasted/PDF-sourced data) to a single regular
+         // space, so "PI 1.1" matches PI_META's key even if the sheet cell
+         // contains an invisible whitespace variant.
+         const id = idKey ? String(row[idKey] || '').replace(/\s+/g, ' ').trim() : null;
          if (!id || !PI_META[id]) return;
 
          const levelText = levelKey ? String(row[levelKey] || '').trim() : null;
@@ -605,6 +609,21 @@ async function loadData() {
         PI_META[id].criteria = liveCriteria[id];
       }
     });
+
+    // Diagnostic: confirms what was actually fetched and matched. Safe to
+    // leave in — it only logs to console, never shown in the UI. Remove
+    // once live criteria are confirmed working end-to-end.
+    console.log(
+      `[Criteria fetch] ${critParsed.length} rows in CSV, ` +
+      `${Object.keys(liveCriteria).length} indicators matched ` +
+      `(${Object.values(liveCriteria).reduce((sum, arr) => sum + arr.length, 0)} total criteria rows applied).`
+    );
+    if (critParsed.length > 0 && Object.keys(liveCriteria).length === 0) {
+      console.warn(
+        '[Criteria fetch] CSV returned rows but none matched any PI_META id. ' +
+        'Sample row from sheet:', critParsed[0]
+      );
+    }
   } catch(e) {
     console.warn("Live criteria fetch failed — using built-in criteria as fallback.", e);
   }
