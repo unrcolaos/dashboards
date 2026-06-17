@@ -95,10 +95,10 @@
     background: transparent;
     color: #fff;
     border: 1.5px solid var(--accent);
-    padding: 5px 14px;
+    padding: 7px 16px;
     border-radius: 4px;
     font-family: 'Roboto', sans-serif;
-    font-size: 0.75rem;
+    font-size: 0.8rem;
     font-weight: 600;
     cursor: pointer;
     transition: all 0.2s ease;
@@ -133,7 +133,7 @@
     max-width: 1100px;
     margin: 0 auto;
     position: relative;
-    background: var(--bg);
+    background: transparent;
     border-radius: 12px;
     padding: 2.5rem 2rem;
   }
@@ -150,10 +150,10 @@
     font-size: clamp(2rem, 4vw, 3.2rem);
     line-height: 1.1;
     margin-bottom: 0.75rem;
-    color: var(--text);
+    color: #ffffff;
   }
   .hero p {
-    color: var(--text-muted);
+    color: rgba(255,255,255,0.75);
     font-size: 1rem;
     max-width: 600px;
     line-height: 1.6;
@@ -165,10 +165,10 @@
     gap: 0.4rem;
     background: var(--accent);
     color: #fff;
-    font-size: 0.82rem;
+    font-size: 0.92rem;
     font-weight: 600;
     letter-spacing: 0.03em;
-    padding: 9px 20px;
+    padding: 12px 26px;
     border-radius: 6px;
     text-decoration: none;
     transition: background 0.15s, transform 0.15s;
@@ -199,7 +199,7 @@
     align-items: center;
     gap: 0.5rem;
     font-size: 0.82rem;
-    color: var(--text-muted);
+    color: rgba(255,255,255,0.65);
     margin: 0 0 0.85rem;
     font-weight: 400;
   }
@@ -586,22 +586,47 @@
     border-radius: 4px;
     letter-spacing: 0.05em;
   }
-  .act-completed {
+  .act-status-pill {
     font-size: 0.75rem;
     font-weight: 600;
-    color: var(--meets);
     display: inline-flex;
     align-items: center;
-    gap: 0.3rem;
+    gap: 0.4rem;
     white-space: nowrap;
+    padding: 4px 10px 4px 8px;
+    border-radius: 20px;
   }
-  .act-completed::before {
+  .act-status-pill::before {
     content: '';
     width: 6px; height: 6px;
-    background: var(--meets);
     border-radius: 50%;
     flex-shrink: 0;
   }
+  .act-status-pill.status-planned {
+    color: var(--approaches);
+    background: var(--approaches-bg);
+  }
+  .act-status-pill.status-planned::before { background: var(--approaches-mid); }
+  .act-status-pill.status-progress {
+    color: var(--meets);
+    background: var(--meets-bg);
+  }
+  .act-status-pill.status-progress::before { background: var(--meets-mid); }
+  .act-status-pill.status-done {
+    color: var(--exceeds);
+    background: var(--exceeds-bg);
+  }
+  .act-status-pill.status-done::before { background: var(--exceeds-mid); }
+  .act-status-pill.status-delayed {
+    color: var(--missing);
+    background: var(--missing-bg);
+  }
+  .act-status-pill.status-delayed::before { background: var(--missing-mid); }
+  .act-status-pill.status-other {
+    color: var(--text-muted);
+    background: var(--border);
+  }
+  .act-status-pill.status-other::before { background: var(--text-muted); }
   /* Multi-line / list rendering inside Description & Notes cells */
   .cell-list { margin: 0; padding-left: 1.15rem; }
   .cell-list li { margin-bottom: 0.25rem; }
@@ -853,6 +878,18 @@ function piLink(piId) {
   return `<a href="indicators.html#${anchor}" class="pi-link" title="View ${raw} details"><strong>${raw}</strong></a>`;
 }
 
+// Map a free-text Activities status value to a colour-coded pill class.
+// Planned -> orange, In Progress -> green, Done -> blue, Delayed -> red.
+function statusPillClass(rawStatus) {
+  const s = String(rawStatus || '').trim().toLowerCase();
+  if (!s) return 'status-other';
+  if (s.includes('delay')) return 'status-delayed';
+  if (s.includes('progress') || s.includes('ongoing')) return 'status-progress';
+  if (s.includes('done') || s.includes('complete')) return 'status-done';
+  if (s.includes('plan')) return 'status-planned';
+  return 'status-other';
+}
+
 function buildActivities() {
   const tbody = document.getElementById('act-tbody');
   if (!tbody) return;
@@ -863,7 +900,7 @@ function buildActivities() {
       <td style="padding: 10px; font-size:0.9rem;">${formatCell(a.description)}</td>
       <td style="padding: 10px;"><span class="act-type-pill">${a.type}</span></td>
       <td style="padding: 10px; font-size:0.9rem;">${a.lead}</td>
-      <td style="padding: 10px;"><span class="act-completed">${a.status}</span></td>
+      <td style="padding: 10px;"><span class="act-status-pill ${statusPillClass(a.status)}">${a.status}</span></td>
       <td style="padding: 10px; color:var(--text-muted); font-size:0.85rem;">${formatCell(a.notes)}</td>
     </tr>
   `).join('');
@@ -918,18 +955,19 @@ async function downloadScorecardPDF() {
   if (headerActions) headerActions.style.display = 'none';
 
   try {
-    // Capture the hero card (title + KPI cards, light surface — no dark
-    // background at all) and the main report content as two canvases.
-    // This excludes the top header bar and the dark gradient frame.
+    // Capture the hero card (title + KPI cards). The hero card background
+    // is now transparent and blends into the dark gradient hero section,
+    // so capture it with that same dark background to keep the white text
+    // legible in the exported PDF.
     const captureOpts = {
       scale: 2,
       useCORS: true,
-      backgroundColor: '#fafaf8',
+      backgroundColor: '#1a1f2b',
       windowWidth: document.documentElement.scrollWidth,
       windowHeight: document.documentElement.scrollHeight
     };
     const heroCanvas = heroCardEl ? await html2canvas(heroCardEl, captureOpts) : null;
-    const mainCanvas = await html2canvas(mainEl, captureOpts);
+    const mainCanvas = await html2canvas(mainEl, { ...captureOpts, backgroundColor: '#fafaf8' });
 
     // The two elements can come back at slightly different pixel widths
     // (different internal padding, scrollbar timing, etc). Scale both to
@@ -944,7 +982,7 @@ async function downloadScorecardPDF() {
     combined.width = targetWidth;
     combined.height = scaledHeroHeight + scaledMainHeight;
     const ctx = combined.getContext('2d');
-    ctx.fillStyle = '#fafaf8';
+    ctx.fillStyle = '#1a1f2b';
     ctx.fillRect(0, 0, combined.width, combined.height);
     let yOffset = 0;
     if (heroCanvas) {
