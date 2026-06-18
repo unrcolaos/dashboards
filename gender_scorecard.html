@@ -572,30 +572,6 @@
 
   /* ACTIVITIES TABLE */
   .activities-section { margin-top: 3.5rem; }
-
-  /* PDF-EXPORT-ONLY COMPACT SIZING — applied via a temporary class on <body>
-     while the PDF is being captured, then removed immediately after. Leaves
-     the live page untouched; only shrinks the chart inside the export. */
-  body.pdf-export-mode .progress-section {
-    padding: 1.1rem 1.5rem;
-    margin-bottom: 1.5rem;
-  }
-  body.pdf-export-mode .progress-title {
-    margin-bottom: 0.75rem;
-  }
-  body.pdf-export-mode .year-bar-row {
-    margin-bottom: 0.4rem;
-  }
-  body.pdf-export-mode .year-bar-track {
-    height: 20px;
-    border-radius: 4px;
-  }
-  body.pdf-export-mode .bar-legend {
-    margin-top: 0.85rem !important;
-  }
-  body.pdf-export-mode .activities-section {
-    margin-top: 2rem;
-  }
   .activities-section td { vertical-align: top; }
   .pi-link { color: var(--accent); text-decoration: none; border-bottom: 1px dotted transparent; transition: border-color .15s; }
   .pi-link:hover { border-bottom-color: var(--accent); }
@@ -996,10 +972,6 @@ async function downloadScorecardPDF() {
   const prevHeroActionsDisplay = heroActionsEl ? heroActionsEl.style.display : '';
   if (heroActionsEl) heroActionsEl.style.display = 'none';
 
-  // Shrink the yearly bar chart and tighten surrounding spacing for the
-  // export only — this doesn't affect how the live page looks.
-  document.body.classList.add('pdf-export-mode');
-
   try {
     // Load the UN logo so we can stamp it into the top-right corner of the
     // exported PDF (the on-screen header has it top-left, but the PDF
@@ -1080,7 +1052,7 @@ async function downloadScorecardPDF() {
     const finalWidth = imgWidth * scaleFactor;
     const finalHeight = imgHeight * scaleFactor;
     const x = (pageWidth - finalWidth) / 2;
-    const y = (pageHeight - finalHeight) / 2;
+    const y = margin;
 
     pdf.addImage(imgData, 'JPEG', x, y, finalWidth, finalHeight);
 
@@ -1123,7 +1095,6 @@ async function downloadScorecardPDF() {
   } finally {
     if (headerActions) headerActions.style.display = prevDisplay;
     if (heroActionsEl) heroActionsEl.style.display = prevHeroActionsDisplay;
-    document.body.classList.remove('pdf-export-mode');
     printBtn.disabled = false;
     printBtn.innerHTML = originalHTML;
   }
