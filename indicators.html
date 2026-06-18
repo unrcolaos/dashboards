@@ -51,7 +51,7 @@
     background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
   }
   .page-hero-inner { max-width: 1100px; margin: 0 auto; position: relative; }
-  .page-hero-label { font-size: 0.72rem; font-weight: 600; letter-spacing: 0.15em; text-transform: uppercase; color: var(--accent); margin-bottom: 0.5rem; }
+  .page-hero-label { font-size: 0.72rem; font-weight: 600; letter-spacing: 0.15em; text-transform: uppercase; color: #FFA0AC; margin-bottom: 0.5rem; }
   .page-hero h2 { font-family: 'Lato', sans-serif; font-size: clamp(1.6rem, 3vw, 2.4rem); line-height: 1.1; margin-bottom: 0.5rem; }
   .page-hero-sub { color: #b0a89c; font-size: 0.9rem; }
 
@@ -673,7 +673,7 @@ async function loadData() {
          const isMetStr = metKey ? String(row[metKey] || '').trim().toUpperCase() : "FALSE";
          const noteText = notesKey ? String(row[notesKey] || '').replace(/\s+/g, ' ').trim() : '';
 
-         if (levelText && critText) {
+         if (critText && (levelText || THRESHOLD_INDICATORS[id])) {
             const rawText = criterionLetter ? `(${criterionLetter}) ${critText}` : critText;
             const formattedText = mdBoldToHtml(rawText);
             (liveCriteria[id] = liveCriteria[id] || []).push({
@@ -688,16 +688,19 @@ async function loadData() {
 
     // Only override an indicator's hardcoded criteria when the sheet actually
     // returned rows for it. Indicators with no live rows keep their fallback.
-    // Only override an indicator's hardcoded criteria when the sheet actually
-    // returned rows for it. Indicators with no live rows keep their fallback.
-    // Skip THRESHOLD indicators: their rows have a blank Level column (and PI 5.2
-    // mixes a filled first row with blank ones), so a level-gated capture would be
-    // partial and silently drop criteria. They keep their curated lists; their
-    // current score still comes live from the Indicators sheet.
+    // Threshold indicators (blank Level column) used to be skipped entirely
+    // to avoid a partial/level-gated capture silently dropping rows (e.g.
+    // PI 5.2's inconsistently-filled Level column) — but that also blocked
+    // genuine edits, like updates to PI 4.1, from ever showing up live. Now
+    // we only fall back to the hardcoded list when the live capture has
+    // FEWER rows than what's already there (a sign of a partial/broken
+    // fetch); a live row count equal to or greater than the existing count
+    // is treated as a real update and applied.
     Object.keys(liveCriteria).forEach(id => {
-      if (PI_META[id] && liveCriteria[id].length > 0 && !THRESHOLD_INDICATORS[id]) {
-        PI_META[id].criteria = liveCriteria[id];
-      }
+      if (!PI_META[id] || liveCriteria[id].length === 0) return;
+      const existingCount = (PI_META[id].criteria || []).length;
+      if (THRESHOLD_INDICATORS[id] && liveCriteria[id].length < existingCount) return;
+      PI_META[id].criteria = liveCriteria[id];
     });
   } catch(e) {
     console.warn("Live criteria fetch failed — using built-in criteria as fallback.", e);

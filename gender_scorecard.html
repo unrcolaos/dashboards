@@ -142,7 +142,7 @@
     font-weight: 600;
     letter-spacing: 0.15em;
     text-transform: uppercase;
-    color: var(--accent);
+    color: #FFA0AC;
     margin-bottom: 1rem;
   }
   .hero h2 {
@@ -676,32 +676,19 @@
 
 <section class="hero">
   <div class="hero-card">
-
-    <!-- Section 1: Title block -->
-    <div class="hero-intro">
-      <p class="hero-label">Performance Indicator Dashboard</p>
-      <h2>Gender Equality<br><em>Progress Overview</em></h2>
-      <p>Live view of UNCT-SWAP scorecard indicators across seven dimensions. Data sourced from the Indicator Data tab of the shared workbook.</p>
+    <p class="hero-label">Performance Indicator Dashboard</p>
+    <h2>Gender Equality<br><em>Progress Overview</em></h2>
+    <p>Live view of UNCT-SWAP scorecard indicators across seven dimensions. Data sourced from the Indicator Data tab of the shared workbook.</p>
+    <div class="hero-buttons">
+      <a href="indicators.html" class="hero-cta">Explore all indicators →</a>
+      <a href="https://drive.google.com/drive/folders/1D3WGTaAHnxWLe7TomJO9Zsh1hIaS6Oir?usp=sharing" target="_blank" rel="noopener" class="hero-cta hero-cta-alt">Resources ↗</a>
     </div>
-
-    <!-- Section 2: Buttons + instruction block -->
-    <div class="hero-actions">
-      <div class="hero-buttons">
-        <a href="indicators.html" class="hero-cta">Explore all indicators →</a>
-        <a href="https://drive.google.com/drive/folders/1D3WGTaAHnxWLe7TomJO9Zsh1hIaS6Oir?usp=sharing" target="_blank" rel="noopener" class="hero-cta hero-cta-alt">Resources ↗</a>
+    <p class="kpi-instruction">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+      Click any card below to view the indicators behind that score
+    </p>
+    <div class="summary-grid" id="summary-grid">
       </div>
-      <p class="kpi-instruction">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
-        Click any card below to view the indicators behind that score
-      </p>
-    </div>
-
-    <!-- Section 3: KPI summary cards block -->
-    <div class="hero-summary">
-      <div class="summary-grid" id="summary-grid">
-        </div>
-    </div>
-
   </div>
 </section>
 
@@ -956,7 +943,6 @@ async function downloadScorecardPDF() {
   const printBtn = document.getElementById('print-btn');
   const headerActions = document.getElementById('header-actions');
   const heroCardEl = document.querySelector('.hero-card');
-  const heroActionsEl = document.querySelector('.hero-actions');
   const mainEl = document.querySelector('main.main');
   if (!printBtn || !mainEl || typeof html2canvas === 'undefined' || !window.jspdf) return;
 
@@ -968,10 +954,6 @@ async function downloadScorecardPDF() {
   const prevDisplay = headerActions ? headerActions.style.display : '';
   if (headerActions) headerActions.style.display = 'none';
 
-  // Hide the hero buttons/instruction row too — not wanted in the PDF export
-  const prevHeroActionsDisplay = heroActionsEl ? heroActionsEl.style.display : '';
-  if (heroActionsEl) heroActionsEl.style.display = 'none';
-
   try {
     // Load the UN logo so we can stamp it into the top-right corner of the
     // exported PDF (the on-screen header has it top-left, but the PDF
@@ -982,19 +964,6 @@ async function downloadScorecardPDF() {
       logoImg.onerror = () => resolve(false);
     });
     logoImg.src = 'un_logo_lao.png';
-
-    // Measure where the hero label (top-alignment target) and the rightmost
-    // KPI card (right-edge alignment target) sit relative to the hero card,
-    // so the stamped logo can be positioned against them precisely instead
-    // of using a fixed inset from the page corner.
-    let heroCardRect = null, heroLabelRect = null, lastCardRect = null;
-    if (heroCardEl) {
-      heroCardRect = heroCardEl.getBoundingClientRect();
-      const heroLabelEl = heroCardEl.querySelector('.hero-label');
-      const lastCardEl = heroCardEl.querySelector('.summary-card:last-child');
-      if (heroLabelEl) heroLabelRect = heroLabelEl.getBoundingClientRect();
-      if (lastCardEl) lastCardRect = lastCardEl.getBoundingClientRect();
-    }
 
     // Capture the hero card (title + KPI cards). The hero card background
     // is now transparent and blends into the dark gradient hero section,
@@ -1056,35 +1025,16 @@ async function downloadScorecardPDF() {
 
     pdf.addImage(imgData, 'JPEG', x, y, finalWidth, finalHeight);
 
-    // Stamp the UN logo so its right edge lines up with the rightmost KPI
-    // card and its top lines up with the hero label text above the title,
-    // matching how the request asked it to sit relative to that content.
+    // Stamp the UN logo in the top-right corner of the page, over the dark
+    // hero band at the top of the captured content.
     const logoOk = await logoReady;
     if (logoOk && logoImg.naturalWidth && logoImg.naturalHeight) {
       const logoHeightMM = 9;
       const logoWidthMM = logoHeightMM * (logoImg.naturalWidth / logoImg.naturalHeight);
-
-      if (heroCanvas && heroCardRect && heroLabelRect && lastCardRect) {
-        // Convert the measured DOM rects (CSS px) into combined-canvas pixel
-        // space, then into PDF mm space, using the same scale factors that
-        // were applied when the hero canvas was captured, composited into
-        // the combined canvas, and finally placed on the page.
-        const heroCanvasScale = heroCanvas.width / heroCardRect.width; // CSS px -> heroCanvas px
-        const combinedScale = targetWidth / heroCanvas.width; // heroCanvas px -> combined canvas px
-
-        const rightEdgePx = (lastCardRect.right - heroCardRect.left) * heroCanvasScale * combinedScale;
-        const topEdgePx = (heroLabelRect.top - heroCardRect.top) * heroCanvasScale * combinedScale;
-
-        const logoX = x + (rightEdgePx * scaleFactor) - logoWidthMM;
-        const logoY = y + (topEdgePx * scaleFactor);
-        pdf.addImage(logoImg, 'PNG', logoX, logoY, logoWidthMM, logoHeightMM);
-      } else {
-        // Fallback: fixed inset from the page corner if measurements failed
-        const logoInset = 6; // mm from the page edges
-        const logoX = pageWidth - margin - logoInset - logoWidthMM;
-        const logoY = margin + logoInset / 2;
-        pdf.addImage(logoImg, 'PNG', logoX, logoY, logoWidthMM, logoHeightMM);
-      }
+      const logoInset = 6; // mm from the page edges
+      const logoX = pageWidth - margin - logoInset - logoWidthMM;
+      const logoY = margin + logoInset / 2;
+      pdf.addImage(logoImg, 'PNG', logoX, logoY, logoWidthMM, logoHeightMM);
     }
 
     const today = new Date().toISOString().slice(0, 10);
@@ -1094,7 +1044,6 @@ async function downloadScorecardPDF() {
     alert('Sorry, something went wrong while generating the PDF. Please try again.');
   } finally {
     if (headerActions) headerActions.style.display = prevDisplay;
-    if (heroActionsEl) heroActionsEl.style.display = prevHeroActionsDisplay;
     printBtn.disabled = false;
     printBtn.innerHTML = originalHTML;
   }
