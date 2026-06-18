@@ -238,8 +238,8 @@
     50% { box-shadow: 0 0 0 6px rgba(248,113,113,0.08); }
   }
   .summary-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.16);
     border-radius: 8px;
     padding: 1.2rem 1.4rem;
     position: relative;
@@ -251,19 +251,19 @@
   }
   .summary-card:hover {
     transform: translateY(-3px);
-    box-shadow: 0 8px 24px rgba(0,0,0,0.1);
-    border-color: var(--text-muted);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.25);
+    border-color: rgba(255,255,255,0.35);
   }
   .summary-card .card-arrow {
     position: absolute;
     top: 0.65rem; right: 0.75rem;
     font-size: 0.75rem;
-    color: var(--text-muted);
+    color: rgba(255,255,255,0.45);
     transition: color 0.15s, transform 0.15s;
     line-height: 1;
   }
   .summary-card:hover .card-arrow {
-    color: var(--text);
+    color: #ffffff;
     transform: translate(2px, -2px);
   }
   .summary-card::before {
@@ -286,7 +286,7 @@
   .summary-card.meets .summary-num { color: var(--meets-mid); }
   .summary-card.approaches .summary-num { color: var(--approaches-mid); }
   .summary-card.missing .summary-num { color: var(--missing-mid); }
-  .summary-label { font-size: 0.8rem; color: var(--text-muted); font-weight: 500; }
+  .summary-label { font-size: 0.8rem; color: rgba(255,255,255,0.7); font-weight: 500; }
 
   /* MAIN CONTENT */
   .main { max-width: 1100px; margin: 0 auto; padding: 2.5rem 2rem 4rem; }
