@@ -983,6 +983,19 @@ async function downloadScorecardPDF() {
     });
     logoImg.src = 'un_logo_lao.png';
 
+    // Measure where the hero label (top-alignment target) and the rightmost
+    // KPI card (right-edge alignment target) sit relative to the hero card,
+    // so the stamped logo can be positioned against them precisely instead
+    // of using a fixed inset from the page corner.
+    let heroCardRect = null, heroLabelRect = null, lastCardRect = null;
+    if (heroCardEl) {
+      heroCardRect = heroCardEl.getBoundingClientRect();
+      const heroLabelEl = heroCardEl.querySelector('.hero-label');
+      const lastCardEl = heroCardEl.querySelector('.summary-card:last-child');
+      if (heroLabelEl) heroLabelRect = heroLabelEl.getBoundingClientRect();
+      if (lastCardEl) lastCardRect = lastCardEl.getBoundingClientRect();
+    }
+
     // Capture the hero card (title + KPI cards). The hero card background
     // is now transparent and blends into the dark gradient hero section,
     // so capture it with that same dark background to keep the white text
@@ -1043,16 +1056,35 @@ async function downloadScorecardPDF() {
 
     pdf.addImage(imgData, 'JPEG', x, y, finalWidth, finalHeight);
 
-    // Stamp the UN logo in the top-right corner of the page, over the dark
-    // hero band at the top of the captured content.
+    // Stamp the UN logo so its right edge lines up with the rightmost KPI
+    // card and its top lines up with the hero label text above the title,
+    // matching how the request asked it to sit relative to that content.
     const logoOk = await logoReady;
     if (logoOk && logoImg.naturalWidth && logoImg.naturalHeight) {
       const logoHeightMM = 9;
       const logoWidthMM = logoHeightMM * (logoImg.naturalWidth / logoImg.naturalHeight);
-      const logoInset = 6; // mm from the page edges
-      const logoX = pageWidth - margin - logoInset - logoWidthMM;
-      const logoY = margin + logoInset / 2;
-      pdf.addImage(logoImg, 'PNG', logoX, logoY, logoWidthMM, logoHeightMM);
+
+      if (heroCanvas && heroCardRect && heroLabelRect && lastCardRect) {
+        // Convert the measured DOM rects (CSS px) into combined-canvas pixel
+        // space, then into PDF mm space, using the same scale factors that
+        // were applied when the hero canvas was captured, composited into
+        // the combined canvas, and finally placed on the page.
+        const heroCanvasScale = heroCanvas.width / heroCardRect.width; // CSS px -> heroCanvas px
+        const combinedScale = targetWidth / heroCanvas.width; // heroCanvas px -> combined canvas px
+
+        const rightEdgePx = (lastCardRect.right - heroCardRect.left) * heroCanvasScale * combinedScale;
+        const topEdgePx = (heroLabelRect.top - heroCardRect.top) * heroCanvasScale * combinedScale;
+
+        const logoX = x + (rightEdgePx * scaleFactor) - logoWidthMM;
+        const logoY = y + (topEdgePx * scaleFactor);
+        pdf.addImage(logoImg, 'PNG', logoX, logoY, logoWidthMM, logoHeightMM);
+      } else {
+        // Fallback: fixed inset from the page corner if measurements failed
+        const logoInset = 6; // mm from the page edges
+        const logoX = pageWidth - margin - logoInset - logoWidthMM;
+        const logoY = margin + logoInset / 2;
+        pdf.addImage(logoImg, 'PNG', logoX, logoY, logoWidthMM, logoHeightMM);
+      }
     }
 
     const today = new Date().toISOString().slice(0, 10);
