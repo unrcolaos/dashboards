@@ -644,6 +644,17 @@
 
   /* FOCUS THIS YEAR */
   .focus-section { margin-bottom: 3rem; }
+  .focus-subhead {
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin: 1.5rem 0 0.75rem;
+    padding-bottom: 0.45rem;
+    border-bottom: 1px solid var(--border);
+  }
+  .focus-subhead:first-child { margin-top: 0; }
   .focus-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
@@ -794,7 +805,7 @@
   <!-- Assessment History — past 3 years -->
   <div class="assess-section">
     <div class="section-title">Assessment History · Past 3 Years</div>
-    <p class="section-subtitle">All 15 indicators were first assessed in 2022 — indicators not listed in a given year had their previous rating carried forward.</p>
+    <p class="section-subtitle">All 15 indicators were first assessed in 2022 (baseline year, not shown here). This table covers 2023–2025 reassessment cycles only — indicators not listed in a given year had their previous rating carried forward and were not actively reassessed that cycle.</p>
     <div style="overflow-x:auto;">
       <table class="assess-table">
         <thead>
@@ -806,12 +817,6 @@
         </thead>
         <tbody id="assess-tbody"></tbody>
       </table>
-    </div>
-    <div class="bar-legend" style="margin-top:1.1rem;">
-      <div class="legend-item"><span class="move-chip move-up">▲ Improved</span></div>
-      <div class="legend-item"><span class="move-chip move-flat">— No change</span></div>
-      <div class="legend-item"><span class="move-chip move-down">▼ Declined</span></div>
-      <div class="legend-item"><span class="move-chip move-baseline">◆ Baseline</span></div>
     </div>
   </div>
 
@@ -1103,7 +1108,10 @@ function buildFocus() {
     return;
   }
 
-  grid.innerHTML = items.map(it => {
+  const missing  = items.filter(it => statusKey(it.status) === 'missing');
+  const others   = items.filter(it => statusKey(it.status) !== 'missing');
+
+  const renderCards = list => list.map(it => {
     const k = statusKey(it.status);
     const pillClass = k ? `pill-${k}` : '';
     return `
@@ -1121,6 +1129,17 @@ function buildFocus() {
       </div>
     </a>`;
   }).join('');
+
+  let html = '';
+  if (missing.length) {
+    html += `<div class="focus-subhead">Indicators with Missing Status</div>`;
+    html += `<div class="focus-grid">${renderCards(missing)}</div>`;
+  }
+  if (others.length) {
+    html += `<div class="focus-subhead" style="margin-top:${missing.length ? '2rem' : '0'};">Indicators with Potential for Advancement</div>`;
+    html += `<div class="focus-grid">${renderCards(others)}</div>`;
+  }
+  grid.innerHTML = html;
 }
 
 function buildAssessmentHistory() {
@@ -1279,18 +1298,17 @@ async function downloadScorecardPDF() {
   printBtn.disabled = true;
   printBtn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="animation: spin 1s linear infinite;"><path d="M21 2v6h-6"></path><path d="M3 12a9 9 0 1 0 2.13-5.88L21 8"></path></svg> Generating...`;
 
-  // Hide the header buttons while we capture the page so they don't appear in the export
+  // Hide header buttons and hero actions — not wanted in the export
   const prevDisplay = headerActions ? headerActions.style.display : '';
   if (headerActions) headerActions.style.display = 'none';
-
-  // Hide the hero buttons/instruction row too — not wanted in the PDF export
   const prevHeroActionsDisplay = heroActionsEl ? heroActionsEl.style.display : '';
   if (heroActionsEl) heroActionsEl.style.display = 'none';
 
+  // Grab the activities section so we can move it to page 2
+  const activitiesEl = document.querySelector('.activities-section');
+  const prevActivitiesDisplay = activitiesEl ? activitiesEl.style.display : '';
+
   try {
-    // Load the UN logo so we can stamp it into the top-right corner of the
-    // exported PDF (the on-screen header has it top-left, but the PDF
-    // doesn't capture the header bar at all, so it needs to be added here).
     const logoImg = new Image();
     const logoReady = new Promise(resolve => {
       logoImg.onload = () => resolve(true);
@@ -1298,23 +1316,16 @@ async function downloadScorecardPDF() {
     });
     logoImg.src = 'un_logo_lao.png';
 
-    // Measure where the hero label (top-alignment target) and the rightmost
-    // KPI card (right-edge alignment target) sit relative to the hero card,
-    // so the stamped logo can be positioned against them precisely instead
-    // of using a fixed inset from the page corner.
+    // Measure logo anchor points before hiding anything
     let heroCardRect = null, heroLabelRect = null, lastCardRect = null;
     if (heroCardEl) {
       heroCardRect = heroCardEl.getBoundingClientRect();
       const heroLabelEl = heroCardEl.querySelector('.hero-label');
-      const lastCardEl = heroCardEl.querySelector('.summary-card:last-child');
+      const lastCardEl  = heroCardEl.querySelector('.summary-card:last-child');
       if (heroLabelEl) heroLabelRect = heroLabelEl.getBoundingClientRect();
-      if (lastCardEl) lastCardRect = lastCardEl.getBoundingClientRect();
+      if (lastCardEl)  lastCardRect  = lastCardEl.getBoundingClientRect();
     }
 
-    // Capture the hero card (title + KPI cards). The hero card background
-    // is now transparent and blends into the dark gradient hero section,
-    // so capture it with that same dark background to keep the white text
-    // legible in the exported PDF.
     const captureOpts = {
       scale: 2,
       useCORS: true,
@@ -1322,95 +1333,91 @@ async function downloadScorecardPDF() {
       windowWidth: document.documentElement.scrollWidth,
       windowHeight: document.documentElement.scrollHeight
     };
+
+    // ── PAGE 1: hero + all main sections except activities ──────────────────
+    if (activitiesEl) activitiesEl.style.display = 'none';
+
     const heroCanvas = heroCardEl ? await html2canvas(heroCardEl, captureOpts) : null;
     const mainCanvas = await html2canvas(mainEl, { ...captureOpts, backgroundColor: '#fafaf8' });
 
-    // The two elements can come back at slightly different pixel widths
-    // (different internal padding, scrollbar timing, etc). Scale both to
-    // a shared width before stacking so there's never a leftover gap —
-    // an uninitialized canvas gap renders solid black, which is the bug
-    // this fixes.
+    if (activitiesEl) activitiesEl.style.display = prevActivitiesDisplay;
+
+    // Stack hero + main onto a shared-width canvas (prevents black-gap artifact)
     const targetWidth = Math.max(heroCanvas ? heroCanvas.width : 0, mainCanvas.width);
     const scaledHeroHeight = heroCanvas ? Math.round(heroCanvas.height * (targetWidth / heroCanvas.width)) : 0;
     const scaledMainHeight = Math.round(mainCanvas.height * (targetWidth / mainCanvas.width));
 
-    const combined = document.createElement('canvas');
-    combined.width = targetWidth;
-    combined.height = scaledHeroHeight + scaledMainHeight;
-    const ctx = combined.getContext('2d');
-    ctx.fillStyle = '#392427';
-    ctx.fillRect(0, 0, combined.width, combined.height);
-    let yOffset = 0;
-    if (heroCanvas) {
-      ctx.drawImage(heroCanvas, 0, 0, targetWidth, scaledHeroHeight);
-      yOffset = scaledHeroHeight;
-    }
-    ctx.drawImage(mainCanvas, 0, yOffset, targetWidth, scaledMainHeight);
+    const p1Canvas = document.createElement('canvas');
+    p1Canvas.width  = targetWidth;
+    p1Canvas.height = scaledHeroHeight + scaledMainHeight;
+    const p1Ctx = p1Canvas.getContext('2d');
+    p1Ctx.fillStyle = '#392427';
+    p1Ctx.fillRect(0, 0, p1Canvas.width, p1Canvas.height);
+    if (heroCanvas) p1Ctx.drawImage(heroCanvas, 0, 0, targetWidth, scaledHeroHeight);
+    p1Ctx.drawImage(mainCanvas, 0, scaledHeroHeight, targetWidth, scaledMainHeight);
 
-    const imgData = combined.toDataURL('image/jpeg', 0.95);
-    const imgWidth = combined.width;
-    const imgHeight = combined.height;
+    // ── PAGE 2: activities only ─────────────────────────────────────────────
+    const p2Canvas = activitiesEl
+      ? await html2canvas(activitiesEl, { ...captureOpts, backgroundColor: '#fafaf8' })
+      : null;
 
+    // ── BUILD PDF ───────────────────────────────────────────────────────────
     const { jsPDF } = window.jspdf;
-    // Pick the A4 orientation that best matches the captured content's shape
-    const orientation = imgWidth > imgHeight ? 'landscape' : 'portrait';
+    const margin = 5; // mm
+
+    // Use page 1 shape to decide orientation; keep consistent across both pages
+    const orientation = p1Canvas.width > p1Canvas.height ? 'landscape' : 'portrait';
     const pdf = new jsPDF({ orientation, unit: 'mm', format: 'a4' });
 
-    const pageWidth = pdf.internal.pageSize.getWidth();
+    const pageWidth  = pdf.internal.pageSize.getWidth();
     const pageHeight = pdf.internal.pageSize.getHeight();
+    const usableW    = pageWidth  - margin * 2;
+    const usableH    = pageHeight - margin * 2;
 
-    // Scale the captured image down so it fits entirely within a single A4 page
-    const margin = 5; // mm
-    const usableWidth = pageWidth - margin * 2;
-    const usableHeight = pageHeight - margin * 2;
-    const scaleFactor = Math.min(usableWidth / imgWidth, usableHeight / imgHeight);
-    const finalWidth = imgWidth * scaleFactor;
-    const finalHeight = imgHeight * scaleFactor;
-    const x = (pageWidth - finalWidth) / 2;
-    const y = margin;
+    // Place page 1 image
+    const p1Scale  = Math.min(usableW / p1Canvas.width, usableH / p1Canvas.height);
+    const p1W      = p1Canvas.width  * p1Scale;
+    const p1H      = p1Canvas.height * p1Scale;
+    const p1X      = (pageWidth - p1W) / 2;
+    pdf.addImage(p1Canvas.toDataURL('image/jpeg', 0.95), 'JPEG', p1X, margin, p1W, p1H);
 
-    pdf.addImage(imgData, 'JPEG', x, y, finalWidth, finalHeight);
-
-    // Stamp the UN logo so its right edge lines up with the rightmost KPI
-    // card and its top lines up with the hero label text above the title,
-    // matching how the request asked it to sit relative to that content.
+    // Stamp UN logo on page 1
     const logoOk = await logoReady;
     if (logoOk && logoImg.naturalWidth && logoImg.naturalHeight) {
-      const logoHeightMM = 9;
-      const logoWidthMM = logoHeightMM * (logoImg.naturalWidth / logoImg.naturalHeight);
-
+      const logoH = 9;
+      const logoW = logoH * (logoImg.naturalWidth / logoImg.naturalHeight);
       if (heroCanvas && heroCardRect && heroLabelRect && lastCardRect) {
-        // Convert the measured DOM rects (CSS px) into combined-canvas pixel
-        // space, then into PDF mm space, using the same scale factors that
-        // were applied when the hero canvas was captured, composited into
-        // the combined canvas, and finally placed on the page.
-        const heroCanvasScale = heroCanvas.width / heroCardRect.width; // CSS px -> heroCanvas px
-        const combinedScale = targetWidth / heroCanvas.width; // heroCanvas px -> combined canvas px
-
-        const rightEdgePx = (lastCardRect.right - heroCardRect.left) * heroCanvasScale * combinedScale;
-        const topEdgePx = (heroLabelRect.top - heroCardRect.top) * heroCanvasScale * combinedScale;
-
-        const logoX = x + (rightEdgePx * scaleFactor) - logoWidthMM;
-        const logoY = y + (topEdgePx * scaleFactor);
-        pdf.addImage(logoImg, 'PNG', logoX, logoY, logoWidthMM, logoHeightMM);
+        const heroCanvasScale = heroCanvas.width / heroCardRect.width;
+        const combinedScale   = targetWidth / heroCanvas.width;
+        const rightEdgePx = (lastCardRect.right  - heroCardRect.left) * heroCanvasScale * combinedScale;
+        const topEdgePx   = (heroLabelRect.top   - heroCardRect.top)  * heroCanvasScale * combinedScale;
+        pdf.addImage(logoImg, 'PNG', p1X + (rightEdgePx * p1Scale) - logoW, margin + (topEdgePx * p1Scale), logoW, logoH);
       } else {
-        // Fallback: fixed inset from the page corner if measurements failed
-        const logoInset = 6; // mm from the page edges
-        const logoX = pageWidth - margin - logoInset - logoWidthMM;
-        const logoY = margin + logoInset / 2;
-        pdf.addImage(logoImg, 'PNG', logoX, logoY, logoWidthMM, logoHeightMM);
+        pdf.addImage(logoImg, 'PNG', pageWidth - margin - 6 - logoW, margin + 3, logoW, logoH);
       }
+    }
+
+    // Page 2 — activities
+    if (p2Canvas) {
+      pdf.addPage();
+      const p2Scale = Math.min(usableW / p2Canvas.width, usableH / p2Canvas.height);
+      const p2W     = p2Canvas.width  * p2Scale;
+      const p2H     = p2Canvas.height * p2Scale;
+      const p2X     = (pageWidth - p2W) / 2;
+      pdf.addImage(p2Canvas.toDataURL('image/jpeg', 0.95), 'JPEG', p2X, margin, p2W, p2H);
     }
 
     const today = new Date().toISOString().slice(0, 10);
     pdf.save(`UNCT-SWAP_Gender_Scorecard_LaoPDR_${today}.pdf`);
+
   } catch (err) {
     console.error('Failed to generate PDF', err);
     alert('Sorry, something went wrong while generating the PDF. Please try again.');
   } finally {
-    if (headerActions) headerActions.style.display = prevDisplay;
-    if (heroActionsEl) heroActionsEl.style.display = prevHeroActionsDisplay;
-    printBtn.disabled = false;
+    if (headerActions)  headerActions.style.display  = prevDisplay;
+    if (heroActionsEl)  heroActionsEl.style.display  = prevHeroActionsDisplay;
+    if (activitiesEl)   activitiesEl.style.display   = prevActivitiesDisplay;
+    printBtn.disabled  = false;
     printBtn.innerHTML = originalHTML;
   }
 }
