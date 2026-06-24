@@ -523,8 +523,9 @@ async function downloadIndicatorsPDF(){
     // if the dimension is too tall for a single page.
     for(const blk of blocks){
       const blkH=(blk.y1-blk.y0)*kMain;
-      if(blk.dimStart && blk.dimIndex>1){
-        // New dimension → always begin on a clean page
+      if(blk.dimStart && blk.dimIndex>2){
+        // Dim 3 onwards → always begin on a clean page
+        // Dim 2 intentionally flows on the same page as any Dim 1 overflow
         pdf.addPage();
         yMm=margin;
       }else if(yMm+blkH>margin+pageH){
