@@ -327,14 +327,18 @@ function setDimFilter(dim,el){
   buildPage();
 }
 function setStatusFilter(status,el){
-  // Toggle off if already active
-  if(_activeStatus===status){_activeStatus='all';clearStatusChips();buildPage();return;}
+  // Toggle off: clicking the already-active status reverts to 'all'
+  if(_activeStatus===status&&status!=='all')status='all';
   _activeStatus=status;
-  document.querySelectorAll('[data-status]').forEach(c=>c.className='chip');
-  if(el){
-    if(status==='all')el.className='chip active-all';
-    else el.className=`chip active-${status}`;
-  }
+  // Style status chips off the status value (NOT the clicked element),
+  // so a KPI-card click never turns the card into a chip.
+  document.querySelectorAll('[data-status]').forEach(c=>{
+    const on=c.dataset.status===status;
+    c.className='chip'+(on?(status==='all'?' active-all':` active-${status}`):'');
+  });
+  // Highlight the matching KPI card via its own subtle .active state
+  document.querySelectorAll('.kpi-card').forEach(c=>c.classList.remove('active'));
+  if(status!=='all'){const kc=document.getElementById('kpi-'+status);if(kc)kc.classList.add('active');}
   buildPage();
 }
 function clearStatusChips(){
