@@ -25,7 +25,7 @@ body{font-family:'Roboto',sans-serif;font-weight:400;font-size:16px;background:v
 .site-header{position:sticky;top:0;z-index:200;background:var(--header-bg);border-bottom:3px solid var(--accent);height:64px;display:flex;align-items:center}
 .header-inner{width:100%;max-width:1100px;margin:0 auto;padding:0 2rem;display:flex;align-items:center;justify-content:space-between;gap:1rem}
 .header-left{display:flex;align-items:center;gap:.75rem}
-.logo{width:38px;height:38px;background:rgba(255,255,255,.15);border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-family:'Lato',sans-serif;font-weight:900;font-size:.75rem;letter-spacing:.05em;border:2px solid rgba(255,255,255,.3)}
+.header-logo{height:38px;width:auto;display:block}
 .header-divider{width:1px;height:28px;background:rgba(255,255,255,.25)}
 .header-title{font-family:'Lato',sans-serif;font-weight:700;font-size:1rem;color:#fff;white-space:nowrap}
 .header-badge{background:var(--accent);color:#fff;font-size:.65rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:3px 10px;border-radius:2px;white-space:nowrap}
@@ -132,33 +132,27 @@ body{font-family:'Roboto',sans-serif;font-weight:400;font-size:16px;background:v
 .legend-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
 
 /* ACTIVITIES */
-.activities-section{margin-bottom:2rem}
-.table-scroll{overflow-x:auto;border:1px solid var(--border);border-radius:6px}
-table{width:100%;border-collapse:collapse;font-size:.82rem}
-thead th{background:var(--bg);padding:.7rem 1rem;text-align:left;font-size:.72rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--text-muted);border-bottom:2px solid var(--border);white-space:nowrap}
-tbody tr{border-bottom:1px solid var(--border)}
-tbody tr:last-child{border-bottom:none}
-tbody tr:hover{background:#faf8ff}
-tbody td{padding:.75rem 1rem;vertical-align:top;color:var(--text)}
-td.date-cell{white-space:nowrap;color:var(--text-muted);font-size:.78rem;min-width:100px}
-td.ind-cell{white-space:nowrap;min-width:90px}
-td.desc-cell{min-width:200px;max-width:320px}
-td.notes-cell{max-width:240px;font-size:.78rem;color:var(--text-muted)}
-td.lead-cell{min-width:120px;font-size:.78rem;color:var(--text-muted)}
-.pi-link{color:var(--accent);text-decoration:none;font-weight:600;font-size:.78rem;white-space:nowrap}
-.pi-link:hover{text-decoration:underline}
-.ind-name-sub{display:block;font-size:.72rem;color:var(--text-muted);margin-top:2px}
-.act-type-pill{display:inline-block;font-size:.65rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:2px 8px;border-radius:3px;background:var(--bg);border:1px solid var(--border);color:var(--text-muted);white-space:nowrap}
-.act-status-pill{display:inline-flex;align-items:center;gap:5px;font-size:.72rem;font-weight:600;padding:3px 10px;border-radius:99px;white-space:nowrap}
-.act-status-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
-.act-planned{background:var(--approaches-bg);color:var(--approaches)}.act-planned .act-status-dot{background:var(--approaches-mid)}
-.act-inprogress{background:var(--meets-bg);color:var(--meets)}.act-inprogress .act-status-dot{background:var(--meets-mid)}
-.act-done{background:var(--exceeds-bg);color:var(--exceeds)}.act-done .act-status-dot{background:var(--exceeds-mid)}
-.act-delayed{background:var(--missing-bg);color:var(--missing)}.act-delayed .act-status-dot{background:var(--missing-mid)}
-.act-other{background:var(--bg);color:var(--text-muted);border:1px solid var(--border)}.act-other .act-status-dot{background:var(--text-muted)}
+.activities-section{margin-top:2rem}
+.activities-section td{vertical-align:top}
+.pi-link{color:var(--accent);text-decoration:none;border-bottom:1px dotted transparent;transition:border-color .15s}
+.pi-link:hover{border-bottom-color:var(--accent)}
+.act-type-pill{display:inline-block;white-space:nowrap;font-size:.65rem;font-weight:600;text-transform:uppercase;background:var(--border);padding:3px 8px;border-radius:4px;letter-spacing:.05em}
+.act-status-pill{font-size:.75rem;font-weight:600;display:inline-flex;align-items:center;gap:.4rem;white-space:nowrap;padding:4px 10px 4px 8px;border-radius:20px}
+.act-status-pill::before{content:'';width:6px;height:6px;border-radius:50%;flex-shrink:0}
+.act-status-pill.status-planned{color:var(--approaches);background:var(--approaches-bg)}
+.act-status-pill.status-planned::before{background:var(--approaches-mid)}
+.act-status-pill.status-progress{color:var(--meets);background:var(--meets-bg)}
+.act-status-pill.status-progress::before{background:var(--meets-mid)}
+.act-status-pill.status-done{color:var(--exceeds);background:var(--exceeds-bg)}
+.act-status-pill.status-done::before{background:var(--exceeds-mid)}
+.act-status-pill.status-delayed{color:var(--missing);background:var(--missing-bg)}
+.act-status-pill.status-delayed::before{background:var(--missing-mid)}
+.act-status-pill.status-other{color:var(--text-muted);background:var(--border)}
+.act-status-pill.status-other::before{background:var(--text-muted)}
+.cell-list{margin:0;padding-left:1.15rem}
+.cell-list li{margin-bottom:.25rem}
+.cell-list li:last-child{margin-bottom:0}
 .no-data{text-align:center;color:var(--text-muted);padding:2rem;font-style:italic}
-td ol,td ul{padding-left:1.2rem;margin:0}
-td li{margin-bottom:.2rem;line-height:1.5}
 
 /* FOOTER */
 footer{text-align:center;padding:2rem;font-size:.78rem;color:var(--text-muted);border-top:1px solid var(--border)}
@@ -168,7 +162,7 @@ footer{text-align:center;padding:2rem;font-size:.78rem;color:var(--text-muted);b
   .hero-top{grid-template-columns:1fr}
   .kpi-grid{grid-template-columns:repeat(2,1fr)}
   .header-divider,.header-title{display:none}
-  .logo{width:32px;height:32px;font-size:.65rem}
+  .header-logo{height:32px}
   .dist-label{min-width:90px;font-size:.72rem}
   .dist-sep{margin-left:90px}
   .main{padding:1.5rem 1rem 3rem}
@@ -185,7 +179,7 @@ footer{text-align:center;padding:2rem;font-size:.78rem;color:var(--text-muted);b
 <header class="site-header">
   <div class="header-inner">
     <div class="header-left">
-      <div class="logo">UN</div>
+      <img src="https://raw.githubusercontent.com/unrcolaos/dashboards/main/un_logo_lao.png" alt="United Nations Lao PDR" class="header-logo">
       <div class="header-divider"></div>
       <h1 class="header-title">UNDIS Disability Inclusion Scorecard</h1>
       <span class="header-badge">UNDIS · 2025</span>
@@ -207,7 +201,7 @@ footer{text-align:center;padding:2rem;font-size:.78rem;color:var(--text-muted);b
         <p class="hero-desc">Tracking the UN Country Team's progress on disability inclusion across leadership &amp; strategic planning, programming, organizational culture, and inclusiveness.</p>
         <div class="hero-actions" id="hero-actions">
           <a href="undis_indicators.html" class="btn-hero-primary">View All Indicators →</a>
-          <button class="btn-hero-outline" onclick="downloadScorecardPDF()">Download Report ↗</button>
+          <a href="#" target="_blank" rel="noopener" class="btn-hero-outline" id="resources-link">Resources ↗</a>
         </div>
       </div>
     </div>
@@ -251,11 +245,13 @@ footer{text-align:center;padding:2rem;font-size:.78rem;color:var(--text-muted);b
     <h2 class="section-title">Status Distribution</h2>
     <p class="section-subtitle">2025 assessment results across all 14 indicators, by dimension.</p>
     <div id="dist-chart" class="dist-chart"></div>
-    <div class="dist-legend">
-      <div class="legend-item"><div class="legend-dot" style="background:var(--exceeds-mid)"></div>Exceeds</div>
-      <div class="legend-item"><div class="legend-dot" style="background:var(--meets-mid)"></div>Meets</div>
-      <div class="legend-item"><div class="legend-dot" style="background:var(--approaches-mid)"></div>Approaches</div>
-      <div class="legend-item"><div class="legend-dot" style="background:var(--missing-mid)"></div>Missing</div>
+    <div style="display:flex;justify-content:flex-end;margin-top:.75rem;">
+      <div class="dist-legend">
+        <div class="legend-item"><div class="legend-dot" style="background:var(--exceeds-mid)"></div>Exceeds</div>
+        <div class="legend-item"><div class="legend-dot" style="background:var(--meets-mid)"></div>Meets</div>
+        <div class="legend-item"><div class="legend-dot" style="background:var(--approaches-mid)"></div>Approaches</div>
+        <div class="legend-item"><div class="legend-dot" style="background:var(--missing-mid)"></div>Missing</div>
+      </div>
     </div>
   </section>
 
@@ -263,17 +259,17 @@ footer{text-align:center;padding:2rem;font-size:.78rem;color:var(--text-muted);b
   <section class="activities-section" id="activities-section">
     <h2 class="section-title">Recent &amp; Upcoming Activities</h2>
     <p class="section-subtitle">Live from the activities tracker — refresh to see the latest updates.</p>
-    <div class="table-scroll">
-      <table>
+    <div style="overflow-x:auto;">
+      <table style="width:100%;border-collapse:collapse;text-align:left;">
         <thead>
-          <tr>
-            <th>Date</th>
-            <th>Indicator</th>
-            <th>Activity</th>
-            <th>Type</th>
-            <th>Lead</th>
-            <th>Status</th>
-            <th>Notes</th>
+          <tr style="border-bottom:1px solid var(--border);font-size:.8rem;color:var(--text-muted);">
+            <th style="padding:10px;white-space:nowrap;">Date</th>
+            <th style="padding:10px;">Indicator</th>
+            <th style="padding:10px;width:26%;">Activity Description</th>
+            <th style="padding:10px;white-space:nowrap;">Activity Type</th>
+            <th style="padding:10px;">Lead</th>
+            <th style="padding:10px;white-space:nowrap;">Status</th>
+            <th style="padding:10px;width:20%;">Notes</th>
           </tr>
         </thead>
         <tbody id="activities-body"><tr><td colspan="7" class="no-data">Loading activities…</td></tr></tbody>
@@ -330,15 +326,17 @@ function formatDate(v){
 
 function formatCell(text){
   const raw=String(text||'').trim();if(!raw)return'—';
-  const lines=raw.split(/\n+/);
-  const isNum=lines.length>1&&/^\d+[\.\)]/.test(lines[0].trim());
-  const isBullet=lines.length>1&&/^[-•]/.test(lines[0].trim());
-  if(isNum){const items=lines.map(l=>l.replace(/^\d+[\.\)]\s*/,'').trim()).filter(Boolean);return'<ol>'+items.map(i=>`<li>${escHtml(i)}</li>`).join('')+'</ol>'}
-  if(isBullet){const items=lines.map(l=>l.replace(/^[-•]\s*/,'').trim()).filter(Boolean);return'<ul>'+items.map(i=>`<li>${escHtml(i)}</li>`).join('')+'</ul>'}
-  return escHtml(raw).replace(/\n/g,'<br>');
+  const lines=raw.split(/\r\n|\r|\n/).map(l=>l.trim()).filter(Boolean);
+  if(!lines.length)return'';
+  const numRe=/^(\d+)[.):\-]\s+(.*)$/;
+  const bulRe=/^[-*•·–]\s+(.*)$/;
+  const esc=s=>escHtml(String(s));
+  if(lines.every(l=>numRe.test(l)))return'<ol class="cell-list">'+lines.map(l=>`<li>${esc(l.match(numRe)[2])}</li>`).join('')+'</ol>';
+  if(lines.every(l=>bulRe.test(l)))return'<ul class="cell-list">'+lines.map(l=>`<li>${esc(l.match(bulRe)[1])}</li>`).join('')+'</ul>';
+  return lines.map(l=>escHtml(l)).join('<br>');
 }
 
-function actStatusClass(s){const v=String(s||'').toLowerCase().trim();if(v.includes('progress'))return'act-inprogress';if(v==='planned')return'act-planned';if(v==='done')return'act-done';if(v==='delayed')return'act-delayed';return'act-other'}
+function actStatusClass(s){const v=String(s||'').toLowerCase().trim();if(v.includes('progress'))return'status-progress';if(v==='planned')return'status-planned';if(v==='done'||v==='complete'||v==='completed')return'status-done';if(v==='delayed'||v==='overdue')return'status-delayed';return'status-other'}
 
 function normalizeDim(raw){const map={'LEADERSHIP, STRATEGIC PLANNING AND MANAGEMENT':'Leadership, Strategic Planning & Management','INCLUSIVENESS':'Inclusiveness','PROGRAMMING':'Programming','ORGANIZATIONAL CULTURE':'Organizational Culture'};return map[String(raw||'').trim().toUpperCase()]||raw}
 function shortDim(raw){const map={'LEADERSHIP, STRATEGIC PLANNING AND MANAGEMENT':'Leadership & Planning','INCLUSIVENESS':'Inclusiveness','PROGRAMMING':'Programming','ORGANIZATIONAL CULTURE':'Org. Culture'};return map[String(raw||'').trim().toUpperCase()]||raw}
@@ -479,17 +477,16 @@ function buildActivities(){
   if(!_activities.length){tbody.innerHTML='<tr><td colspan="7" class="no-data">No activities found. Add rows to the Activities tab in the Google Sheet.</td></tr>';return}
   tbody.innerHTML=_activities.map(a=>{
     const sc=actStatusClass(a.status);
-    // find indicator name from _indicators if possible
     const matched=_indicators.find(i=>String(i.num).trim()===String(a.num).trim());
     const indName=matched?matched.name:a.indicator;
-    return`<tr>
-      <td class="date-cell">${escHtml(formatDate(a.date))}</td>
-      <td class="ind-cell"><a class="pi-link" href="${indAnchorHref(a.num)}">#${escHtml(a.num)}</a><span class="ind-name-sub">${escHtml(indName)}</span></td>
-      <td class="desc-cell">${formatCell(a.desc)}</td>
-      <td><span class="act-type-pill">${escHtml(a.type)}</span></td>
-      <td class="lead-cell">${escHtml(a.lead)}</td>
-      <td><span class="act-status-pill ${sc}"><span class="act-status-dot"></span>${escHtml(a.status)}</span></td>
-      <td class="notes-cell">${formatCell(a.notes)}</td>
+    return`<tr style="border-bottom:1px solid var(--border);">
+      <td style="padding:10px;white-space:nowrap;font-size:.85rem;color:var(--text-muted);">${escHtml(formatDate(a.date))}</td>
+      <td style="padding:10px;"><a class="pi-link" href="${indAnchorHref(a.num)}">#${escHtml(a.num)}</a><br><span style="font-size:.78rem;color:var(--text-muted);">${escHtml(indName)}</span></td>
+      <td style="padding:10px;font-size:.9rem;">${formatCell(a.desc)}</td>
+      <td style="padding:10px;"><span class="act-type-pill">${escHtml(a.type)}</span></td>
+      <td style="padding:10px;font-size:.9rem;color:var(--text-muted);">${escHtml(a.lead)}</td>
+      <td style="padding:10px;"><span class="act-status-pill ${sc}">${escHtml(a.status)}</span></td>
+      <td style="padding:10px;color:var(--text-muted);font-size:.85rem;">${formatCell(a.notes)}</td>
     </tr>`;
   }).join('');
 }
