@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UNDIS Indicators · Lao PDR 2025</title>
+<link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700;900&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --exceeds:#1d4e89;--exceeds-bg:#dbeafe;--exceeds-mid:#60a5fa;
+  --meets:#2d6a4f;--meets-bg:#d8f3dc;--meets-mid:#52b788;
+  --approaches:#92400e;--approaches-bg:#fef3c7;--approaches-mid:#f59e0b;
+  --missing:#7f1d1d;--missing-bg:#fee2e2;--missing-mid:#f87171;
+  --accent:#4C3B73;
+  --bg:#faf9fc;--surface:#fff;--border:#e6e2ee;
+  --text:#181421;--text-muted:#645d72;
+  --header-bg:#2A2342;--hero-highlight:#B7A6E0;
+  --header-h:60px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:'Roboto',sans-serif;font-size:16px;background:var(--bg);color:var(--text);line-height:1.6}
+
+/* ── HEADER ── */
+.site-header{position:sticky;top:0;z-index:200;background:var(--header-bg);border-bottom:3px solid var(--accent);height:var(--header-h);display:flex;align-items:center}
+.header-inner{width:100%;max-width:1100px;margin:0 auto;padding:0 2rem;display:flex;align-items:center;justify-content:space-between;gap:1rem}
+.header-left{display:flex;align-items:center;gap:.75rem}
+.logo{width:36px;height:36px;background:rgba(255,255,255,.15);border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-family:'Lato',sans-serif;font-weight:900;font-size:.7rem;letter-spacing:.05em;border:2px solid rgba(255,255,255,.3);flex-shrink:0}
+.header-divider{width:1px;height:26px;background:rgba(255,255,255,.25)}
+.header-title{font-family:'Lato',sans-serif;font-weight:700;font-size:.95rem;color:#fff;white-space:nowrap}
+.header-badge{background:var(--accent);color:#fff;font-size:.62rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:3px 9px;border-radius:2px;white-space:nowrap}
+.btn-back{background:transparent;border:1px solid rgba(255,255,255,.4);color:#fff;font-family:'Roboto',sans-serif;font-size:.78rem;font-weight:500;padding:6px 14px;border-radius:4px;cursor:pointer;text-decoration:none;display:inline-block;transition:background .2s}
+.btn-back:hover{background:var(--accent)}
+
+/* ── HERO ── */
+.hero{background:linear-gradient(135deg,#2A2342 55%,#4C3B73 100%);position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;inset:0;background-image:url("data:image/svg+xml,%3Csvg width='20' height='20' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 0h2v2H0zm10 10h2v2h-2z' fill='white' fill-opacity='0.03'/%3E%3C/svg%3E");pointer-events:none}
+.hero-card{max-width:1100px;margin:0 auto;padding:2.2rem 2rem 2rem;position:relative}
+.eyebrow{font-size:.72rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--hero-highlight);margin-bottom:.5rem}
+.hero-title{font-family:'Lato',sans-serif;font-weight:900;font-size:clamp(1.5rem,3vw,2.2rem);color:#fff;line-height:1.2;margin-bottom:.5rem}
+.hero-desc{font-size:.88rem;color:rgba(255,255,255,.7);max-width:600px;font-weight:300;line-height:1.6;margin-bottom:1.5rem}
+.kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:.8rem}
+.kpi-card{display:block;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.16);border-radius:6px;padding:.9rem 1rem .8rem;text-decoration:none;position:relative;transition:transform .2s,border-color .2s;cursor:pointer;overflow:hidden}
+.kpi-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px}
+.kpi-exceeds::before{background:var(--exceeds-mid)}.kpi-meets::before{background:var(--meets-mid)}.kpi-approaches::before{background:var(--approaches-mid)}.kpi-missing::before{background:var(--missing-mid)}
+.kpi-card:hover,.kpi-card.active{transform:translateY(-2px);border-color:rgba(255,255,255,.4)}
+.kpi-card.active{background:rgba(255,255,255,.14)}
+.kpi-num{display:block;font-size:2.2rem;font-weight:700;line-height:1;margin:.2rem 0 .35rem}
+.kpi-exceeds .kpi-num{color:var(--exceeds-mid)}.kpi-meets .kpi-num{color:var(--meets-mid)}.kpi-approaches .kpi-num{color:var(--approaches-mid)}.kpi-missing .kpi-num{color:var(--missing-mid)}
+.kpi-label{font-size:.7rem;color:rgba(255,255,255,.62);line-height:1.3}
+
+/* ── FILTER BAR ── */
+.filter-bar-wrap{position:sticky;top:var(--header-h);z-index:100;background:#fff;border-bottom:1px solid var(--border);box-shadow:0 2px 8px rgba(0,0,0,.06)}
+.filter-bar{max-width:1100px;margin:0 auto;padding:.65rem 2rem .55rem}
+.filter-row{display:flex;align-items:center;gap:.4rem;flex-wrap:wrap;margin-bottom:.35rem}
+.filter-row:last-child{margin-bottom:0}
+.filter-label{font-size:.7rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--text-muted);min-width:72px;flex-shrink:0}
+.chip{display:inline-flex;align-items:center;gap:.3rem;font-size:.75rem;font-weight:500;padding:4px 12px;border-radius:99px;border:1px solid var(--border);color:var(--text-muted);background:var(--bg);cursor:pointer;transition:background .15s,color .15s,border-color .15s;white-space:nowrap;user-select:none}
+.chip:hover{border-color:var(--accent);color:var(--accent)}
+.chip.active-all{background:var(--text);color:#fff;border-color:var(--text)}
+.chip.active-exceeds{background:var(--exceeds);color:#fff;border-color:var(--exceeds)}
+.chip.active-meets{background:var(--meets);color:#fff;border-color:var(--meets)}
+.chip.active-approaches{background:var(--approaches);color:#fff;border-color:var(--approaches)}
+.chip.active-missing{background:var(--missing);color:#fff;border-color:var(--missing)}
+.chip.active-dim{background:var(--text);color:#fff;border-color:var(--text)}
+.chip-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.filter-meta{display:flex;align-items:center;justify-content:space-between;padding:.3rem 0 .1rem;font-size:.75rem;color:var(--text-muted)}
+.btn-clear{background:none;border:1px solid var(--border);color:var(--text-muted);font-size:.72rem;padding:2px 10px;border-radius:99px;cursor:pointer;font-family:'Roboto',sans-serif}
+.btn-clear:hover{border-color:var(--accent);color:var(--accent)}
+
+/* ── MAIN ── */
+.main{max-width:1100px;margin:0 auto;padding:2rem 2rem 4rem}
+
+/* DIM SECTION */
+.dim-section{margin-bottom:2.5rem}
+.dim-header{display:flex;align-items:center;gap:.75rem;border-bottom:2px solid var(--border);padding-bottom:.6rem;margin-bottom:1rem}
+.dim-header-left{flex:1}
+.dim-num{font-size:.7rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--text-muted);margin-bottom:.15rem}
+.dim-name{font-family:'Lato',sans-serif;font-weight:700;font-size:1.15rem;color:var(--text)}
+.dim-badges{display:flex;gap:.4rem;flex-shrink:0}
+
+/* PILL */
+.pill{display:inline-block;font-size:.67rem;font-weight:700;padding:3px 10px;border-radius:99px;white-space:nowrap;line-height:1.4}
+.pill-exceeds{background:var(--exceeds-bg);color:var(--exceeds)}
+.pill-meets{background:var(--meets-bg);color:var(--meets)}
+.pill-approaches{background:var(--approaches-bg);color:var(--approaches)}
+.pill-missing{background:var(--missing-bg);color:var(--missing)}
+
+/* INDICATOR DETAIL CARD */
+.indicator-detail{background:var(--surface);border:1px solid var(--border);border-radius:8px;overflow:hidden;margin-bottom:1rem;transition:box-shadow .2s}
+.indicator-detail:target,.indicator-detail.highlighted{box-shadow:0 0 0 3px var(--accent)}
+.ind-header{padding:1.1rem 1.3rem 1rem;display:flex;justify-content:space-between;align-items:flex-start;gap:1rem;border-bottom:1px solid var(--border)}
+.ind-header-left{flex:1}
+.ind-label{font-size:.7rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--text-muted);margin-bottom:.3rem}
+.ind-name{font-family:'Lato',sans-serif;font-weight:700;font-size:1.15rem;color:var(--text);margin-bottom:.3rem;line-height:1.3}
+.ind-desc{font-size:.83rem;color:var(--text-muted);line-height:1.5}
+.ind-header-right{text-align:right;flex-shrink:0}
+.ind-year{font-size:.68rem;color:rgba(255,255,255,.6);margin-top:.35rem;text-align:center}
+
+/* MISSING BANNER */
+.missing-banner{background:var(--missing-bg);border-left:4px solid var(--missing-mid);padding:.85rem 1.1rem;margin:0;font-size:.83rem;color:var(--missing)}
+.missing-banner strong{display:block;font-weight:700;margin-bottom:.35rem}
+.missing-banner ul{padding-left:1.2rem;margin-top:.35rem}
+.missing-banner li{margin-bottom:.2rem;line-height:1.5}
+
+/* CRITERIA */
+.criteria-section{padding:1.1rem 1.3rem 1.3rem}
+.criteria-label{font-size:.7rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--text-muted);margin-bottom:.9rem}
+.criteria-cols{display:grid;grid-template-columns:repeat(3,1fr);gap:.8rem}
+.criteria-col{border:1px solid var(--border);border-radius:6px;overflow:hidden}
+.crit-col-head{padding:.55rem .8rem;display:flex;align-items:center;justify-content:space-between;gap:.5rem;border-bottom:1px solid var(--border)}
+.crit-level-label{font-size:.7rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase}
+.crit-check{font-size:.85rem;font-weight:700}
+.crit-col-body{padding:.75rem .8rem;font-size:.8rem;line-height:1.6;color:var(--text)}
+
+/* Met state */
+.crit-col.met-exceeds{border-color:var(--exceeds-mid)}
+.crit-col.met-exceeds .crit-col-head{background:var(--exceeds-bg)}
+.crit-col.met-exceeds .crit-level-label{color:var(--exceeds)}
+.crit-col.met-exceeds .crit-check{color:var(--exceeds)}
+.crit-col.met-meets{border-color:var(--meets-mid)}
+.crit-col.met-meets .crit-col-head{background:var(--meets-bg)}
+.crit-col.met-meets .crit-level-label{color:var(--meets)}
+.crit-col.met-meets .crit-check{color:var(--meets)}
+.crit-col.met-approaches{border-color:var(--approaches-mid)}
+.crit-col.met-approaches .crit-col-head{background:var(--approaches-bg)}
+.crit-col.met-approaches .crit-level-label{color:var(--approaches)}
+.crit-col.met-approaches .crit-check{color:var(--approaches)}
+/* Pending state */
+.crit-col.pending .crit-col-head{background:var(--bg)}
+.crit-col.pending .crit-level-label{color:var(--text-muted)}
+.crit-col.pending .crit-check{color:var(--border)}
+.crit-col.pending .crit-col-body{color:var(--text-muted)}
+
+/* EMPTY / FOOTER */
+.empty-state{text-align:center;padding:3rem 2rem;color:var(--text-muted);font-style:italic}
+footer{text-align:center;padding:2rem;font-size:.76rem;color:var(--text-muted);border-top:1px solid var(--border)}
+
+/* RESPONSIVE */
+@media(max-width:760px){
+  .kpi-grid{grid-template-columns:repeat(2,1fr)}
+  .header-divider,.header-title{display:none}
+  .dim-badges{display:none}
+  .criteria-cols{grid-template-columns:1fr}
+  .main{padding:1.5rem 1rem 3rem}
+  .filter-bar{padding:.6rem 1rem .5rem}
+}
+@media(min-width:1600px){html{font-size:112.5%}.main,.header-inner,.hero-card,.filter-bar{max-width:1320px}}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="site-header">
+  <div class="header-inner">
+    <div class="header-left">
+      <div class="logo">UN</div>
+      <div class="header-divider"></div>
+      <h1 class="header-title">UNDIS Disability Inclusion Scorecard</h1>
+      <span class="header-badge">UNDIS · 2025</span>
+    </div>
+    <div style="display:flex;gap:.5rem;align-items:center">
+      <button class="btn-back" onclick="downloadIndicatorsPDF()" id="pdf-btn-b">⬇ Print PDF</button>
+      <a href="undis_scorecard.html" class="btn-back">← Back to Scorecard</a>
+    </div>
+  </div>
+</header>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-card">
+    <p class="eyebrow">UNCT · Lao PDR · 2025 Annual Assessment</p>
+    <h2 class="hero-title">All Indicators</h2>
+    <p class="hero-desc">Browse and filter the 14 UNDIS disability inclusion indicators. Select a dimension or status to narrow the view.</p>
+    <div class="kpi-grid">
+      <div class="kpi-card kpi-exceeds" onclick="setStatusFilter('exceeds',this)" id="kpi-exceeds">
+        <span class="kpi-num" id="kpi-n-exceeds">—</span>
+        <span class="kpi-label">Exceeds Requirements</span>
+      </div>
+      <div class="kpi-card kpi-meets" onclick="setStatusFilter('meets',this)" id="kpi-meets">
+        <span class="kpi-num" id="kpi-n-meets">—</span>
+        <span class="kpi-label">Meets Requirements</span>
+      </div>
+      <div class="kpi-card kpi-approaches" onclick="setStatusFilter('approaches',this)" id="kpi-approaches">
+        <span class="kpi-num" id="kpi-n-approaches">—</span>
+        <span class="kpi-label">Approaches Requirements</span>
+      </div>
+      <div class="kpi-card kpi-missing" onclick="setStatusFilter('missing',this)" id="kpi-missing">
+        <span class="kpi-num" id="kpi-n-missing">—</span>
+        <span class="kpi-label">Missing Requirements</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- FILTER BAR -->
+<div class="filter-bar-wrap">
+  <div class="filter-bar">
+    <div class="filter-row">
+      <span class="filter-label">Dimension</span>
+      <div class="chip active-all" onclick="setDimFilter('all',this)" data-dim="all">All</div>
+      <div class="chip" onclick="setDimFilter('1',this)" data-dim="1">1 · Leadership &amp; Planning</div>
+      <div class="chip" onclick="setDimFilter('2',this)" data-dim="2">2 · Inclusiveness</div>
+      <div class="chip" onclick="setDimFilter('3',this)" data-dim="3">3 · Programming</div>
+      <div class="chip" onclick="setDimFilter('4',this)" data-dim="4">4 · Org. Culture</div>
+    </div>
+    <div class="filter-row">
+      <span class="filter-label">Status</span>
+      <div class="chip active-all" onclick="setStatusFilter('all',this)" data-status="all" id="chip-all-status">All</div>
+      <div class="chip" onclick="setStatusFilter('exceeds',this)" data-status="exceeds" id="chip-exceeds"><span class="chip-dot" style="background:var(--exceeds-mid)"></span>Exceeds <span id="chip-cnt-exceeds"></span></div>
+      <div class="chip" onclick="setStatusFilter('meets',this)" data-status="meets" id="chip-meets"><span class="chip-dot" style="background:var(--meets-mid)"></span>Meets <span id="chip-cnt-meets"></span></div>
+      <div class="chip" onclick="setStatusFilter('approaches',this)" data-status="approaches" id="chip-approaches"><span class="chip-dot" style="background:var(--approaches-mid)"></span>Approaches <span id="chip-cnt-approaches"></span></div>
+      <div class="chip" onclick="setStatusFilter('missing',this)" data-status="missing" id="chip-missing"><span class="chip-dot" style="background:var(--missing-mid)"></span>Missing <span id="chip-cnt-missing"></span></div>
+    </div>
+    <div class="filter-meta">
+      <span id="filter-count">Loading…</span>
+      <button class="btn-clear" onclick="clearFilters()">✕ Clear filters</button>
+    </div>
+  </div>
+</div>
+
+<!-- MAIN -->
+<main class="main" id="main-content"></main>
+
+<footer>UNCT Lao PDR · UNDIS Disability Inclusion Scorecard · 2025 Annual Assessment</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script>
+const INDICATORS_URL='https://docs.google.com/spreadsheets/d/e/2PACX-1vT0xUlx1_BafDZft-hzk8gVwnVHUPTmQkfEfzery6vT51HpXj1pzsmAcnot3Y4QvC5QSpbBUTb-D1eQ/pub?gid=1871579428&single=true&output=csv';
+
+/* ── FALLBACK DATA ── */
+const IND_META=[
+  {dim:'LEADERSHIP, STRATEGIC PLANNING AND MANAGEMENT',num:1,name:'Leadership',desc:'UNCT leadership champions disability inclusion.',req_a:'UNCT leadership champions disability inclusion internally and publicly.',req_m:'Leadership champions it internally/publicly AND disability inclusion is a recurring/standing item in UNCT Heads of Agency meetings.',req_e:'All "Meets" criteria AND disability inclusion in programming and operations is reflected in the RC/UNCT work plan and performance appraisal system.',status:'Exceeds Requirements'},
+  {dim:'LEADERSHIP, STRATEGIC PLANNING AND MANAGEMENT',num:2,name:'Strategic Planning',desc:'The Common Country Analysis (CCA) is disability-inclusive.',req_a:'The CCA includes analysis of the situation of persons with disabilities.',req_m:'The CCA includes analysis of the situation of persons with disabilities AND includes this analysis in at least one thematic area.',req_e:'The CCA includes analysis of persons with disabilities in the majority of thematic areas AND periodic updates include relevant data and analysis.',status:'Exceeds Requirements'},
+  {dim:'LEADERSHIP, STRATEGIC PLANNING AND MANAGEMENT',num:3,name:'Cooperation Framework',desc:'Disability inclusion is mainstreamed in Cooperation Framework outcomes/results areas.',req_a:'UNCT explicitly commits to the rights of persons with disabilities in the CF.',req_m:'Commitments are explicit, inclusion is visibly mainstreamed in at least one outcome area/joint workplan, AND indicators are disaggregated by disability, sex, and age where possible.',req_e:'All "Meets" criteria for the majority of outcome areas AND at least one CF outcome specifically targets persons with disabilities.',status:'Approaches Requirements'},
+  {dim:'LEADERSHIP, STRATEGIC PLANNING AND MANAGEMENT',num:4,name:'Setup and Coordination',desc:'Disability inclusion is promoted through UNCT coordination mechanisms.',req_a:'A disability inclusion mechanism is established within the wider UNCT coordination mechanism.',req_m:'Mechanism is established AND has made substantive input into the CCA, CF, and joint workplans or evaluations in consultation with OPDs.',req_e:'All "Meets" criteria AND Organizations of Persons with Disabilities (OPDs) are part of an existing UN coordination mechanism (e.g., Joint National/UN Steering Committee).',status:'Exceeds Requirements'},
+  {dim:'INCLUSIVENESS',num:5,name:'Consultation with OPDs',desc:'UNCT consults organizations of persons with disabilities.',req_a:'UNCT convenes at least an annual consultation with OPDs on UNDIS implementation.',req_m:'Annual consultation is held; OPDs participate in key CF cycle consultations AND are consulted in emergency risk/needs assessments and response planning.',req_e:'All "Meets" criteria AND the UNCT has a formal partnership with OPDs.',status:'Approaches Requirements'},
+  {dim:'INCLUSIVENESS',num:6,name:'Accessibility',desc:'UN premises and services are accessible to all UN staff and constituents with disabilities.',req_a:'UNCT conducts a baseline accessibility assessment of common premises/services AND keeps records of reasonable accommodation requests.',req_m:'Assessment is done, records of requests and their provision are kept, AND an accessibility plan is adopted within the CF cycle.',req_e:'All "Meets" criteria, records include satisfaction levels, AND the accessibility plan is implemented and monitored.',status:'Meets Requirements'},
+  {dim:'INCLUSIVENESS',num:7,name:'Inclusive Procurement',desc:'Accessibility of external venues and in procurement.',req_a:'UNCT procurement guidelines and practices consider accessibility in venues, goods, and services.',req_m:'Guidelines consider accessibility AND it is included as a criterion in periodic reviews of authorized external venues/accommodations.',req_e:'All "Meets" criteria AND the Operations Management Team sets and meets a target for accessibility as a mandatory procurement criterion.',status:'Meets Requirements'},
+  {dim:'PROGRAMMING',num:8,name:'Joint Programmes',desc:'Joint programmes contribute to disability inclusion.',req_a:'Disability inclusion is mainstreamed in a majority of new joint programmes/projects.',req_m:'Mainstreamed in majority of new programmes, practical measures added to some existing ones, AND UNCT implements one joint programme specifically on disability inclusion.',req_e:'Mainstreamed in all new programmes, half of existing ones, AND monitoring/reporting includes results/impact for persons with disabilities.',status:'Approaches Requirements'},
+  {dim:'PROGRAMMING',num:9,name:'Data',desc:'Strengthening data on persons with disabilities.',req_a:'UNCT maps available data and gaps in national statistical sources.',req_m:'UNCT maps data gaps AND works with at least one Government partner on data related to persons with disabilities.',req_e:'All "Meets" criteria AND a majority of capacity-building initiatives for national statistical offices take into account disability.',status:'Exceeds Requirements'},
+  {dim:'PROGRAMMING',num:10,name:'Monitoring and Evaluation',desc:'CF monitoring and evaluation processes address disability inclusion.',req_a:'The CF annual report assesses progress against specific disability-inclusion results.',req_m:'Annual report assesses progress AND the M&E group receives technical training on disability indicators at least once per cycle.',req_e:'All "Meets" criteria AND the CF evaluation and management response address progress related to disability inclusion.',status:'Approaches Requirements'},
+  {dim:'PROGRAMMING',num:11,name:'Humanitarian',desc:'Disability inclusion is mainstreamed in humanitarian planning and response.',req_a:'HCT/UNCT assess how persons with disabilities are included in needs assessments and response plans.',req_m:'Assessment is conducted AND the Humanitarian Response Plan (HRP) spells out specific risk addressing and disaggregates data where possible.',req_e:'All "Meets" criteria AND persons with disabilities and their representative organizations participate in humanitarian coordination mechanisms.',status:'Approaches Requirements'},
+  {dim:'ORGANIZATIONAL CULTURE',num:12,name:'Employment',desc:'UNCT human resources practices are disability-inclusive.',req_a:'UNCT adopts a non-discrimination employment statement explicitly referring to persons with disabilities.',req_m:'Statement is adopted, vacancy announcements explicitly encourage OPDs to apply, AND targeted measures ensure announcements reach them.',req_e:'All "Meets" criteria AND UNCT reviews the disability status of employees and consultants at least once per CF cycle.',status:'Missing Requirements'},
+  {dim:'ORGANIZATIONAL CULTURE',num:13,name:'Capacity Development',desc:'UNCT invests in capacity development on disability inclusion.',req_a:'Training and learning resources are available to UNCT staff (online or workshops).',req_m:'Resources are available AND one inter-agency training is conducted annually in collaboration with OPDs.',req_e:'All "Meets" criteria AND a majority of staff, including senior staff, participates in training within the CF cycle.',status:'Approaches Requirements'},
+  {dim:'ORGANIZATIONAL CULTURE',num:14,name:'Communication',desc:'UNCT communication and advocacy address disability inclusion.',req_a:'Mainstream UN communications reflect persons with disabilities.',req_m:'Communications reflect persons with disabilities AND the inter-agency Communication Group integrates their human rights into annual workplans.',req_e:'All "Meets" criteria AND a disability inclusion communications campaign is undertaken at least once per CF cycle.',status:'Meets Requirements'}
+];
+
+/* Per-indicator missing gap lists (shown in red banner when status = Missing) */
+const MISSING_GAPS={
+  12:['No UNCT-wide adoption of a unified non-discrimination statement.','No UNCT-wide vacancy templates that include encouraging language for applicants with disabilities.','No targeted outreach measures to share vacancies with disabled communities.','No data or review of the disability status of current UN employees and consultants.']
+};
+
+/* ── UTILITIES ── */
+function escHtml(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
+function statusKey(s){const v=String(s||'').toLowerCase().trim();if(v.startsWith('exceed'))return'exceeds';if(v.startsWith('meet'))return'meets';if(v.startsWith('approach'))return'approaches';if(v.startsWith('miss'))return'missing';return''}
+function statusLabel(k){return{exceeds:'Exceeds',meets:'Meets',approaches:'Approaches',missing:'Missing'}[k]||''}
+function pillHtml(k){return`<span class="pill pill-${k}">${statusLabel(k)}</span>`}
+function statusRank(k){return{missing:0,approaches:1,meets:2,exceeds:3}[k]??-1}
+function mdBold(s){return escHtml(s).replace(/\*\*([^*]+)\*\*/g,'<strong>$1</strong>')}
+
+const DIM_KEYS=['LEADERSHIP, STRATEGIC PLANNING AND MANAGEMENT','INCLUSIVENESS','PROGRAMMING','ORGANIZATIONAL CULTURE'];
+function dimNumber(raw){return String(DIM_KEYS.indexOf(String(raw||'').trim().toUpperCase())+1)}
+function normalizeDim(raw){const map={'LEADERSHIP, STRATEGIC PLANNING AND MANAGEMENT':'Leadership, Strategic Planning & Management','INCLUSIVENESS':'Inclusiveness','PROGRAMMING':'Programming','ORGANIZATIONAL CULTURE':'Organizational Culture'};return map[String(raw||'').trim().toUpperCase()]||raw}
+
+function rowToIndicator(row){
+  return{dim:String(row[0]||'').trim(),num:String(row[1]||'').trim(),name:String(row[2]||'').trim(),desc:String(row[3]||'').trim(),req_a:String(row[4]||'').trim(),req_m:String(row[5]||'').trim(),req_e:String(row[6]||'').trim(),status:String(row[7]||'').trim()};
+}
+
+/* ── STATE ── */
+let _indicators=[];
+let _activeDim='all', _activeStatus='all';
+
+/* ── LOAD DATA ── */
+function loadData(){
+  fetch(INDICATORS_URL).then(r=>{if(!r.ok)throw 0;return r.text()}).then(text=>{
+    const rows=Papa.parse(text,{header:false,skipEmptyLines:true}).data;
+    _indicators=rows.slice(1).filter(r=>String(r[1]||'').trim()).map(rowToIndicator);
+    initPage();
+  }).catch(()=>{
+    _indicators=IND_META.map(m=>({...m,num:String(m.num)}));
+    initPage();
+  });
+}
+
+function initPage(){
+  updateCounts();
+  parseUrlParams();
+  buildPage();
+  handleAnchor();
+}
+
+/* ── COUNTS ── */
+function updateCounts(){
+  const counts={exceeds:0,meets:0,approaches:0,missing:0};
+  _indicators.forEach(i=>{const k=statusKey(i.status);if(k)counts[k]++});
+  ['exceeds','meets','approaches','missing'].forEach(k=>{
+    const el=document.getElementById('kpi-n-'+k);if(el)el.textContent=counts[k];
+    const cel=document.getElementById('chip-cnt-'+k);if(cel)cel.textContent='('+counts[k]+')';
+  });
+}
+
+/* ── URL PARAMS ── */
+function parseUrlParams(){
+  const p=new URLSearchParams(location.search);
+  const d=p.get('dim');const s=p.get('status');
+  if(d&&['1','2','3','4'].includes(d)){
+    _activeDim=d;
+    document.querySelectorAll('[data-dim]').forEach(el=>{el.className='chip'+(el.dataset.dim===d?' active-dim':'')});
+  }
+  if(s&&['exceeds','meets','approaches','missing'].includes(s)){
+    _activeStatus=s;
+    document.querySelectorAll('[data-status]').forEach(el=>{el.className='chip'+(el.dataset.status===s?` active-${s}`:'')});
+    // Also highlight kpi card
+    document.querySelectorAll('.kpi-card').forEach(el=>el.classList.remove('active'));
+    const kc=document.getElementById('kpi-'+s);if(kc)kc.classList.add('active');
+  }
+}
+
+/* ── FILTERS ── */
+function setDimFilter(dim,el){
+  _activeDim=dim;
+  document.querySelectorAll('[data-dim]').forEach(c=>c.className='chip'+(c===el?(dim==='all'?' active-all':' active-dim'):''));
+  buildPage();
+}
+function setStatusFilter(status,el){
+  // Toggle off if already active
+  if(_activeStatus===status){_activeStatus='all';clearStatusChips();buildPage();return;}
+  _activeStatus=status;
+  document.querySelectorAll('[data-status]').forEach(c=>c.className='chip');
+  if(el){
+    if(status==='all')el.className='chip active-all';
+    else el.className=`chip active-${status}`;
+  }
+  document.querySelectorAll('.kpi-card').forEach(c=>c.classList.remove('active'));
+  const kc=document.getElementById('kpi-'+status);if(kc&&status!=='all')kc.classList.add('active');
+  buildPage();
+}
+function clearStatusChips(){
+  document.querySelectorAll('[data-status]').forEach(c=>c.className='chip');
+  document.getElementById('chip-all-status').className='chip active-all';
+  document.querySelectorAll('.kpi-card').forEach(c=>c.classList.remove('active'));
+}
+function clearFilters(){_activeDim='all';_activeStatus='all';document.querySelectorAll('[data-dim]').forEach(c=>c.className='chip'+(c.dataset.dim==='all'?' active-all':''));clearStatusChips();buildPage();}
+
+/* ── BUILD PAGE ── */
+function buildPage(){
+  const main=document.getElementById('main-content');
+  // Filter
+  const visible=_indicators.filter(i=>{
+    const dimOk=_activeDim==='all'||dimNumber(i.dim)===_activeDim;
+    const statOk=_activeStatus==='all'||statusKey(i.status)===_activeStatus;
+    return dimOk&&statOk;
+  });
+  document.getElementById('filter-count').textContent=`Showing ${visible.length} of ${_indicators.length} indicators`;
+  if(!visible.length){main.innerHTML='<div class="empty-state">No indicators match the selected filters.</div>';return;}
+
+  // Group by dimension (preserve order)
+  const dimMap=new Map();
+  DIM_KEYS.forEach(d=>dimMap.set(d,[]));
+  visible.forEach(i=>{const d=String(i.dim||'').trim().toUpperCase();if(dimMap.has(d))dimMap.get(d).push(i);});
+
+  let html='';
+  let dimIdx=0;
+  dimMap.forEach((inds,dimKey)=>{
+    dimIdx++;
+    if(!inds.length)return;
+    // Collect status badges for this dim
+    const dimStatuses=[...new Set(inds.map(i=>statusKey(i.status)).filter(Boolean))];
+    const badges=dimStatuses.map(k=>pillHtml(k)).join('');
+    html+=`<div class="dim-section">
+      <div class="dim-header">
+        <div class="dim-header-left">
+          <div class="dim-num">Dimension ${dimIdx}</div>
+          <div class="dim-name">${escHtml(normalizeDim(dimKey))}</div>
+        </div>
+        <div class="dim-badges">${badges}</div>
+      </div>
+      ${inds.map(indCardHtml).join('')}
+    </div>`;
+  });
+  main.innerHTML=html;
+}
+
+/* ── INDICATOR CARD ── */
+function indCardHtml(ind){
+  const k=statusKey(ind.status);
+  const rank=statusRank(k);
+  const levels=[
+    {level:'approaches',label:'Approaches',req:ind.req_a,rank:1},
+    {level:'meets',label:'Meets',req:ind.req_m,rank:2},
+    {level:'exceeds',label:'Exceeds',req:ind.req_e,rank:3}
+  ];
+  const critCols=levels.map(l=>{
+    const isMet=rank>=l.rank;
+    const cls=isMet?`met-${l.level}`:'pending';
+    const check=isMet?'✓':'○';
+    return`<div class="criteria-col crit-col ${cls}">
+      <div class="crit-col-head">
+        <span class="crit-level-label">${l.label}</span>
+        <span class="crit-check">${check}</span>
+      </div>
+      <div class="crit-col-body">${mdBold(l.req)}</div>
+    </div>`;
+  }).join('');
+
+  const missingBanner=k==='missing'?buildMissingBanner(ind):'';
+
+  return`<div class="indicator-detail" id="ind-${escHtml(ind.num)}">
+    <div class="ind-header">
+      <div class="ind-header-left">
+        <div class="ind-label">Indicator ${escHtml(ind.num)}</div>
+        <div class="ind-name">${escHtml(ind.name)}</div>
+        <div class="ind-desc">${escHtml(ind.desc)}</div>
+      </div>
+      <div class="ind-header-right">
+        ${pillHtml(k)}
+        <div class="ind-year">2025</div>
+      </div>
+    </div>
+    ${missingBanner}
+    <div class="criteria-section">
+      <div class="criteria-label">Assessment Requirements</div>
+      <div class="criteria-cols">${critCols}</div>
+    </div>
+  </div>`;
+}
+
+function buildMissingBanner(ind){
+  const num=parseInt(ind.num);
+  const gaps=MISSING_GAPS[num];
+  if(gaps){
+    return`<div class="missing-banner"><strong>⚠ Key gaps preventing this indicator from meeting Approaches requirements:</strong><ul>${gaps.map(g=>`<li>${escHtml(g)}</li>`).join('')}</ul></div>`;
+  }
+  return`<div class="missing-banner"><strong>⚠ Missing Requirements</strong>This indicator has not yet met the Approaches threshold. Review the criteria below to identify the specific gaps to address.</div>`;
+}
+
+/* ── ANCHOR HANDLING ── */
+function handleAnchor(){
+  const hash=location.hash;
+  if(!hash||!hash.startsWith('#ind-'))return;
+  setTimeout(()=>{
+    const el=document.querySelector(hash);
+    if(el){el.classList.add('highlighted');el.scrollIntoView({behavior:'smooth',block:'start'});setTimeout(()=>el.classList.remove('highlighted'),3000);}
+  },200);
+}
+
+/* ── PDF EXPORT (Page B) — card-level packing, dim-header bonded to first card ── */
+async function downloadIndicatorsPDF(){
+  const btn=document.getElementById('pdf-btn-b');
+  btn.textContent='Generating…';btn.disabled=true;
+  try{
+    const {jsPDF}=window.jspdf;
+    const A4W=210,A4H=297,margin=5;
+    const pageW=A4W-margin*2;
+    const pageH=A4H-margin*2;
+
+    const heroEl=document.querySelector('.hero');
+    const mainEl=document.getElementById('main-content');
+
+    // Capture hero (dark) and full main content (light) once each
+    const captureOpts={scale:2,useCORS:true,logging:false};
+    const heroCanvas=await html2canvas(heroEl,{...captureOpts,backgroundColor:'#2A2342'});
+    const mainCanvas=await html2canvas(mainEl,{...captureOpts,backgroundColor:'#faf9fc'});
+
+    const mainRect=mainEl.getBoundingClientRect();
+    const S=2; // capture scale
+
+    // Build atomic blocks. Each block = {y0,y1} in mainCanvas pixels.
+    // First card of each dimension: y0 = top of dim-header (bonds header to card).
+    // All subsequent cards: y0 = top of that card.
+    // y1 = top of next card (or bottom of dim-section for the last card).
+    const blocks=[];
+    mainEl.querySelectorAll('.dim-section').forEach(dimEl=>{
+      const dimHeader=dimEl.querySelector('.dim-header');
+      const cards=[...dimEl.querySelectorAll('.indicator-detail')];
+      cards.forEach((card,i)=>{
+        const blockTop=i===0&&dimHeader
+          ? dimHeader.getBoundingClientRect().top
+          : card.getBoundingClientRect().top;
+        const blockBot=i<cards.length-1
+          ? cards[i+1].getBoundingClientRect().top
+          : dimEl.getBoundingClientRect().bottom;
+        blocks.push({
+          y0:Math.round((blockTop-mainRect.top)*S),
+          y1:Math.round((blockBot-mainRect.top)*S)
+        });
+      });
+    });
+
+    // Helpers
+    const kMain=pageW/mainCanvas.width;
+    function sliceCanvas(src,y0,y1){
+      const h=Math.max(1,Math.round(y1-y0));
+      const c=document.createElement('canvas');c.width=src.width;c.height=h;
+      c.getContext('2d').drawImage(src,0,Math.round(y0),src.width,h,0,0,src.width,h);
+      return c;
+    }
+    function addImg(pdf,canvas,yMm,w){
+      const h=canvas.height*(w/canvas.width);
+      pdf.addImage(canvas.toDataURL('image/jpeg',0.92),'JPEG',margin,yMm,w,h);
+      return h;
+    }
+
+    const pdf=new jsPDF({orientation:'portrait',unit:'mm',format:'a4'});
+    let yMm=margin;
+
+    // Page 1: place hero, then add a small breathing gap before indicators
+    yMm+=addImg(pdf,heroCanvas,yMm,pageW);
+    yMm+=6; // 6mm gap between hero and first indicator
+
+    // Greedy pack: each block is atomic (never split), start new page if it won't fit
+    for(const blk of blocks){
+      const blkH=(blk.y1-blk.y0)*kMain;
+      if(yMm+blkH>margin+pageH){
+        pdf.addPage();
+        yMm=margin;
+      }
+      const strip=sliceCanvas(mainCanvas,blk.y0,blk.y1);
+      yMm+=addImg(pdf,strip,yMm,pageW);
+    }
+
+    const d=new Date();
+    const ds=`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+    pdf.save(`UNCT-UNDIS_Indicators_LaoPDR_${ds}.pdf`);
+  }finally{
+    btn.textContent='⬇ Print PDF';btn.disabled=false;
+  }
+}
+
+/* ── INIT ── */
+document.addEventListener('DOMContentLoaded',loadData);
+</script>
+</body>
+</html>

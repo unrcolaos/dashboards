@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UNDIS Disability Inclusion Scorecard · Lao PDR 2025</title>
+<link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700;900&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --exceeds:#1d4e89; --exceeds-bg:#dbeafe; --exceeds-mid:#60a5fa;
+  --meets:#2d6a4f;   --meets-bg:#d8f3dc;   --meets-mid:#52b788;
+  --approaches:#92400e; --approaches-bg:#fef3c7; --approaches-mid:#f59e0b;
+  --missing:#7f1d1d; --missing-bg:#fee2e2; --missing-mid:#f87171;
+  --accent:#4C3B73;
+  --bg:#faf9fc; --surface:#fff; --border:#e6e2ee;
+  --text:#181421; --text-muted:#645d72;
+  --header-bg:#2A2342; --hero-end:#4C3B73;
+  --hero-highlight:#B7A6E0;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:'Roboto',sans-serif;font-weight:400;font-size:16px;background:var(--bg);color:var(--text);line-height:1.6}
+
+/* ── HEADER ── */
+.site-header{position:sticky;top:0;z-index:200;background:var(--header-bg);border-bottom:3px solid var(--accent);height:64px;display:flex;align-items:center}
+.header-inner{width:100%;max-width:1100px;margin:0 auto;padding:0 2rem;display:flex;align-items:center;justify-content:space-between;gap:1rem}
+.header-left{display:flex;align-items:center;gap:.75rem}
+.logo{width:38px;height:38px;background:rgba(255,255,255,.15);border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-family:'Lato',sans-serif;font-weight:900;font-size:.75rem;letter-spacing:.05em;border:2px solid rgba(255,255,255,.3)}
+.header-divider{width:1px;height:28px;background:rgba(255,255,255,.25)}
+.header-title{font-family:'Lato',sans-serif;font-weight:700;font-size:1rem;color:#fff;white-space:nowrap}
+.header-badge{background:var(--accent);color:#fff;font-size:.65rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:3px 10px;border-radius:2px;white-space:nowrap}
+.header-actions{display:flex;gap:.5rem;flex-shrink:0}
+.btn-action{background:transparent;border:1px solid rgba(255,255,255,.4);color:#fff;font-family:'Roboto',sans-serif;font-size:.78rem;font-weight:500;padding:6px 14px;border-radius:4px;cursor:pointer;transition:background .2s}
+.btn-action:hover{background:var(--accent)}
+#refresh-icon{display:inline-block;transition:transform .5s}
+.spinning{animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* ── HERO ── */
+.hero{background:linear-gradient(135deg,#2A2342 55%,#4C3B73 100%);position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;inset:0;background-image:url("data:image/svg+xml,%3Csvg width='20' height='20' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 0h2v2H0zm10 10h2v2h-2z' fill='white' fill-opacity='0.03'/%3E%3C/svg%3E");pointer-events:none}
+.hero-card{max-width:1100px;margin:0 auto;padding:3rem 2rem 2.5rem;position:relative}
+.hero-top{display:grid;grid-template-columns:1fr auto;gap:2rem;align-items:start;margin-bottom:2rem}
+.eyebrow{font-size:.75rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--hero-highlight);margin-bottom:.6rem}
+.hero-title{font-family:'Lato',sans-serif;font-weight:900;font-size:clamp(1.8rem,4vw,2.8rem);color:#fff;line-height:1.15;margin-bottom:.75rem}
+.hero-desc{font-size:.95rem;color:rgba(255,255,255,.72);max-width:580px;font-weight:300;line-height:1.7}
+.hero-actions{display:flex;gap:.75rem;flex-wrap:wrap;margin-top:1.25rem}
+.btn-hero-primary{display:inline-block;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.4);color:#fff;font-family:'Roboto',sans-serif;font-size:.85rem;font-weight:500;padding:10px 22px;border-radius:4px;text-decoration:none;transition:background .2s}
+.btn-hero-primary:hover{background:rgba(255,255,255,.25)}
+.btn-hero-outline{background:transparent;border:1px solid var(--hero-highlight);color:var(--hero-highlight);font-family:'Roboto',sans-serif;font-size:.85rem;font-weight:500;padding:10px 22px;border-radius:4px;cursor:pointer;transition:background .2s}
+.btn-hero-outline:hover{background:rgba(183,166,224,.15)}
+
+/* KPI GRID */
+.kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-top:2rem}
+.kpi-card{display:block;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.16);border-radius:6px;padding:1.1rem 1.2rem 1rem;text-decoration:none;position:relative;transition:transform .2s,border-color .2s;overflow:hidden}
+.kpi-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px}
+.kpi-exceeds::before{background:var(--exceeds-mid)}
+.kpi-meets::before{background:var(--meets-mid)}
+.kpi-approaches::before{background:var(--approaches-mid)}
+.kpi-missing::before{background:var(--missing-mid)}
+.kpi-card:hover{transform:translateY(-3px);border-color:rgba(255,255,255,.35)}
+.kpi-arrow{position:absolute;top:.6rem;right:.7rem;color:rgba(255,255,255,.4);font-size:.85rem}
+.kpi-num{display:block;font-size:2.6rem;font-weight:700;line-height:1;margin:.25rem 0 .4rem}
+.kpi-exceeds .kpi-num{color:var(--exceeds-mid)}
+.kpi-meets .kpi-num{color:var(--meets-mid)}
+.kpi-approaches .kpi-num{color:var(--approaches-mid)}
+.kpi-missing .kpi-num{color:var(--missing-mid)}
+.kpi-label{font-size:.75rem;color:rgba(255,255,255,.65);font-weight:400;line-height:1.3}
+
+/* ── MAIN ── */
+.main{max-width:1100px;margin:0 auto;padding:2.5rem 2rem 4rem}
+
+/* SECTION TITLE */
+.section-title{font-family:'Lato',sans-serif;font-weight:700;font-size:1.4rem;color:var(--text);display:flex;align-items:center;gap:.75rem;margin-bottom:.5rem}
+.section-title::after{content:'';flex:1;height:1px;background:var(--border)}
+.section-subtitle{font-size:.88rem;color:var(--text-muted);margin-bottom:1.5rem}
+
+/* FOCUS SECTION */
+.focus-section{margin-bottom:3rem}
+.focus-subhead{font-size:.72rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--text-muted);border-bottom:1px solid var(--border);padding-bottom:.5rem;margin:1.5rem 0 1rem}
+.focus-subhead:first-child{margin-top:0}
+.focus-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:1rem}
+
+/* INDICATOR CARD */
+.indicator-card{display:flex;flex-direction:column;background:var(--surface);border:1px solid var(--border);border-radius:6px;overflow:hidden;text-decoration:none;color:inherit;transition:box-shadow .2s;position:relative}
+.indicator-card:hover{box-shadow:0 4px 16px rgba(0,0,0,.08)}
+.card-accent{height:4px;flex-shrink:0}
+.card-exceeds .card-accent{background:var(--exceeds-mid)}
+.card-meets .card-accent{background:var(--meets-mid)}
+.card-approaches .card-accent{background:var(--approaches-mid)}
+.card-missing .card-accent{background:var(--missing-mid)}
+.card-body{padding:1rem 1.1rem;display:flex;flex-direction:column;flex:1}
+.card-top{display:flex;justify-content:space-between;align-items:flex-start;gap:.5rem;margin-bottom:.5rem}
+.card-id{font-size:.72rem;font-weight:600;color:var(--text-muted);letter-spacing:.04em}
+.card-name{font-size:.92rem;font-weight:600;color:var(--text);min-height:2.4rem;margin-bottom:.75rem;line-height:1.4}
+.card-action{border-left:3px solid;padding:.55rem .7rem;border-radius:0 4px 4px 0;margin-bottom:.75rem}
+.card-exceeds .card-action{border-color:var(--exceeds-mid);background:var(--exceeds-bg)}
+.card-meets .card-action{border-color:var(--meets-mid);background:var(--meets-bg)}
+.card-approaches .card-action{border-color:var(--approaches-mid);background:var(--approaches-bg)}
+.card-missing .card-action{border-color:var(--missing-mid);background:var(--missing-bg)}
+.card-action-label{font-size:.62rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--text-muted);display:block;margin-bottom:.3rem}
+.card-action-text{font-size:.8rem;color:var(--text);line-height:1.5}
+.card-footer{border-top:1px solid var(--border);padding:.6rem 1.1rem;display:flex;justify-content:space-between;align-items:center;margin-top:auto}
+.card-footer-meta{font-size:.75rem;color:var(--text-muted)}
+.card-explore{font-size:.78rem;font-weight:500;color:var(--accent);text-decoration:none}
+.card-explore:hover{text-decoration:underline}
+.focus-empty{background:#d8f3dc;border:1px solid #52b788;border-radius:6px;padding:1rem 1.25rem;color:#2d6a4f;font-size:.88rem;font-weight:500}
+
+/* PILL */
+.pill{display:inline-block;font-size:.68rem;font-weight:700;padding:3px 10px;border-radius:99px;white-space:nowrap;line-height:1.4}
+.pill-exceeds{background:var(--exceeds-bg);color:var(--exceeds)}
+.pill-meets{background:var(--meets-bg);color:var(--meets)}
+.pill-approaches{background:var(--approaches-bg);color:var(--approaches)}
+.pill-missing{background:var(--missing-bg);color:var(--missing)}
+
+/* DISTRIBUTION */
+.progress-section{margin-bottom:3rem}
+.dist-chart{display:flex;flex-direction:column;gap:.7rem;margin-bottom:1.25rem}
+.dist-row{display:flex;align-items:center;gap:.75rem}
+.dist-label{font-size:.8rem;font-weight:500;color:var(--text-muted);min-width:160px;text-align:right;white-space:nowrap}
+.dist-label.overall{font-weight:700;color:var(--text)}
+.dist-bar{flex:1;display:flex;border-radius:4px;overflow:hidden;height:32px}
+.dist-seg{display:flex;align-items:center;justify-content:center;font-size:.72rem;font-weight:700;color:#fff;transition:width .4s ease;min-width:0}
+.dist-seg.has-count{min-width:30px}
+.dist-seg-exceeds{background:var(--exceeds-mid)}
+.dist-seg-meets{background:var(--meets-mid)}
+.dist-seg-approaches{background:var(--approaches-mid)}
+.dist-seg-missing{background:var(--missing-mid)}
+.dist-sep{height:1px;background:var(--border);margin:.3rem 0 .3rem 160px}
+.dist-legend{display:flex;gap:1.5rem;flex-wrap:wrap;margin-top:.75rem}
+.legend-item{display:flex;align-items:center;gap:.4rem;font-size:.78rem;color:var(--text-muted)}
+.legend-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+
+/* ACTIVITIES */
+.activities-section{margin-bottom:2rem}
+.table-scroll{overflow-x:auto;border:1px solid var(--border);border-radius:6px}
+table{width:100%;border-collapse:collapse;font-size:.82rem}
+thead th{background:var(--bg);padding:.7rem 1rem;text-align:left;font-size:.72rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--text-muted);border-bottom:2px solid var(--border);white-space:nowrap}
+tbody tr{border-bottom:1px solid var(--border)}
+tbody tr:last-child{border-bottom:none}
+tbody tr:hover{background:#faf8ff}
+tbody td{padding:.75rem 1rem;vertical-align:top;color:var(--text)}
+td.date-cell{white-space:nowrap;color:var(--text-muted);font-size:.78rem;min-width:100px}
+td.ind-cell{white-space:nowrap;min-width:90px}
+td.desc-cell{min-width:200px;max-width:320px}
+td.notes-cell{max-width:240px;font-size:.78rem;color:var(--text-muted)}
+td.lead-cell{min-width:120px;font-size:.78rem;color:var(--text-muted)}
+.pi-link{color:var(--accent);text-decoration:none;font-weight:600;font-size:.78rem;white-space:nowrap}
+.pi-link:hover{text-decoration:underline}
+.ind-name-sub{display:block;font-size:.72rem;color:var(--text-muted);margin-top:2px}
+.act-type-pill{display:inline-block;font-size:.65rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:2px 8px;border-radius:3px;background:var(--bg);border:1px solid var(--border);color:var(--text-muted);white-space:nowrap}
+.act-status-pill{display:inline-flex;align-items:center;gap:5px;font-size:.72rem;font-weight:600;padding:3px 10px;border-radius:99px;white-space:nowrap}
+.act-status-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.act-planned{background:var(--approaches-bg);color:var(--approaches)}.act-planned .act-status-dot{background:var(--approaches-mid)}
+.act-inprogress{background:var(--meets-bg);color:var(--meets)}.act-inprogress .act-status-dot{background:var(--meets-mid)}
+.act-done{background:var(--exceeds-bg);color:var(--exceeds)}.act-done .act-status-dot{background:var(--exceeds-mid)}
+.act-delayed{background:var(--missing-bg);color:var(--missing)}.act-delayed .act-status-dot{background:var(--missing-mid)}
+.act-other{background:var(--bg);color:var(--text-muted);border:1px solid var(--border)}.act-other .act-status-dot{background:var(--text-muted)}
+.no-data{text-align:center;color:var(--text-muted);padding:2rem;font-style:italic}
+td ol,td ul{padding-left:1.2rem;margin:0}
+td li{margin-bottom:.2rem;line-height:1.5}
+
+/* FOOTER */
+footer{text-align:center;padding:2rem;font-size:.78rem;color:var(--text-muted);border-top:1px solid var(--border)}
+
+/* RESPONSIVE */
+@media(max-width:760px){
+  .hero-top{grid-template-columns:1fr}
+  .kpi-grid{grid-template-columns:repeat(2,1fr)}
+  .header-divider,.header-title{display:none}
+  .logo{width:32px;height:32px;font-size:.65rem}
+  .dist-label{min-width:90px;font-size:.72rem}
+  .dist-sep{margin-left:90px}
+  .main{padding:1.5rem 1rem 3rem}
+}
+@media(min-width:1600px){
+  html{font-size:112.5%}
+  .main,.header-inner,.hero-card{max-width:1320px}
+}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="site-header">
+  <div class="header-inner">
+    <div class="header-left">
+      <div class="logo">UN</div>
+      <div class="header-divider"></div>
+      <h1 class="header-title">UNDIS Disability Inclusion Scorecard</h1>
+      <span class="header-badge">UNDIS · 2025</span>
+    </div>
+    <div class="header-actions" id="header-actions">
+      <button class="btn-action" onclick="downloadScorecardPDF()" id="pdf-btn">⬇ Print PDF</button>
+      <button class="btn-action" onclick="loadData(true)" id="refresh-btn"><span id="refresh-icon">↻</span> Refresh</button>
+    </div>
+  </div>
+</header>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-card" id="hero-card">
+    <div class="hero-top">
+      <div class="hero-intro">
+        <p class="eyebrow">UNCT · Lao PDR · 2025 Annual Assessment</p>
+        <h2 class="hero-title">Disability Inclusion Scorecard</h2>
+        <p class="hero-desc">Tracking the UN Country Team's progress on disability inclusion across leadership &amp; strategic planning, programming, organizational culture, and inclusiveness.</p>
+        <div class="hero-actions" id="hero-actions">
+          <a href="undis_indicators.html" class="btn-hero-primary">View All Indicators →</a>
+          <button class="btn-hero-outline" onclick="downloadScorecardPDF()">Download Report ↗</button>
+        </div>
+      </div>
+    </div>
+    <div class="kpi-grid">
+      <a href="undis_indicators.html?status=exceeds" class="kpi-card kpi-exceeds">
+        <span class="kpi-arrow">↗</span>
+        <span class="kpi-num" id="kpi-exceeds">—</span>
+        <span class="kpi-label">Exceeds Requirements</span>
+      </a>
+      <a href="undis_indicators.html?status=meets" class="kpi-card kpi-meets">
+        <span class="kpi-arrow">↗</span>
+        <span class="kpi-num" id="kpi-meets">—</span>
+        <span class="kpi-label">Meets Requirements</span>
+      </a>
+      <a href="undis_indicators.html?status=approaches" class="kpi-card kpi-approaches">
+        <span class="kpi-arrow">↗</span>
+        <span class="kpi-num" id="kpi-approaches">—</span>
+        <span class="kpi-label">Approaches Requirements</span>
+      </a>
+      <a href="undis_indicators.html?status=missing" class="kpi-card kpi-missing">
+        <span class="kpi-arrow">↗</span>
+        <span class="kpi-num" id="kpi-missing">—</span>
+        <span class="kpi-label">Missing Requirements</span>
+      </a>
+    </div>
+  </div>
+</div>
+
+<!-- MAIN -->
+<main class="main">
+
+  <!-- FOCUS SECTION -->
+  <section class="focus-section" id="focus-section">
+    <h2 class="section-title">Main Focus for 2026</h2>
+    <p class="section-subtitle" id="focus-subtitle">Loading…</p>
+    <div id="focus-content"></div>
+  </section>
+
+  <!-- DISTRIBUTION -->
+  <section class="progress-section" id="progress-section">
+    <h2 class="section-title">Status Distribution</h2>
+    <p class="section-subtitle">2025 assessment results across all 14 indicators, by dimension.</p>
+    <div id="dist-chart" class="dist-chart"></div>
+    <div class="dist-legend">
+      <div class="legend-item"><div class="legend-dot" style="background:var(--exceeds-mid)"></div>Exceeds</div>
+      <div class="legend-item"><div class="legend-dot" style="background:var(--meets-mid)"></div>Meets</div>
+      <div class="legend-item"><div class="legend-dot" style="background:var(--approaches-mid)"></div>Approaches</div>
+      <div class="legend-item"><div class="legend-dot" style="background:var(--missing-mid)"></div>Missing</div>
+    </div>
+  </section>
+
+  <!-- ACTIVITIES -->
+  <section class="activities-section" id="activities-section">
+    <h2 class="section-title">Recent &amp; Upcoming Activities</h2>
+    <p class="section-subtitle">Live from the activities tracker — refresh to see the latest updates.</p>
+    <div class="table-scroll">
+      <table>
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Indicator</th>
+            <th>Activity</th>
+            <th>Type</th>
+            <th>Lead</th>
+            <th>Status</th>
+            <th>Notes</th>
+          </tr>
+        </thead>
+        <tbody id="activities-body"><tr><td colspan="7" class="no-data">Loading activities…</td></tr></tbody>
+      </table>
+    </div>
+  </section>
+
+</main>
+
+<footer>UNCT Lao PDR · UNDIS Disability Inclusion Scorecard · Data sourced from the UNDIS Backend Google Sheet</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script>
+/* ── LIVE DATA URLs ── */
+const INDICATORS_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vT0xUlx1_BafDZft-hzk8gVwnVHUPTmQkfEfzery6vT51HpXj1pzsmAcnot3Y4QvC5QSpbBUTb-D1eQ/pub?gid=1871579428&single=true&output=csv';
+const ACTIVITIES_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vT0xUlx1_BafDZft-hzk8gVwnVHUPTmQkfEfzery6vT51HpXj1pzsmAcnot3Y4QvC5QSpbBUTb-D1eQ/pub?gid=1805938549&single=true&output=csv';
+
+/* ── FALLBACK DATA (used if fetch fails or file:// testing) ── */
+const IND_META = [
+  {dim:'LEADERSHIP, STRATEGIC PLANNING AND MANAGEMENT',num:1,name:'Leadership',desc:'UNCT leadership champions disability inclusion.',req_a:'UNCT leadership champions disability inclusion internally and publicly.',req_m:'Leadership champions it internally/publicly AND disability inclusion is a recurring/standing item in UNCT Heads of Agency meetings.',req_e:'All "Meets" criteria AND disability inclusion in programming and operations is reflected in the RC/UNCT work plan and performance appraisal system.',status:'Exceeds Requirements',focus:'NO',focus_note:''},
+  {dim:'LEADERSHIP, STRATEGIC PLANNING AND MANAGEMENT',num:2,name:'Strategic Planning',desc:'The Common Country Analysis (CCA) is disability-inclusive.',req_a:'The CCA includes analysis of the situation of persons with disabilities.',req_m:'The CCA includes analysis of the situation of persons with disabilities AND includes this analysis in at least one thematic area.',req_e:'The CCA includes analysis of persons with disabilities in the majority of thematic areas AND periodic updates include relevant data and analysis.',status:'Exceeds Requirements',focus:'NO',focus_note:''},
+  {dim:'LEADERSHIP, STRATEGIC PLANNING AND MANAGEMENT',num:3,name:'Cooperation Framework',desc:'Disability inclusion is mainstreamed in Cooperation Framework outcomes/results areas.',req_a:'UNCT explicitly commits to the rights of persons with disabilities in the CF.',req_m:'Commitments are explicit, inclusion is visibly mainstreamed in at least one outcome area/joint workplan, AND indicators are disaggregated by disability, sex, and age where possible.',req_e:'All "Meets" criteria for the majority of outcome areas AND at least one CF outcome specifically targets persons with disabilities.',status:'Approaches Requirements',focus:'NO',focus_note:''},
+  {dim:'LEADERSHIP, STRATEGIC PLANNING AND MANAGEMENT',num:4,name:'Setup and Coordination',desc:'Disability inclusion is promoted through UNCT coordination mechanisms.',req_a:'A disability inclusion mechanism is established within the wider UNCT coordination mechanism.',req_m:'Mechanism is established AND has made substantive input into the CCA, CF, and joint workplans or evaluations in consultation with OPDs.',req_e:'All "Meets" criteria AND Organizations of Persons with Disabilities (OPDs) are part of an existing UN coordination mechanism (e.g., Joint National/UN Steering Committee).',status:'Exceeds Requirements',focus:'NO',focus_note:''},
+  {dim:'INCLUSIVENESS',num:5,name:'Consultation with OPDs',desc:'UNCT consults organizations of persons with disabilities.',req_a:'UNCT convenes at least an annual consultation with OPDs on UNDIS implementation.',req_m:'Annual consultation is held; OPDs participate in key CF cycle consultations AND are consulted in emergency risk/needs assessments and response planning.',req_e:'All "Meets" criteria AND the UNCT has a formal partnership with OPDs.',status:'Approaches Requirements',focus:'NO',focus_note:''},
+  {dim:'INCLUSIVENESS',num:6,name:'Accessibility',desc:'UN premises and services are accessible to all UN staff and constituents with disabilities.',req_a:'UNCT conducts a baseline accessibility assessment of common premises/services AND keeps records of reasonable accommodation requests.',req_m:'Assessment is done, records of requests and their provision are kept, AND an accessibility plan is adopted within the CF cycle.',req_e:'All "Meets" criteria, records include satisfaction levels, AND the accessibility plan is implemented and monitored.',status:'Meets Requirements',focus:'YES',focus_note:'Implement and monitor the accessibility plan, drawing on feedback from persons with disabilities and tracking budget allocated to removing physical, digital, and service barriers.'},
+  {dim:'INCLUSIVENESS',num:7,name:'Inclusive Procurement',desc:'Accessibility of external venues and in procurement.',req_a:'UNCT procurement guidelines and practices consider accessibility in venues, goods, and services.',req_m:'Guidelines consider accessibility AND it is included as a criterion in periodic reviews of authorized external venues/accommodations.',req_e:'All "Meets" criteria AND the Operations Management Team sets and meets a target for accessibility as a mandatory procurement criterion.',status:'Meets Requirements',focus:'NO',focus_note:''},
+  {dim:'PROGRAMMING',num:8,name:'Joint Programmes',desc:'Joint programmes contribute to disability inclusion.',req_a:'Disability inclusion is mainstreamed in a majority of new joint programmes/projects.',req_m:'Mainstreamed in majority of new programmes, practical measures added to some existing ones, AND UNCT implements one joint programme specifically on disability inclusion.',req_e:'Mainstreamed in all new programmes, half of existing ones, AND monitoring/reporting includes results/impact for persons with disabilities.',status:'Approaches Requirements',focus:'YES',focus_note:'Embed practical disability measures in at least 50% of joint programmes, track their impact in JP reporting, and design and launch one dedicated disability-inclusion joint programme.'},
+  {dim:'PROGRAMMING',num:9,name:'Data',desc:'Strengthening data on persons with disabilities.',req_a:'UNCT maps available data and gaps in national statistical sources.',req_m:'UNCT maps data gaps AND works with at least one Government partner on data related to persons with disabilities.',req_e:'All "Meets" criteria AND a majority of capacity-building initiatives for national statistical offices take into account disability.',status:'Exceeds Requirements',focus:'NO',focus_note:''},
+  {dim:'PROGRAMMING',num:10,name:'Monitoring and Evaluation',desc:'CF monitoring and evaluation processes address disability inclusion.',req_a:'The CF annual report assesses progress against specific disability-inclusion results.',req_m:'Annual report assesses progress AND the M&E group receives technical training on disability indicators at least once per cycle.',req_e:'All "Meets" criteria AND the CF evaluation and management response address progress related to disability inclusion.',status:'Approaches Requirements',focus:'NO',focus_note:''},
+  {dim:'PROGRAMMING',num:11,name:'Humanitarian',desc:'Disability inclusion is mainstreamed in humanitarian planning and response.',req_a:'HCT/UNCT assess how persons with disabilities are included in needs assessments and response plans.',req_m:'Assessment is conducted AND the Humanitarian Response Plan (HRP) spells out specific risk addressing and disaggregates data where possible.',req_e:'All "Meets" criteria AND persons with disabilities and their representative organizations participate in humanitarian coordination mechanisms.',status:'Approaches Requirements',focus:'NO',focus_note:''},
+  {dim:'ORGANIZATIONAL CULTURE',num:12,name:'Employment',desc:'UNCT human resources practices are disability-inclusive.',req_a:'UNCT adopts a non-discrimination employment statement explicitly referring to persons with disabilities.',req_m:'Statement is adopted, vacancy announcements explicitly encourage OPDs to apply, AND targeted measures ensure announcements reach them.',req_e:'All "Meets" criteria AND UNCT reviews the disability status of employees and consultants at least once per CF cycle.',status:'Missing Requirements',focus:'YES',focus_note:'Drive UNCT-wide initiatives: a unified non-discrimination statement, vacancy templates with disability-inclusive language, targeted outreach sharing vacancies with OPDs, and a review of staff and consultant disability data.'},
+  {dim:'ORGANIZATIONAL CULTURE',num:13,name:'Capacity Development',desc:'UNCT invests in capacity development on disability inclusion.',req_a:'Training and learning resources are available to UNCT staff (online or workshops).',req_m:'Resources are available AND one inter-agency training is conducted annually in collaboration with OPDs.',req_e:'All "Meets" criteria AND a majority of staff, including senior staff, participates in training within the CF cycle.',status:'Approaches Requirements',focus:'YES',focus_note:'Run at least one inter-agency training each year, co-delivered with OPDs, and ensure most staff — especially senior leadership — complete training before the CF cycle ends.'},
+  {dim:'ORGANIZATIONAL CULTURE',num:14,name:'Communication',desc:'UNCT communication and advocacy address disability inclusion.',req_a:'Mainstream UN communications reflect persons with disabilities.',req_m:'Communications reflect persons with disabilities AND the inter-agency Communication Group integrates their human rights into annual workplans.',req_e:'All "Meets" criteria AND a disability inclusion communications campaign is undertaken at least once per CF cycle.',status:'Meets Requirements',focus:'NO',focus_note:''}
+];
+
+/* ── UTILITIES ── */
+function escHtml(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
+function statusKey(s){const v=String(s||'').toLowerCase().trim();if(v.startsWith('exceed'))return'exceeds';if(v.startsWith('meet'))return'meets';if(v.startsWith('approach'))return'approaches';if(v.startsWith('miss'))return'missing';return''}
+function statusLabel(k){return{exceeds:'Exceeds',meets:'Meets',approaches:'Approaches',missing:'Missing'}[k]||''}
+function pillHtml(k){return`<span class="pill pill-${k}">${statusLabel(k)}</span>`}
+function indAnchorHref(n){return`undis_indicators.html#ind-${String(n).trim()}`}
+
+function formatDate(v){
+  const s=String(v||'').trim();if(!s||s==='-')return'';
+  const n=parseFloat(s);
+  if(!isNaN(n)&&n>40000){
+    const d=new Date(Math.round((n-25569)*86400*1000));
+    return d.toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'});
+  }
+  return s;
+}
+
+function formatCell(text){
+  const raw=String(text||'').trim();if(!raw)return'—';
+  const lines=raw.split(/\n+/);
+  const isNum=lines.length>1&&/^\d+[\.\)]/.test(lines[0].trim());
+  const isBullet=lines.length>1&&/^[-•]/.test(lines[0].trim());
+  if(isNum){const items=lines.map(l=>l.replace(/^\d+[\.\)]\s*/,'').trim()).filter(Boolean);return'<ol>'+items.map(i=>`<li>${escHtml(i)}</li>`).join('')+'</ol>'}
+  if(isBullet){const items=lines.map(l=>l.replace(/^[-•]\s*/,'').trim()).filter(Boolean);return'<ul>'+items.map(i=>`<li>${escHtml(i)}</li>`).join('')+'</ul>'}
+  return escHtml(raw).replace(/\n/g,'<br>');
+}
+
+function actStatusClass(s){const v=String(s||'').toLowerCase().trim();if(v.includes('progress'))return'act-inprogress';if(v==='planned')return'act-planned';if(v==='done')return'act-done';if(v==='delayed')return'act-delayed';return'act-other'}
+
+function normalizeDim(raw){const map={'LEADERSHIP, STRATEGIC PLANNING AND MANAGEMENT':'Leadership, Strategic Planning & Management','INCLUSIVENESS':'Inclusiveness','PROGRAMMING':'Programming','ORGANIZATIONAL CULTURE':'Organizational Culture'};return map[String(raw||'').trim().toUpperCase()]||raw}
+function shortDim(raw){const map={'LEADERSHIP, STRATEGIC PLANNING AND MANAGEMENT':'Leadership & Planning','INCLUSIVENESS':'Inclusiveness','PROGRAMMING':'Programming','ORGANIZATIONAL CULTURE':'Org. Culture'};return map[String(raw||'').trim().toUpperCase()]||raw}
+
+/* ── ROW → OBJECT ── */
+function rowToIndicator(row){
+  return{dim:String(row[0]||'').trim(),num:String(row[1]||'').trim(),name:String(row[2]||'').trim(),desc:String(row[3]||'').trim(),req_a:String(row[4]||'').trim(),req_m:String(row[5]||'').trim(),req_e:String(row[6]||'').trim(),status:String(row[7]||'').trim(),focus:String(row[8]||'').trim().toUpperCase(),focus_note:String(row[9]||'').trim()};
+}
+function rowToActivity(row){
+  return{date:String(row[0]||'').trim(),num:String(row[1]||'').trim(),indicator:String(row[2]||'').trim(),desc:String(row[3]||'').trim(),type:String(row[4]||'').trim(),lead:String(row[5]||'').trim(),status:String(row[6]||'').trim(),notes:String(row[7]||'').trim()};
+}
+
+/* ── DATA LOADING ── */
+let _indicators=[], _activities=[];
+
+function loadData(isRefresh){
+  const cb=Date.now();
+  const indUrl=isRefresh?INDICATORS_URL+'&_='+cb:INDICATORS_URL;
+  const actUrl=isRefresh?ACTIVITIES_URL+'&_='+cb:ACTIVITIES_URL;
+  if(isRefresh){const ic=document.getElementById('refresh-icon');ic.classList.add('spinning')}
+
+  Promise.all([
+    fetch(indUrl).then(r=>{if(!r.ok)throw new Error('indicators');return r.text()}),
+    fetch(actUrl).then(r=>{if(!r.ok)throw new Error('activities');return r.text()})
+  ]).then(([indText,actText])=>{
+    const indRows=Papa.parse(indText,{header:false,skipEmptyLines:true}).data;
+    const actRows=Papa.parse(actText,{header:false,skipEmptyLines:true}).data;
+    _indicators=indRows.slice(1).filter(r=>String(r[1]||'').trim()).map(rowToIndicator);
+    _activities=actRows.slice(1).filter(r=>String(r[1]||'').trim()).map(rowToActivity);
+    buildAll();
+  }).catch(()=>{
+    _indicators=IND_META.map(m=>({...m,num:String(m.num)}));
+    _activities=[];
+    buildAll();
+  }).finally(()=>{
+    const ic=document.getElementById('refresh-icon');ic.classList.remove('spinning');
+  });
+}
+
+function buildAll(){
+  buildSummary();
+  buildFocus();
+  buildDistribution();
+  buildActivities();
+}
+
+/* ── BUILD SUMMARY (KPI cards) ── */
+function buildSummary(){
+  const counts={exceeds:0,meets:0,approaches:0,missing:0};
+  _indicators.forEach(ind=>{const k=statusKey(ind.status);if(counts[k]!==undefined)counts[k]++});
+  ['exceeds','meets','approaches','missing'].forEach(k=>{
+    const el=document.getElementById('kpi-'+k);if(el)el.textContent=counts[k];
+  });
+}
+
+/* ── BUILD FOCUS ── */
+function buildFocus(){
+  const focusInds=_indicators.filter(i=>i.focus==='YES').sort((a,b)=>parseInt(a.num)-parseInt(b.num));
+  const sub=document.getElementById('focus-subtitle');
+  const cont=document.getElementById('focus-content');
+  if(!focusInds.length){
+    sub.textContent='No indicators flagged for priority attention this year.';
+    cont.innerHTML='<div class="focus-empty">✓ Nothing flagged for 2026 — every indicator is currently on track for advancement.</div>';
+    return;
+  }
+  sub.textContent=`${focusInds.length} indicator${focusInds.length>1?'s':''} flagged as the main focus for 2026.`;
+  const missing=focusInds.filter(i=>statusKey(i.status)==='missing');
+  const others=focusInds.filter(i=>statusKey(i.status)!=='missing');
+  let html='';
+  if(missing.length){
+    html+=`<div class="focus-subhead">Indicators with Missing Status</div><div class="focus-grid">${missing.map(focusCardHtml).join('')}</div>`;
+  }
+  if(others.length){
+    html+=(missing.length?'<div class="focus-subhead" style="margin-top:2rem">Indicators with Potential for Advancement</div>':'<div class="focus-subhead">Indicators with Potential for Advancement</div>');
+    html+=`<div class="focus-grid">${others.map(focusCardHtml).join('')}</div>`;
+  }
+  cont.innerHTML=html;
+}
+
+function focusCardHtml(ind){
+  const k=statusKey(ind.status);
+  const note=ind.focus_note||ind.desc;
+  return`<a class="indicator-card card-${k}" href="${indAnchorHref(ind.num)}">
+    <div class="card-accent"></div>
+    <div class="card-body">
+      <div class="card-top">
+        <span class="card-id">INDICATOR ${escHtml(ind.num)}</span>
+        ${pillHtml(k)}
+      </div>
+      <div class="card-name">${escHtml(ind.name)}</div>
+      <div class="card-action">
+        <span class="card-action-label">Key Action</span>
+        <div class="card-action-text">${escHtml(note)}</div>
+      </div>
+    </div>
+    <div class="card-footer">
+      <span class="card-footer-meta">${escHtml(normalizeDim(ind.dim))}</span>
+      <span class="card-explore">Explore →</span>
+    </div>
+  </a>`;
+}
+
+/* ── BUILD DISTRIBUTION ── */
+const DIM_ORDER=['LEADERSHIP, STRATEGIC PLANNING AND MANAGEMENT','INCLUSIVENESS','PROGRAMMING','ORGANIZATIONAL CULTURE'];
+const STATUS_ORDER=['exceeds','meets','approaches','missing'];
+
+function buildDistribution(){
+  const chart=document.getElementById('dist-chart');
+  // Overall
+  const overall={exceeds:0,meets:0,approaches:0,missing:0};
+  _indicators.forEach(i=>{const k=statusKey(i.status);if(k)overall[k]++});
+  // Per dim
+  const dimData={};
+  DIM_ORDER.forEach(d=>dimData[d]={exceeds:0,meets:0,approaches:0,missing:0});
+  _indicators.forEach(i=>{const d=String(i.dim||'').trim().toUpperCase();const k=statusKey(i.status);if(dimData[d]&&k)dimData[d][k]++});
+  
+  let html=barRowHtml('Overall (14)',overall,14,true);
+  html+='<div class="dist-sep"></div>';
+  DIM_ORDER.forEach(d=>{
+    const counts=dimData[d];const total=Object.values(counts).reduce((a,b)=>a+b,0);
+    html+=barRowHtml(shortDim(d),counts,total,false);
+  });
+  chart.innerHTML=html;
+}
+
+function barRowHtml(label,counts,total,isOverall){
+  const segs=STATUS_ORDER.map(k=>{
+    const c=counts[k]||0;if(!c)return'';
+    const pct=(c/total)*100;
+    return`<div class="dist-seg dist-seg-${k} has-count" style="width:${pct}%" title="${statusLabel(k)}: ${c}">${c}</div>`;
+  }).join('');
+  return`<div class="dist-row"><div class="dist-label${isOverall?' overall':''}">${escHtml(label)}</div><div class="dist-bar">${segs}</div></div>`;
+}
+
+/* ── BUILD ACTIVITIES ── */
+function buildActivities(){
+  const tbody=document.getElementById('activities-body');
+  if(!_activities.length){tbody.innerHTML='<tr><td colspan="7" class="no-data">No activities found. Add rows to the Activities tab in the Google Sheet.</td></tr>';return}
+  tbody.innerHTML=_activities.map(a=>{
+    const sc=actStatusClass(a.status);
+    // find indicator name from _indicators if possible
+    const matched=_indicators.find(i=>String(i.num).trim()===String(a.num).trim());
+    const indName=matched?matched.name:a.indicator;
+    return`<tr>
+      <td class="date-cell">${escHtml(formatDate(a.date))}</td>
+      <td class="ind-cell"><a class="pi-link" href="${indAnchorHref(a.num)}">#${escHtml(a.num)}</a><span class="ind-name-sub">${escHtml(indName)}</span></td>
+      <td class="desc-cell">${formatCell(a.desc)}</td>
+      <td><span class="act-type-pill">${escHtml(a.type)}</span></td>
+      <td class="lead-cell">${escHtml(a.lead)}</td>
+      <td><span class="act-status-pill ${sc}"><span class="act-status-dot"></span>${escHtml(a.status)}</span></td>
+      <td class="notes-cell">${formatCell(a.notes)}</td>
+    </tr>`;
+  }).join('');
+}
+
+/* ── PDF EXPORT ── */
+async function downloadScorecardPDF(){
+  const btn=document.getElementById('pdf-btn');btn.textContent='Generating…';btn.disabled=true;
+  document.getElementById('header-actions').style.visibility='hidden';
+  document.getElementById('hero-actions').style.visibility='hidden';
+  try{
+    const opts={scale:2,useCORS:true,logging:false};
+    const [heroC,focusC,distC,actC]=await Promise.all([
+      html2canvas(document.getElementById('hero-card'),{...opts,backgroundColor:'#2A2342'}),
+      html2canvas(document.getElementById('focus-section'),{...opts,backgroundColor:'#faf9fc'}),
+      html2canvas(document.getElementById('progress-section'),{...opts,backgroundColor:'#faf9fc'}),
+      html2canvas(document.getElementById('activities-section'),{...opts,backgroundColor:'#faf9fc'})
+    ]);
+    const {jsPDF}=window.jspdf;
+    const mm=5,pw=210-mm*2;
+    function addPage(pdf,canvases){
+      canvases.forEach((c,i)=>{
+        const w=c.width,h=c.height;
+        const scl=pw/(w/2);
+        const ph=h/2*scl;
+        if(i===0&&pdf.internal.getNumberOfPages()>1)pdf.addPage();
+        else if(i>0){}
+        const y=i===0?mm:pdf.internal.pageSize.getHeight()-ph;
+        // stack vertically, auto page breaks
+      });
+    }
+    const page1=[heroC,focusC];
+    const page2=[distC,actC];
+    const allPages=[page1,page2];
+    const pdf=new jsPDF({orientation:'portrait',unit:'mm',format:'a4'});
+    let firstPage=true;
+    allPages.forEach(canvases=>{
+      if(!firstPage)pdf.addPage();firstPage=false;
+      let yPos=mm;
+      const targetW=pw;
+      canvases.forEach(c=>{
+        const scl=targetW/(c.width/2);
+        const h=(c.height/2)*scl;
+        if(yPos+h>297-mm){pdf.addPage();yPos=mm;}
+        pdf.addImage(c.toDataURL('image/jpeg',0.92),'JPEG',mm,yPos,targetW,h);
+        yPos+=h+3;
+      });
+    });
+    const d=new Date();const ds=`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+    pdf.save(`UNCT-UNDIS_Scorecard_LaoPDR_${ds}.pdf`);
+  }finally{
+    document.getElementById('header-actions').style.visibility='';
+    document.getElementById('hero-actions').style.visibility='';
+    btn.textContent='⬇ Print PDF';btn.disabled=false;
+  }
+}
+
+/* ── INIT ── */
+document.addEventListener('DOMContentLoaded',()=>loadData(false));
+</script>
+</body>
+</html>
