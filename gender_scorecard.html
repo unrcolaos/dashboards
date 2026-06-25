@@ -1152,6 +1152,14 @@ function buildFocus() {
   grid.innerHTML = html;
 }
 
+// Fallback last-assessed year per indicator, used ONLY when the live sheet
+// cell comes back blank (published-CSV caching can lag a fresh edit). The live
+// value always wins when present.
+const LAST_ASSESSED_FALLBACK = {
+  'PI 1.2': '2022',
+  'PI 4.1': '2025'
+};
+
 function buildAssessmentHistory() {
   const tbody = document.getElementById('assess-tbody');
   if (!tbody) return;
@@ -1165,12 +1173,12 @@ function buildAssessmentHistory() {
     dimMap[dim].push(ind);
   });
 
-  // Render a dot + status label cell for a given raw status value
+  // Render a status pill for a given raw status value (empty -> em dash)
   const yearCell = (rawStatus) => {
     const k = statusKey(rawStatus);
-    if (!k) return `<td class="yr-na">—</td>`;
+    if (!k) return `<td><span class="yr-na">—</span></td>`;
     const label = k.charAt(0).toUpperCase() + k.slice(1);
-    return `<td><span class="yr-cell"><span class="trend-dot dot-${k}"></span>${label}</span></td>`;
+    return `<td><span class="status-pill pill-${k}">${label}</span></td>`;
   };
 
   let html = '';
@@ -1179,6 +1187,9 @@ function buildAssessmentHistory() {
       <td colspan="6">${escHtml(dim)}</td>
     </tr>`;
     dimMap[dim].forEach(ind => {
+      const piKey = String(ind.pi_id || '').replace(/\s+/g, ' ').trim();
+      const lastAssessed = (ind.last_assessed && String(ind.last_assessed).trim())
+        || LAST_ASSESSED_FALLBACK[piKey] || '—';
       html += `<tr>
         <td>
           <a class="pi-link" href="${piAnchorHref(ind.pi_id)}"><strong>${escHtml(ind.pi_id)}</strong></a>
@@ -1188,7 +1199,7 @@ function buildAssessmentHistory() {
         ${yearCell(ind.status_2023)}
         ${yearCell(ind.status_2024)}
         ${yearCell(ind.status_2025)}
-        <td style="color:var(--text-muted); font-size:0.82rem;">${escHtml(ind.last_assessed || '—')}</td>
+        <td style="color:var(--text-muted); font-size:0.82rem;">${escHtml(lastAssessed)}</td>
       </tr>`;
     });
   });
