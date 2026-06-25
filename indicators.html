@@ -1183,9 +1183,12 @@ function updateUrl() {
 }
 
 // ── PRINT / EXPORT TO PDF ─────────────────────────────────────────────────────
-// Flows the hero + currently-shown indicator cards across as many A4 pages as
-// needed. Page breaks fall wherever the content lands for now — section-aware
-// breaks can be layered on later.
+// Flows the hero + each dimension section across as many A4 pages as needed.
+// Each block is captured into its own modest-sized canvas (never one giant
+// stacked canvas, which can exceed the browser's max canvas height and fail),
+// then packed down the page with a running cursor — splitting a block across a
+// page break only when it doesn't fit. Section-aware breaks can be layered on
+// later.
 function _sliceCanvas(src, sy, sh) {
   sy = Math.max(0, Math.round(sy));
   sh = Math.max(1, Math.round(sh));
@@ -1193,18 +1196,6 @@ function _sliceCanvas(src, sy, sh) {
   c.width = src.width; c.height = sh;
   c.getContext('2d').drawImage(src, 0, sy, src.width, sh, 0, 0, src.width, sh);
   return c;
-}
-function _stackCanvases(parts, bg) {
-  const tw = Math.max(...parts.map(c => c.width));
-  const hs = parts.map(c => Math.round(c.height * (tw / c.width)));
-  const total = hs.reduce((a, b) => a + b, 0);
-  const out = document.createElement('canvas');
-  out.width = tw; out.height = total;
-  const ctx = out.getContext('2d');
-  ctx.fillStyle = bg; ctx.fillRect(0, 0, tw, total);
-  let y = 0;
-  parts.forEach((c, i) => { ctx.drawImage(c, 0, y, tw, hs[i]); y += hs[i]; });
-  return out;
 }
 
 async function downloadIndicatorsPDF() {
@@ -1230,13 +1221,35 @@ async function downloadIndicatorsPDF() {
     const baseOpts = {
       scale: 2,
       useCORS: true,
-      windowWidth: document.documentElement.scrollWidth
+      windowWidth: document.documentElement.scrollWidth,
+      windowHeight: document.documentElement.scrollHeight
     };
-    const heroCanvas = heroEl ? await html2canvas(heroEl, { ...baseOpts, backgroundColor: '#392427' }) : null;
-    const mainCanvas = await html2canvas(mainEl, { ...baseOpts, backgroundColor: '#fafaf8' });
 
-    // One tall document canvas = hero stacked on top of the cards.
-    const docCanvas = _stackCanvases([heroCanvas, mainCanvas].filter(Boolean), '#fafaf8');
+    // Ordered list of atomic blocks to flow. Capturing per CARD (not per
+    // section) keeps every canvas small AND lets us avoid splitting a card
+    // across a page break. Each entry: { el, bg, type }.
+    const items = [];
+    if (heroEl) items.push({ el: heroEl, bg: '#392427', type: 'hero' });
+    const sections = mainEl.querySelectorAll('.dim-section');
+    if (sections.length) {
+      sections.forEach(sec => {
+        const header = sec.querySelector('.dim-section-header');
+        if (header) items.push({ el: header, bg: '#fafaf8', type: 'header' });
+        sec.querySelectorAll('.indicator-detail').forEach(card => {
+          items.push({ el: card, bg: '#fafaf8', type: 'card' });
+        });
+      });
+    }
+    if (items.length === (heroEl ? 1 : 0)) {
+      // Empty-state (no indicators match the filter) or any other main content.
+      items.push({ el: mainEl, bg: '#fafaf8', type: 'card' });
+    }
+
+    const blocks = [];
+    for (const it of items) {
+      const canvas = await html2canvas(it.el, { ...baseOpts, backgroundColor: it.bg });
+      blocks.push({ canvas, type: it.type });
+    }
 
     const { jsPDF } = window.jspdf;
     const margin = 6; // mm
@@ -1245,19 +1258,57 @@ async function downloadIndicatorsPDF() {
     const pageH   = pdf.internal.pageSize.getHeight();
     const renderW = pageW - margin * 2;
     const usableH = pageH - margin * 2;
+    const pageBottom = margin + usableH;
+    const GAP_MM = 4; // breathing room between stacked blocks
 
-    // Canvas px -> mm scale, and how many canvas px fit on one page.
-    const pxToMm  = renderW / docCanvas.width;
-    const pageHpx = usableH / pxToMm;
+    let cursorY = margin; // current vertical position on the current page (mm)
+    const newPage = () => { pdf.addPage(); cursorY = margin; };
+    const heightMm = (canvas) => renderW * (canvas.height / canvas.width);
 
-    const totalPages = Math.max(1, Math.ceil(docCanvas.height / pageHpx));
-    for (let i = 0; i < totalPages; i++) {
-      if (i > 0) pdf.addPage();
-      const sy    = i * pageHpx;
-      const sh    = Math.min(pageHpx, docCanvas.height - sy);
-      const slice = _sliceCanvas(docCanvas, sy, sh);
-      const h     = renderW * (slice.height / slice.width);
-      pdf.addImage(slice.toDataURL('image/jpeg', 0.92), 'JPEG', margin, margin, renderW, h);
+    for (let i = 0; i < blocks.length; i++) {
+      const { canvas, type } = blocks[i];
+      if (!canvas || !canvas.width || !canvas.height) continue;
+      const blockH = heightMm(canvas);
+
+      // Decide whether to break to a new page BEFORE placing this block.
+      if (cursorY > margin) {
+        if (blockH > usableH) {
+          // Taller than a whole page: start fresh so it splits across full pages.
+          newPage();
+        } else {
+          // How much vertical space this block needs to land cleanly. For a
+          // dimension header, also reserve room for the first card so the
+          // header never ends up orphaned at the bottom of a page.
+          let needed = GAP_MM + blockH;
+          if (type === 'header' && i + 1 < blocks.length && blocks[i + 1].canvas) {
+            needed += GAP_MM + heightMm(blocks[i + 1].canvas);
+          }
+          if (needed > (pageBottom - cursorY)) newPage();
+          else cursorY += GAP_MM;
+        }
+      }
+
+      if (blockH <= usableH) {
+        // Whole block fits on one page — place it intact (no card splitting).
+        pdf.addImage(canvas.toDataURL('image/jpeg', 0.92), 'JPEG', margin, cursorY, renderW, blockH);
+        cursorY += blockH;
+      } else {
+        // Oversized block (rare): slice it across pages as a fallback.
+        const pxPerMm = canvas.width / renderW;
+        let srcY = 0, remainingPx = canvas.height;
+        while (remainingPx > 0) {
+          let availMm = pageBottom - cursorY;
+          if (availMm < 6) { newPage(); availMm = usableH; }
+          const drawPx = Math.min(availMm * pxPerMm, remainingPx);
+          const drawMm = drawPx / pxPerMm;
+          const slice  = _sliceCanvas(canvas, srcY, drawPx);
+          pdf.addImage(slice.toDataURL('image/jpeg', 0.92), 'JPEG', margin, cursorY, renderW, drawMm);
+          cursorY    += drawMm;
+          srcY       += drawPx;
+          remainingPx -= drawPx;
+          if (remainingPx > 0) newPage();
+        }
+      }
     }
 
     // Stamp the UN logo in the top-right of page 1, over the hero band.
